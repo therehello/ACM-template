@@ -1,3 +1,21 @@
+- [ACM 模板](#acm-%E6%A8%A1%E6%9D%BF)
+  - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+    - [并查集](#%E5%B9%B6%E6%9F%A5%E9%9B%86)
+    - [树状数组](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84)
+    - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
+  - [图论](#%E5%9B%BE%E8%AE%BA)
+    - [树上问题](#%E6%A0%91%E4%B8%8A%E9%97%AE%E9%A2%98)
+      - [树链剖分](#%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86)
+    - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
+    - [拓扑排序](#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
+  - [字符串](#%E5%AD%97%E7%AC%A6%E4%B8%B2)
+    - [哈希](#%E5%93%88%E5%B8%8C)
+    - [manacher](#manacher)
+  - [数学](#%E6%95%B0%E5%AD%A6)
+    - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
+    - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
+  - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
+
 # ACM 模板
 
 ## 数据结构
@@ -285,6 +303,42 @@ void manacher(const string& _s, vector<int>& r){
         while(i - r[i] - 1 >= 0 && i + r[i] + 1 <s.size() && s[i - r[i] - 1] == s[i + r[i] + 1]) ++r[i];
         if(i + r[i] > maxr) maxr = i + r[i], mid = i;
     }
+}
+```
+
+## 数学
+
+### 线性筛法
+
+```cpp
+constexpr int N = 10000000;
+vector<int> min_prime(N + 1, 0), primes;
+for(int i = 2; i <= N; i++){
+    if(min_prime[i] == 0){
+        min_prime[i] = i;
+        primes.push_back(i);
+    }
+    for(auto& prime : primes){
+        if(prime > min_prime[i] || prime > N / i)break;
+        min_prime[prime * i] = prime;
+    }
+}
+```
+
+### 分解质因数
+
+```cpp
+void solve_num_primes(int num, vector<int>& ans){
+    for(auto i = lower_bound(primes.begin(), primes.end(), min_prime[num]); i != primes.end();i++){
+        int prime = *i;
+        if(prime > num / prime)break;
+        cnt++;
+        if(num % prime == 0){
+            while(num % prime == 0)num /= prime;
+            ans.push_back(prime);
+        }
+    }
+    if(num > 1)ans.push_back(num);
 }
 ```
 
