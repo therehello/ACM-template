@@ -23,6 +23,33 @@ struct dsu{
 };
 ```
 
+### 树状数组
+
+```cpp
+#define lowbit(x) ((x)&(-(x)))
+template<class T>
+struct Fenwick_tree{
+    Fenwick_tree(int size){
+        n = size;
+        tree.assign(n + 1, 0);
+    }
+    T query(int l, int r){
+        auto query = [&](int pos){
+            T res = 0;
+            while(pos){ res += tree[pos]; pos -= lowbit(pos); }
+            return res;
+        };
+        return query(r) - query(l - 1);
+    }
+    void update(int pos, T num){
+        while(pos <= n){ tree[pos] += num; pos += lowbit(pos); }
+    }
+private:
+    int n;
+    vector<T> tree;
+};
+```
+
 ### 线段树
 
 ```cpp
@@ -96,8 +123,6 @@ struct Graph{
     void add(int u, int v, int w){ graph[u].push_back({ v,w }); }
 };
 ```
-
-<br><br>
 
 ### 树上问题
 
