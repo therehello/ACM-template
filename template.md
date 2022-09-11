@@ -4,6 +4,8 @@
     - [树状数组](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84)
     - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
   - [图论](#%E5%9B%BE%E8%AE%BA)
+    - [最短路](#%E6%9C%80%E7%9F%AD%E8%B7%AF)
+    - [dijkstra](#dijkstra)
     - [树上问题](#%E6%A0%91%E4%B8%8A%E9%97%AE%E9%A2%98)
       - [树链剖分](#%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86)
     - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
@@ -15,6 +17,8 @@
     - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
     - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
   - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
+  - [杂项](#%E6%9D%82%E9%A1%B9)
+    - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
 
 # ACM 模板
 
@@ -71,60 +75,60 @@ private:
 ### 线段树
 
 ```cpp
-template <class Data,class Num>
+template <class Data, class Num>
 struct Segment_Tree{
-    inline void update(int l,int r,Num x){update(1,l,r,x);}
-    inline Data query(int l,int r){return query(1,l,r);}
+    inline void update(int l, int r, Num x){ update(1, l, r, x); }
+    inline Data query(int l, int r){ return query(1, l, r); }
     Segment_Tree(vector<Data>& a){
-        n=a.size();
-        tree.assign(n*4+1,{});
-        build(a,1,1,n);
+        n = a.size();
+        tree.assign(n * 4 + 1, {});
+        build(a, 1, 1, n);
     }
-    private:
+private:
     int n;
-    struct Tree{int l,r;Data data;};
+    struct Tree{ int l, r; Data data; };
     vector<Tree> tree;
     inline void pushup(int pos){
-        tree[pos].data=tree[pos<<1].data+tree[pos<<1|1].data;
+        tree[pos].data = tree[pos << 1].data + tree[pos << 1 | 1].data;
     }
     inline void pushdown(int pos){
-        tree[pos<<1].data=tree[pos<<1].data+tree[pos].data.lazytag;
-        tree[pos<<1|1].data=tree[pos<<1|1].data+tree[pos].data.lazytag;
-        tree[pos].data.lazytag=Num::zero();
+        tree[pos << 1].data = tree[pos << 1].data + tree[pos].data.lazytag;
+        tree[pos << 1 | 1].data = tree[pos << 1 | 1].data + tree[pos].data.lazytag;
+        tree[pos].data.lazytag = Num::zero();
     }
-    void build(vector<Data>& a,int pos,int l,int r){
-        tree[pos].l=l;tree[pos].r=r;
-        if(l==r){tree[pos].data=a[l-1];return;}
-        int mid=(tree[pos].l+tree[pos].r)>>1;
-        build(a,pos<<1,l,mid);
-        build(a,pos<<1|1,mid+1,r);
+    void build(vector<Data>& a, int pos, int l, int r){
+        tree[pos].l = l; tree[pos].r = r;
+        if(l == r){ tree[pos].data = a[l - 1]; return; }
+        int mid = (tree[pos].l + tree[pos].r) >> 1;
+        build(a, pos << 1, l, mid);
+        build(a, pos << 1 | 1, mid + 1, r);
         pushup(pos);
     }
-    void update(int pos,int& l,int& r,Num& x){
-        if(l>tree[pos].r||r<tree[pos].l)return;
-        if(l<=tree[pos].l&&tree[pos].r<=r){tree[pos].data=tree[pos].data+x;return;}
+    void update(int pos, int& l, int& r, Num& x){
+        if(l > tree[pos].r || r < tree[pos].l)return;
+        if(l <= tree[pos].l && tree[pos].r <= r){ tree[pos].data = tree[pos].data + x; return; }
         pushdown(pos);
-        update(pos<<1,l,r,x);update(pos<<1|1,l,r,x);
+        update(pos << 1, l, r, x); update(pos << 1 | 1, l, r, x);
         pushup(pos);
     }
-    Data query(int pos,int& l,int& r){
-        if(l>tree[pos].r||r<tree[pos].l)return Data::zero();
-        if(l<=tree[pos].l&&tree[pos].r<=r)return tree[pos].data;
+    Data query(int pos, int& l, int& r){
+        if(l > tree[pos].r || r < tree[pos].l)return Data::zero();
+        if(l <= tree[pos].l && tree[pos].r <= r)return tree[pos].data;
         pushdown(pos);
-        return query(pos<<1,l,r)+query(pos<<1|1,l,r);
+        return query(pos << 1, l, r) + query(pos << 1 | 1, l, r);
     }
 };
 struct Num{
     ll add;
-    inline static Num zero(){return {0};}
-    inline Num operator+(Num b){return {add+b.add};}
+    inline static Num zero(){ return { 0 }; }
+    inline Num operator+(Num b){ return { add + b.add }; }
 };
 struct Data{
-    ll sum,len;
+    ll sum, len;
     Num lazytag;
-    inline static Data zero(){return {0,0,Num::zero()};}
-    inline Data operator+(Num b){return {sum+len*b.add,len,lazytag+b};}
-    inline Data operator+(Data b){return {sum+b.sum,len+b.len,Num::zero()};}
+    inline static Data zero(){ return { 0,0,Num::zero() }; }
+    inline Data operator+(Num b){ return { sum + len * b.add,len,lazytag + b }; }
+    inline Data operator+(Data b){ return { sum + b.sum,len + b.len,Num::zero() }; }
 };
 ```
 
@@ -140,6 +144,30 @@ struct Graph{
     Graph(int _n){ n = _n; graph.assign(n + 1, vector<Edge>()); };
     void add(int u, int v, int w){ graph[u].push_back({ v,w }); }
 };
+```
+
+### 最短路
+
+### dijkstra
+
+```cpp
+void dij(Graph& graph, vector<int>& dis, int t){
+    vector<int> visit(graph.n + 1, 0);
+    priority_queue<pair<int, int>> que;
+    dis[t] = 0;
+    que.emplace(0, t);
+    while(!que.empty()){
+        int u = que.top().second; que.pop();
+        if(visit[u])continue;
+        visit[u] = 1;
+        for(auto& [to, w] : graph.graph[u]){
+            if(dis[to] > dis[u] + w){
+                dis[to] = dis[u] + w;
+                que.emplace(-dis[to], to);
+            }
+        }
+    }
+}
 ```
 
 ### 树上问题
@@ -451,5 +479,58 @@ vec intersection(const T& A, const  T& B, const T& C, const T& D, const T& E, co
 vec intersection(const Line& a, const Line& b){
     return intersection(a.direction.y, -a.direction.x, a.direction.x * a.point.y - a.direction.y * a.point.x,
         b.direction.y, -b.direction.x, b.direction.x * b.point.y - b.direction.y * b.point.x);
+}
+```
+
+## 杂项
+
+### 高精度
+
+```cpp
+struct bignum{
+    int num[4001];
+    int len;
+    bignum(){ len = 0; }
+    bignum operator +(const bignum& b){
+        bignum c;
+        for(int i = 1, j = 0, x; i <= len || i <= b.len || j; i++){
+            x = j; j = 0;
+            if(i <= len)x += num[i];
+            if(i <= b.len)x += b.num[i];
+            if(x >= 10)j = 1, x -= 10;
+            c.num[++c.len] = x;
+        }
+        return c;
+    }
+    bignum operator *(const bignum& b){
+        bignum c;
+        memset(c.num, 0, sizeof(c.num));
+        for(int i = 1; i <= len; i++){
+            int g = 0;
+            for(int j = 1, pos; j <= b.len; j++){
+                pos = i + j - 1;
+                c.num[pos] += num[i] * b.num[j] + g;
+                g = c.num[pos] / 10; c.num[pos] %= 10;
+            }
+            if(g)c.num[i + b.len] = g;
+        }
+        c.len = len + b.len;
+        while(!c.num[c.len] && c.len != 1)c.len--;
+        return c;
+    }
+};
+bignum read(){
+    bignum x;
+    char c = getchar();
+    while(c < '0' || c>'9')c = getchar();
+    while(c >= '0' && c <= '9'){
+        x.num[++x.len] = c - '0';
+        c = getchar();
+    }
+    reverse(x.num + 1, x.num + 1 + x.len);
+    return x;
+}
+void print(bignum x){
+    for(int i = x.len; i; i--)putchar(x.num[i] + '0');
 }
 ```
