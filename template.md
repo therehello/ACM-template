@@ -19,6 +19,7 @@
   - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
   - [杂项](#%E6%9D%82%E9%A1%B9)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
+    - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
 
 # ACM 模板
 
@@ -532,5 +533,75 @@ bignum read(){
 }
 void print(bignum x){
     for(int i = x.len; i; i--)putchar(x.num[i] + '0');
+}
+```
+
+### 表达式求值
+
+```cpp
+// 格式化表达式
+string format(const string& s1){
+    stringstream ss(s1);
+    string s2;
+    char ch;
+    while((ch = ss.get()) != EOF){
+        if(ch == ' ')continue;
+        if(isdigit(ch))s2 += ch;
+        else{
+            if(s2.back() != ' ')s2 += ' ';
+            s2 += ch; s2 += ' ';
+        }
+    }
+    return s2;
+}
+
+// 中缀表达式转后缀表达式
+string convert(const string& s1){
+    
+    unordered_map<char, int> rank{ {'+',2},{'-',2},{'*',1},{'/',1},{'^',0} };
+    stringstream ss(s1);
+    string s2, temp;
+    stack<char> op;
+    while(ss >> temp){
+        if(isdigit(temp[0]))s2 += temp + ' ';
+        else if(temp[0] == '(')op.push('(');
+        else if(temp[0] == ')'){
+            while(op.top() != '('){
+                s2 += op.top(); s2 += ' '; op.pop();
+            }
+            op.pop();
+        }
+        else{
+            while(!op.empty() && op.top() != '(' && (temp[0] != '^' && rank[op.top()] <= rank[temp[0]] || rank[op.top()] < rank[temp[0]])){
+                s2 += op.top(); s2 += ' '; op.pop();
+            }
+            op.push(temp[0]);
+        }
+    }
+    while(!op.empty()){
+        s2 += op.top(); s2 += ' '; op.pop();
+    }
+    return s2;
+}
+
+// 计算后缀表达式
+int calc(const string& s){
+    stack<int> num;
+    stringstream ss(s);
+    string temp;
+    while(ss >> temp){
+        if(isdigit(temp[0]))num.push(stoi(temp));
+        else{
+            int b = num.top(); num.pop();
+            int a = num.top(); num.pop();
+            if(temp[0] == '+')a += b;
+            else if(temp[0] == '-')a -= b;
+            else if(temp[0] == '*')a *= b;
+            else if(temp[0] == '/')a /= b;
+            else if(temp[0] == '^')a = ksm(a, b);
+            num.push(a);
+        }
+    }
+    return num.top();
 }
 ```
