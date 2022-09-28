@@ -7,6 +7,9 @@
     - [最短路](#%E6%9C%80%E7%9F%AD%E8%B7%AF)
       - [dijkstra](#dijkstra)
     - [树上问题](#%E6%A0%91%E4%B8%8A%E9%97%AE%E9%A2%98)
+      - [最近公公祖先](#%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%AC%E7%A5%96%E5%85%88)
+        - [倍增法](#%E5%80%8D%E5%A2%9E%E6%B3%95)
+        - [树剖](#%E6%A0%91%E5%89%96)
       - [树链剖分](#%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86)
     - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
     - [拓扑排序](#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
@@ -173,6 +176,58 @@ void dij(Graph& graph, vector<int>& dis, int t){
 
 ### 树上问题
 
+#### 最近公公祖先
+
+##### 倍增法
+
+```cpp
+vector<int> dep;
+vector<array<int, 21>> fa;
+dep.assign(n + 1, 0);
+fa.assign(n + 1, array<int, 21>{});
+void binary_jump(int root){
+    function<void(int)> dfs = [&](int t){
+        dep[t] = dep[fa[t][0]] + 1;
+        for(auto& [to] : graph[t]){
+            if(to == fa[t][0])continue;
+            fa[to][0] = t;
+            dfs(to);
+        }
+    };
+    dfs(root);
+    for(int j = 1; j <= 20; j++)
+        for(int i = 1; i <= n; i++)
+            fa[i][j] = fa[fa[i][j - 1]][j - 1];
+}
+int lca(int x, int y){
+    if(dep[x] < dep[y])swap(x, y);
+    for(int i = 20; i >= 0; i--){
+        if(dep[fa[x][i]] >= dep[y])x = fa[x][i];
+    }
+    if(x == y)return x;
+    for(int i = 20; i >= 0; i--){
+        if(fa[x][i] != fa[y][i]){
+            x = fa[x][i];
+            y = fa[y][i];
+        }
+    }
+    return fa[x][0];
+}
+```
+
+##### 树剖
+
+```cpp
+int lca(int x, int y){
+    while(top[x] != top[y]){
+        if(dep[top[x]] < dep[top[y]])swap(x, y);
+        x = fa[top[x]];
+    }
+    if(dep[x] < dep[y])swap(x, y);
+    return y;
+}
+```
+
 #### 树链剖分
 
 ```cpp
@@ -210,15 +265,6 @@ void hld(int root){
         }
     }; dfs2(root);
 }
-
-int lca(int x, int y){
-    while(top[x] != top[y]){
-        if(dep[top[x]] < dep[top[y]])swap(x, y);
-        x = fa[top[x]];
-    }
-    if(dep[x] < dep[y])swap(x, y);
-    return y;
-};
 ```
 
 ### 强连通分量
@@ -391,13 +437,11 @@ struct vec{
 
     // 模
     double length()const{
-
         return sqrt(x * x + y * y);
     }
 
     // 与x轴正方向的夹角
     double angle()const{
-
         double angle = atan2(y, x);
         if(angle < 0)angle += 2 * PI;
         return angle;
@@ -463,12 +507,12 @@ struct Line{
 
 // 两直线是否垂直
 bool perpendicular(const Line& a, const Line& b){
-    return a.direction * b.direction == 0 ? true : false;
+    return a.direction * b.direction == 0;
 }
 
 // 两直线是否平行
 bool parallel(const Line& a, const Line& b){
-    return (a.direction ^ b.direction) == 0 ? true : false;
+    return (a.direction ^ b.direction) == 0;
 }
 
 // 两直线交点
