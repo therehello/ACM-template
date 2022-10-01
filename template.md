@@ -23,6 +23,9 @@
   - [杂项](#%E6%9D%82%E9%A1%B9)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
     - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
+    - [对拍](#%E5%AF%B9%E6%8B%8D)
+      - [linux/Mac](#linuxmac)
+      - [windows](#windows)
 
 # ACM 模板
 
@@ -407,7 +410,6 @@ void solve_num_primes(int num, vector<int>& ans){
     for(auto i = lower_bound(primes.begin(), primes.end(), min_prime[num]); i != primes.end();i++){
         int prime = *i;
         if(prime > num / prime)break;
-        cnt++;
         if(num % prime == 0){
             while(num % prime == 0)num /= prime;
             ans.push_back(prime);
@@ -416,6 +418,21 @@ void solve_num_primes(int num, vector<int>& ans){
     if(num > 1)ans.push_back(num);
 }
 ```
+
+### 盒子与球
+
+$n个球,m个盒$
+
+|球同|盒同|可空|公式|
+|---|---|---|---|
+|✓|✓|✓|$f_{n,m}=f_{n-1,m-1}+f_{n-m,m}$|
+|✓|✓|✕|$f_{n-m,m}$|
+|✕|✓|✓|$\Sigma_{i=1}^{m}g_{n,i}$|
+|✕|✓|✕|$g_{n,m}=g_{n-1,m-1}+m*g_{n-1,m}$|
+|✓|✕|✓|$C_{n+m-1}^{m-1}$|
+|✓|✕|✕|$C_{n-1}^{m-1}$|
+|✕|✕|✓|$m^n$|
+|✕|✕|✕|$m!*g_{n,m}$|
 
 ## 计算几何
 
@@ -648,4 +665,50 @@ int calc(const string& s){
     }
     return num.top();
 }
+```
+
+### 对拍
+
+#### linux/Mac
+
+```bash
+g++ a.cpp -o program/a -O2 -std=c++17
+g++ b.cpp -o program/b -O2 -std=c++17
+g++ suiji.cpp -o program/suiji -O2 -std=c++17
+
+cnt=0
+
+while true; do
+    let cnt++
+    echo TEST:$cnt
+
+    ./program/suiji > in
+    ./program/a < in > out.a
+    ./program/b < in > out.b
+
+    diff out.a out.b
+    if [ $? -ne 0 ];then break;fi
+done
+```
+
+#### windows
+
+```bash
+@echo off
+
+g++ a.cpp -o program/a -O2 -std=c++17
+g++ b.cpp -o program/b -O2 -std=c++17
+g++ suiji.cpp -o program/suiji -O2 -std=c++17
+
+set cnt=0
+
+:again
+    set /a cnt=cnt+1
+    echo TEST:%cnt%
+    .\program\suiji > in
+    .\program\a < in > out.a
+    .\program\b < in > out.b
+
+    fc output.a output.b
+if not errorlevel 1 goto again
 ```
