@@ -19,6 +19,8 @@
   - [数学](#%E6%95%B0%E5%AD%A6)
     - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
     - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
+    - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
+    - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
   - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
   - [杂项](#%E6%9D%82%E9%A1%B9)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
@@ -433,6 +435,53 @@ $n个球,m个盒$
 |✓|✕|✕|$C_{n-1}^{m-1}$|
 |✕|✕|✓|$m^n$|
 |✕|✕|✕|$m!*g_{n,m}$|
+
+### 线性基
+
+```cpp
+// 线性基
+struct basis{
+    array<unsigned ll, 64> p{};
+
+    // 将x插入此线性基中
+    void insert(unsigned ll x){
+        for(int i = 63; i >= 0; i--){
+            if((x >> i) & 1){
+                if(p[i])x ^= p[i];
+                else{
+                    p[i] = x; break;
+                }
+            }
+        }
+    }
+
+    // 合并两个线性基
+    basis operator+(basis other){
+        basis res = *this;
+        for(int i = 0; i <= 63; i++){
+            if(!other.p[i])continue;
+            for(int j = i; j >= 0; j--){
+                if((other.p[i] >> j) & 1){
+                    if(res.p[j])other.p[i] ^= res.p[j];
+                    else{
+                        res.p[j] = other.p[i]; break;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    // 最大异或值
+    unsigned ll max_basis(){
+        unsigned ll res = 0;
+        for(int i = 63; i >= 0; i--){
+            if((res ^ p[i]) > res)res ^= p[i];
+        }
+        return res;
+    }
+};
+```
 
 ## 计算几何
 
