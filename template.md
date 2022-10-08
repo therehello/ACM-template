@@ -455,21 +455,12 @@ struct basis{
         }
     }
 
-    // 合并两个线性基
-    basis operator+(basis other){
-        basis res = *this;
+    // 将另一个线性基插入此线性基中
+    void insert(basis other){
         for(int i = 0; i <= 63; i++){
             if(!other.p[i])continue;
-            for(int j = i; j >= 0; j--){
-                if((other.p[i] >> j) & 1){
-                    if(res.p[j])other.p[i] ^= res.p[j];
-                    else{
-                        res.p[j] = other.p[i]; break;
-                    }
-                }
-            }
+            insert(other.p[i]);
         }
-        return res;
     }
 
     // 最大异或值
