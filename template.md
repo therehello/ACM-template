@@ -614,7 +614,7 @@ struct bignum{
     }
 
     bignum operator*(const bignum& other){
-        vector<int> res(num.size() * other.num.size() - 1, 0);
+        vector<int> res(num.size() + other.num.size() - 1, 0);
         for(int i = 0; i < num.size(); i++){
             for(int j = 0; j < other.num.size(); j++){
                 res[i + j] += (num[i] - '0') * (other.num[j] - '0');
@@ -636,6 +636,14 @@ struct bignum{
         res2.num.resize(lim);
         for(int i = 0; i < lim; i++)res2.num[i] = res[i] + '0';
         return res2;
+    }
+
+    bool operator<(const bignum& other){
+        if(num.size() == other.num.size())
+            for(int i = num.size() - 1; i >= 0; i--)
+                if(num[i] == other.num[i])continue;
+                else return num[i] < other.num[i];
+        return num.size() < other.num.size();
     }
 
     friend istream& operator>>(istream& in, bignum& a){
