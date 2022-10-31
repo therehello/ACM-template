@@ -24,6 +24,8 @@
   - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
   - [杂项](#%E6%9D%82%E9%A1%B9)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
+    - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
+    - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
     - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
     - [对拍](#%E5%AF%B9%E6%8B%8D)
       - [linux/Mac](#linuxmac)
@@ -409,7 +411,7 @@ for(int i = 2; i <= N; i++){
 
 ```cpp
 void solve_num_primes(int num, vector<int>& ans){
-    for(auto i = lower_bound(primes.begin(), primes.end(), min_prime[num]); i != primes.end();i++){
+    for(auto i = lower_bound(primes.begin(), primes.end(), min_prime[num]); i != primes.end(); i++){
         int prime = *i;
         if(prime > num / prime)break;
         if(num % prime == 0){
@@ -590,51 +592,154 @@ vec intersection(const Line& a, const Line& b){
 
 ```cpp
 struct bignum{
-    int num[4001];
-    int len;
-    bignum(){ len = 0; }
-    bignum operator +(const bignum& b){
-        bignum c;
-        for(int i = 1, j = 0, x; i <= len || i <= b.len || j; i++){
+    string num;
+
+    bignum() :num("0"){}
+    bignum(const string& num) :num(num){ reverse(this->num.begin(), this->num.end()); }
+    bignum(ll num) :num(to_string(num)){ reverse(this->num.begin(), this->num.end()); }
+
+    bignum operator+(const bignum& other){
+        bignum res;
+        res.num.pop_back();
+        res.num.reserve(max(num.size(), other.num.size()) + 1);
+        for(int i = 0, j = 0, x; i < num.size() || i < other.num.size() || j; i++){
             x = j; j = 0;
-            if(i <= len)x += num[i];
-            if(i <= b.len)x += b.num[i];
+            if(i < num.size())x += num[i] - '0';
+            if(i < other.num.size())x += other.num[i] - '0';
             if(x >= 10)j = 1, x -= 10;
-            c.num[++c.len] = x;
+            res.num.push_back(x + '0');
         }
-        return c;
+        res.num.capacity();
+        return res;
     }
-    bignum operator *(const bignum& b){
-        bignum c;
-        memset(c.num, 0, sizeof(c.num));
-        for(int i = 1; i <= len; i++){
-            int g = 0;
-            for(int j = 1, pos; j <= b.len; j++){
-                pos = i + j - 1;
-                c.num[pos] += num[i] * b.num[j] + g;
-                g = c.num[pos] / 10; c.num[pos] %= 10;
+
+    bignum operator*(const bignum& other){
+        vector<int> res(num.size() * other.num.size() - 1, 0);
+        for(int i = 0; i < num.size(); i++){
+            for(int j = 0; j < other.num.size(); j++){
+                res[i + j] += (num[i] - '0') * (other.num[j] - '0');
             }
-            if(g)c.num[i + b.len] = g;
         }
-        c.len = len + b.len;
-        while(!c.num[c.len] && c.len != 1)c.len--;
-        return c;
+        int g = 0;
+        for(int i = 0; i < res.size(); i++){
+            res[i] += g;
+            g = res[i] / 10;
+            res[i] %= 10;
+        }
+        while(g){
+            res.push_back(g % 10);
+            g /= 10;
+        }
+        int lim = res.size();
+        while(lim > 1 && res[lim - 1] == 0)lim--;
+        bignum res2;
+        res2.num.resize(lim);
+        for(int i = 0; i < lim; i++)res2.num[i] = res[i] + '0';
+        return res2;
+    }
+
+    friend istream& operator>>(istream& in, bignum& a){
+        in >> a.num;
+        reverse(a.num.begin(), a.num.end());
+        return in;
+    }
+    friend ostream& operator<<(ostream& out, bignum a){
+        reverse(a.num.begin(), a.num.end());
+        return out << a.num;
     }
 };
-bignum read(){
-    bignum x;
-    char c = getchar();
-    while(c < '0' || c>'9')c = getchar();
-    while(c >= '0' && c <= '9'){
-        x.num[++x.len] = c - '0';
-        c = getchar();
+```
+
+### 扫描线
+
+```cpp
+#define ls (pos << 1)
+#define rs (ls | 1)
+#define mid ((tree[pos].l + tree[pos].r) >> 1)
+struct Rectangle{
+    ll x_l, y_l, x_r, y_r;
+};
+ll area(vector<Rectangle>& rec){
+    struct Line{
+        ll x, y_up, y_down;
+        int pd;
+    };
+    vector<Line> line(rec.size() * 2);
+    vector<ll> y_set(rec.size() * 2);
+    for(int i = 0; i < rec.size(); i++){
+        y_set[i * 2] = rec[i].y_l;
+        y_set[i * 2 + 1] = rec[i].y_r;
+        line[i * 2] = { rec[i].x_l,rec[i].y_r,rec[i].y_l,1 };
+        line[i * 2 + 1] = { rec[i].x_r,rec[i].y_r,rec[i].y_l,-1 };
     }
-    reverse(x.num + 1, x.num + 1 + x.len);
-    return x;
+    sort(y_set.begin(), y_set.end());
+    y_set.erase(unique(y_set.begin(), y_set.end()), y_set.end());
+    sort(line.begin(), line.end(), [](Line a, Line b){return a.x < b.x; });
+    struct Data{
+        int l, r;
+        ll len, cnt, raw_len;
+    };
+    vector<Data> tree(4 * y_set.size());
+    function<void(int, int, int)> build = [&](int pos, int l, int r){
+        tree[pos].l = l;
+        tree[pos].r = r;
+        if(l == r){
+            tree[pos].raw_len = y_set[r + 1] - y_set[l];
+            tree[pos].cnt = tree[pos].len = 0;
+            return;
+        }
+        build(ls, l, mid);
+        build(rs, mid + 1, r);
+        tree[pos].raw_len = tree[ls].raw_len + tree[rs].raw_len;
+    };
+    function<void(int, int, int, int)> update = [&](int pos, int l, int r, int num){
+        if(l <= tree[pos].l && tree[pos].r <= r){
+            tree[pos].cnt += num;
+            tree[pos].len = tree[pos].cnt ? tree[pos].raw_len : tree[pos].l == tree[pos].r ? 0 : tree[ls].len + tree[rs].len;
+            return;
+        }
+        if(l <= mid)update(ls, l, r, num);
+        if(r > mid)update(rs, l, r, num);
+        tree[pos].len = tree[pos].cnt ? tree[pos].raw_len : tree[ls].len + tree[rs].len;
+    };
+    build(1, 0, y_set.size() - 2);
+    auto find_pos = [&](ll num){
+        return lower_bound(y_set.begin(), y_set.end(), num) - y_set.begin();
+    };
+    ll res = 0;
+    for(int i = 0; i < line.size() - 1; i++){
+        update(1, find_pos(line[i].y_down), find_pos(line[i].y_up) - 1, line[i].pd);
+        res += (line[i + 1].x - line[i].x) * tree[1].len;
+    }
+    return res;
 }
-void print(bignum x){
-    for(int i = x.len; i; i--)putchar(x.num[i] + '0');
-}
+```
+
+### 模运算
+
+```cpp
+class modint{
+    ll num;
+public:
+    modint(ll num = 0) :num(num % mod){}
+    modint pow(modint other){
+        modint res(1), temp = *this;
+        while(other.num){
+            if(other.num & 1)res = res * temp;
+            temp = temp * temp;
+            other.num >>= 1;
+        }
+        return res;
+    }
+    modint inv(){ return this->pow(mod - 2); }
+    modint operator+(modint other){ return modint(this->num + other.num); }
+    modint operator-(){ return { -this->num }; }
+    modint operator-(modint other){ return modint(-other + *this); }
+    modint operator*(modint other){ return modint(this->num * other.num); }
+    modint operator/(modint other){ return *this * other.inv(); }
+    friend istream& operator>>(istream& is, modint& other){ is >> other.num; other.num %= mod; return is; }
+    friend ostream& operator<<(ostream& os, modint other){ other.num = (other.num + mod) % mod; return os << other.num; }
+};
 ```
 
 ### 表达式求值
