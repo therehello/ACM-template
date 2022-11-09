@@ -26,6 +26,7 @@
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
     - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
     - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
+    - [分数](#%E5%88%86%E6%95%B0)
     - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
     - [对拍](#%E5%AF%B9%E6%8B%8D)
       - [linux/Mac](#linuxmac)
@@ -747,6 +748,60 @@ public:
     modint operator/(modint other){ return *this * other.inv(); }
     friend istream& operator>>(istream& is, modint& other){ is >> other.num; other.num %= mod; return is; }
     friend ostream& operator<<(ostream& os, modint other){ other.num = (other.num + mod) % mod; return os << other.num; }
+};
+```
+
+### 分数
+
+```cpp
+struct frac{
+    int a, b;
+    frac() :a(0), b(1){}
+    frac(ll a, ll b){
+        if(a){
+            int temp = gcd(a, b);
+            this->a = a / temp; this->b = b / temp;
+        }
+        else{
+            this->a = 0; this->b = 1;
+        }
+    }
+    frac operator+(const frac& other){
+        return frac(a * other.b + other.a * b, b * other.b);
+    }
+    frac operator-()const{
+        frac res = *this;
+        res.a = -res.a;
+        return res;
+    }
+    frac operator-(const frac& other){
+        return -other + *this;
+    }
+    frac operator*(const frac& other){
+        return frac(a * other.a, b * other.b);
+    }
+    frac operator/(const frac& other){
+        assert(other.a);
+        return *this * frac(other.b, other.a);
+    }
+    bool operator<(const frac& other){
+        return (*this - other).a < 0;
+    }
+    bool operator<=(const frac& other){
+        return (*this - other).a <= 0;
+    }
+    bool operator>(const frac& other){
+        return (*this - other).a > 0;
+    }
+    bool operator>=(const frac& other){
+        return (*this - other).a >= 0;
+    }
+    bool operator==(const frac& other){
+        return a == other.a && b == other.b;
+    }
+    bool operator!=(const frac& other){
+        return !(*this == other);
+    }
 };
 ```
 
