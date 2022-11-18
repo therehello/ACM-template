@@ -19,8 +19,10 @@
   - [数学](#%E6%95%B0%E5%AD%A6)
     - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
     - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
+    - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
     - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
     - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
+    - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
   - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
   - [杂项](#%E6%9D%82%E9%A1%B9)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
@@ -424,6 +426,16 @@ void solve_num_primes(int num, vector<int>& ans){
 }
 ```
 
+### 组合数
+
+```cpp
+modint C(int n, int m){
+    if(m == 0)return 1;
+    if(n <= mod)return factorial[n] * factorial[m].inv() * factorial[n - m].inv();
+    else return C(n % mod, m % mod) * C(n / mod, m / mod); // n >= mod 时需要这个
+}
+```
+
 ### 盒子与球
 
 $n个球,m个盒$
@@ -475,6 +487,38 @@ struct basis{
         return res;
     }
 };
+```
+
+### 矩阵快速幂
+
+```cpp
+constexpr ll mod = 2147493647;
+struct Mat{
+    int n, m;
+    vector<vector<ll>> mat;
+    Mat(int n, int m) :n(n), m(n), mat(n, vector<ll>(m, 0)){}
+    Mat(vector<vector<ll>> mat) :n(mat.size()), m(mat[0].size()), mat(mat){}
+    Mat operator*(const Mat& other){
+        assert(m == other.n);
+        Mat res(n, other.m);
+        for(int i = 0; i < res.n; i++)
+            for(int j = 0; j < res.m; j++)
+                for(int k = 0; k < m; k++)
+                    res.mat[i][j] = (res.mat[i][j] + mat[i][k] * other.mat[k][j] % mod) % mod;
+        return res;
+    }
+};
+Mat ksm(Mat a, ll b){
+    assert(a.n == a.m);
+    Mat res(a.n, a.m);
+    for(int i = 0; i < res.n; i++)res.mat[i][i] = 1;
+    while(b){
+        if(b & 1)res = res * a;
+        b >>= 1;
+        a = a * a;
+    }
+    return res;
+}
 ```
 
 ## 计算几何
