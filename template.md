@@ -146,6 +146,50 @@ struct Data{
 };
 ```
 
+### 可持久化线段树
+
+```cpp
+constexpr int MAXN = 200000;
+vector<int> root(MAXN << 5);
+struct Persistent_seg {
+    int n;
+    struct Data {
+        int ls, rs;
+        int val;
+    };
+    vector<Data> tree;
+    Persistent_seg(int n, vector<int>& a):n(n) { root[0] = build(1, n, a); }
+    int build(int l, int r, vector<int>& a) {
+        if (l == r) {
+            tree.push_back({ 0,0,a[l] });
+            return tree.size() - 1;
+        }
+        int mid = l + r >> 1;
+        int ls = build(l, mid, a), rs = build(mid + 1, r, a);
+        tree.push_back({ ls,rs,tree[ls].val + tree[rs].val });
+        return tree.size() - 1;
+    }
+    int update(int rt, const int& idx, const int& val, int l, int r) {
+        if (l == r) {
+            tree.push_back({ 0,0,tree[rt].val + val });
+            return tree.size() - 1;
+        }
+        int mid = l + r >> 1, ls = tree[rt].ls, rs = tree[rt].rs;
+        if (idx <= mid)ls = update(ls, idx, val, l, mid);
+        else rs = update(rs, idx, val, mid + 1, r);
+        tree.push_back({ ls,rs,tree[ls].val + tree[rs].val });
+        return tree.size() - 1;
+    }
+    int query(int rt1, int rt2, int k, int l, int r) {
+        if (l == r)return l;
+        int mid = l + r >> 1;
+        int lcnt = tree[tree[rt2].ls].val - tree[tree[rt1].ls].val;
+        if (k <= lcnt)return query(tree[rt1].ls, tree[rt2].ls, k, l, mid);
+        else return query(tree[rt1].rs, tree[rt2].rs, k - lcnt, mid + 1, r);
+    }
+};
+```
+
 ## 图论
 
 存图
