@@ -1,3 +1,5 @@
+# ACM 模板
+
 - [ACM 模板](#acm-%E6%A8%A1%E6%9D%BF)
   - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
     - [并查集](#%E5%B9%B6%E6%9F%A5%E9%9B%86)
@@ -34,8 +36,9 @@
     - [对拍](#%E5%AF%B9%E6%8B%8D)
       - [linux/Mac](#linuxmac)
       - [windows](#windows)
-
-# ACM 模板
+    - [开栈](#%E5%BC%80%E6%A0%88)
+      - [windowns](#windowns)
+      - [linux](#linux)
 
 ## 数据结构
 
@@ -458,16 +461,15 @@ for(int i = 2; i <= N; i++){
 ### 分解质因数
 
 ```cpp
-void solve_num_primes(int num, vector<int>& ans){
-    for(auto i = lower_bound(primes.begin(), primes.end(), min_prime[num]); i != primes.end(); i++){
-        int prime = *i;
-        if(prime > num / prime)break;
-        if(num % prime == 0){
-            while(num % prime == 0)num /= prime;
+void num_primes(int num, vector<int>& ans) {
+    for (auto& prime : primes) {
+        if (prime > num / prime)break;
+        if (num % prime == 0) {
+            while (num % prime == 0)num /= prime;
             ans.push_back(prime);
         }
     }
-    if(num > 1)ans.push_back(num);
+    if (num > 1)ans.push_back(num);
 }
 ```
 
@@ -844,11 +846,11 @@ public:
 
 ```cpp
 struct frac{
-    int a, b;
+    ll a, b;
     frac() :a(0), b(1){}
-    frac(ll a, ll b){
+    frac(ll a, ll b = 1){
         if(a){
-            int temp = gcd(a, b);
+            ll temp = gcd(a, b);
             this->a = a / temp; this->b = b / temp;
         }
         else{
@@ -1008,4 +1010,18 @@ set cnt=0
 
     fc output.a output.b
 if not errorlevel 1 goto again
+```
+
+### 开栈
+
+#### windowns
+
+```bash
+-Wl,--stack=268435456
+```
+
+#### linux
+
+```bash
+-Wl,-stack_size -Wl,0x10000000
 ```
