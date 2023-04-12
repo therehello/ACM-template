@@ -15,6 +15,7 @@
     - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
     - [拓扑排序](#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
   - [字符串](#%E5%AD%97%E7%AC%A6%E4%B8%B2)
+    - [kmp](#kmp)
     - [哈希](#%E5%93%88%E5%B8%8C)
     - [manacher](#manacher)
   - [数学](#%E6%95%B0%E5%AD%A6)
@@ -388,6 +389,20 @@ void toposort(Graph& g, vector<int>& dis){
 
 ## 字符串
 
+### kmp
+
+```cpp
+vector<int> kmp(string&& s) {
+    vector<int> next(s.size(), -1);
+    for (int i = 1, j = -1; i < s.size(); i++) {
+        while (j >= 0 && s[i] != s[j + 1])j = next[j];
+        if (s[i] == s[j + 1])j++;
+        next[i] = j;
+    }
+    return next;
+}
+```
+
 ### 哈希
 
 ```cpp
@@ -445,18 +460,21 @@ void manacher(const string& _s, vector<int>& r){
 ### 线性筛法
 
 ```cpp
-constexpr int N = 10000000;
-vector<int> min_prime(N + 1, 0), primes;
-for(int i = 2; i <= N; i++){
-    if(min_prime[i] == 0){
-        min_prime[i] = i;
-        primes.push_back(i);
+auto [min_prime,primes] = [](){
+    constexpr int N = 10000000;
+    vector<int> min_prime(N + 1, 0), primes;
+    for (int i = 2; i <= N; i++) {
+        if (min_prime[i] == 0) {
+            min_prime[i] = i;
+            primes.push_back(i);
+        }
+        for (auto& prime : primes) {
+            if (prime > min_prime[i] || prime > N / i)break;
+            min_prime[prime * i] = prime;
+        }
     }
-    for(auto& prime : primes){
-        if(prime > min_prime[i] || prime > N / i)break;
-        min_prime[prime * i] = prime;
-    }
-}
+    return tuple{ min_prime, primes };
+}();
 ```
 
 ### 分解质因数
