@@ -2,6 +2,9 @@
   - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
     - [并查集](#%E5%B9%B6%E6%9F%A5%E9%9B%86)
     - [树状数组](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84)
+      - [一维](#%E4%B8%80%E7%BB%B4)
+      - [二维](#%E4%BA%8C%E7%BB%B4)
+      - [三维](#%E4%B8%89%E7%BB%B4)
     - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
     - [可持久化线段树](#%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E7%BA%BF%E6%AE%B5%E6%A0%91)
   - [图论](#%E5%9B%BE%E8%AE%BA)
@@ -67,28 +70,82 @@ struct dsu{
 
 ### 树状数组
 
+#### 一维
+
 ```cpp
-#define lowbit(x) ((x)&(-(x)))
 template<class T>
-struct Fenwick_tree{
-    Fenwick_tree(int size){
-        n = size;
-        tree.assign(n + 1, 0);
-    }
-    T query(int l, int r){
-        auto query = [&](int pos){
+struct Fenwick_tree {
+    Fenwick_tree(int n) : n(n), tree(n + 1, 0) {}
+    T query(int l, int r) {
+        auto query = [&](int pos) {
             T res = 0;
-            while(pos){ res += tree[pos]; pos -= lowbit(pos); }
+            while (pos) { res += tree[pos]; pos -= lowbit(pos); }
             return res;
         };
         return query(r) - query(l - 1);
     }
-    void update(int pos, T num){
-        while(pos <= n){ tree[pos] += num; pos += lowbit(pos); }
+    void update(int pos, T num) {
+        while (pos <= n) { tree[pos] += num; pos += lowbit(pos); }
     }
-private:
+    private:
     int n;
     vector<T> tree;
+};
+```
+
+#### 二维
+
+```cpp
+template<class T>
+struct Fenwick_tree_2 {
+    Fenwick_tree_2(int n, int m) :n(n), m(m), tree(n + 1, vector<T>(m + 1)) {}
+    T query(int l1, int r1, int l2, int r2) {
+        auto query = [&](int l, int r) {
+            T res = 0;
+            for (int i = l; i; i -= lowbit(i))
+                for (int j = r; j; j -= lowbit(j)) res += tree[i][j];
+            return res;
+        };
+        return query(l2, r2) - query(l2, r1 - 1) - query(l1 - 1, r2) + query(l1 - 1, r1 - 1);
+    }
+    void update(int x, int y, T num) {
+        for (int i = x; i <= n; i += lowbit(i))
+            for (int j = y; j <= m; j += lowbit(j)) tree[i][j] += num;
+    }
+    private:
+    int n, m;
+    vector<vector<T>> tree;
+};
+```
+
+#### 三维
+
+```cpp
+template<class T>
+struct Fenwick_tree_3 {
+    Fenwick_tree_3(int n, int m, int k) :n(n), m(m), k(k), tree(n + 1, vector<vector<T>>(m + 1, vector<T>(k + 1))) {}
+    T query(int a, int b, int c, int d, int e, int f) {
+        auto query = [&](int x, int y, int z) {
+            T res = 0;
+            for (int i = x; i; i -= lowbit(i))
+                for (int j = y; j; j -= lowbit(j))
+                    for (int p = z; p; p -= lowbit(p)) res += tree[i][j][p];
+            return res;
+        };
+        T res = query(d, e, f);
+        res -= query(a - 1, e, f) + query(d, b - 1, f) + query(d, e, c - 1);
+        res += query(a - 1, b - 1, f) + query(a - 1, e, c - 1) + query(d, b - 1, c - 1);
+        res -= query(a - 1, b - 1, c - 1);
+        return res;
+    }
+    void update(int x, int y, int z, T num) {
+        for (int i = x; i <= n; i += lowbit(i))
+            for (int j = y; j <= m; j += lowbit(j))
+                for (int p = z; p <= k; p += lowbit(p)) tree[i][j][p] += num;
+    }
+    private:
+    int n, m, k;
+    vector<vector<vector<T>>> tree;
 };
 ```
 
