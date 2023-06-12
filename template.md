@@ -1089,17 +1089,11 @@ if not errorlevel 1 goto again
 ```
 
 ### 开栈
-
-#### windowns
-
+任选一种
 ```bash
--Wl,--stack=268435456
-```
-
-#### linux
-
-```bash
+-Wl,--stack=0x10000000
 -Wl,-stack_size -Wl,0x10000000
+-Wl,-z,stack-size=0x10000000
 ```
 
 ### 日期
