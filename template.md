@@ -647,110 +647,182 @@ Mat ksm(Mat a, ll b){
 ## 计算几何
 
 ```cpp
-constexpr double PI = 3.141592653589793116;
+#define PI M_PI
 constexpr double eps = 1e-8;
-using T = double;
+using T = int;
 
-// 两浮点数是否相等
-bool equal(const T& a, const T& b){
-    return abs(a - b) < eps;
+template<typename T>
+bool equal(T a, T b) {
+    return a == b;
 }
+// 两浮点数是否相等
+bool equal(double a, double b) { return abs(a - b) < eps; }
 
 // 向量
-struct vec{
+struct vec {
     T x, y;
-    vec() :x(0), y(0){}
-    vec(const T& _x, const T& _y) :x(_x), y(_y){}
+    vec(T _x = 0, T _y = 0) : x(_x), y(_y) {}
 
     // 模
-    double length()const{
-        return sqrt(x * x + y * y);
-    }
+    double length() const { return sqrt(x * x + y * y); }
 
     // 与x轴正方向的夹角
-    double angle()const{
+    double angle() const {
         double angle = atan2(y, x);
-        if(angle < 0)angle += 2 * PI;
+        if (angle < 0) angle += 2 * PI;
         return angle;
     }
 
     // 逆时针旋转
-    void rotate(const double& theta){
+    void rotate(const double &theta) {
         double temp = x;
         x = x * cos(theta) - y * sin(theta);
         y = y * cos(theta) + temp * sin(theta);
     }
 
-    bool operator==(const vec& other)const{ return equal(x, other.x) && equal(y, other.y); }
-    bool operator<(const vec& other)const{ return angle() == other.angle() ? x < other.x : angle() < other.angle(); }
+    bool operator==(const vec &other) const { return equal(x, other.x) && equal(y, other.y); }
+    bool operator<(const vec &other) const {
+        return equal(angle(), other.angle()) ? x < other.x : angle() < other.angle();
+    }
 
-    vec operator+(const vec& other)const{ return { x + other.x,y + other.y }; }
-    vec operator-()const{ return { -x,-y }; }
-    vec operator-(const vec& other)const{ return -other + (*this); }
-    vec operator*(const T& other)const{ return { other * x,other * y }; }
-    T operator*(const vec& other)const{ return x * other.x + y * other.y; }
+    vec operator+(const vec &other) const { return {x + other.x, y + other.y}; }
+    vec operator-() const { return {-x, -y}; }
+    vec operator-(const vec &other) const { return -other + (*this); }
+    vec operator*(const T &other) const { return {x * other, y * other}; }
+    vec operator/(const T &other) const { return {x / other, y / other}; }
+    T operator*(const vec &other) const { return x * other.x + y * other.y; }
 
-    // 叉积 结果大于0，a在b的顺时针，小于0，a在b的逆时针，等于0共线，可能同向或反向，结果绝对值表示 a b形成的平行四边行的面积
-    T operator^(const vec& other)const{ return x * other.y - y * other.x; }
+    // 叉积 结果大于0，a在b的顺时针，小于0，a在b的逆时针,
+    // 等于0共线，可能同向或反向，结果绝对值表示 a b形成的平行四边行的面积
+    T operator^(const vec &other) const { return x * other.y - y * other.x; }
 
-    friend istream& operator>>(istream& input, vec& data){
+    friend istream &operator>>(istream &input, vec &data) {
         input >> data.x >> data.y;
         return input;
     }
-    friend ostream& operator<<(ostream& output, const vec& data){
+    friend ostream &operator<<(ostream &output, const vec &data) {
         output << fixed << setprecision(6);
         output << data.x << " " << data.y;
         return output;
     }
 };
 
-// 求两点间的距离
-double distance(const vec& a, const vec& b){
-    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
-}
+// 两点间的距离
+T distance(const vec &a, const vec &b) { return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)); }
 
-// 求两向量夹角
-double angle(const vec& a, const vec& b){
+// 两向量夹角
+double angle(const vec &a, const vec &b) {
     double theta = abs(a.angle() - b.angle());
-    if(theta > PI)theta = 2 * PI - theta;
+    if (theta > PI) theta = 2 * PI - theta;
     return theta;
 }
 
-// 计算多边形的面积，polygon里必须是存的相邻的点
-T polygon_area(const vector<vec>& polygon){
-    T ans = 0;
-    for(int i = 1; i < polygon.size(); i++)ans += polygon[i - 1] ^ polygon[i];
-    ans += polygon[polygon.size() - 1] ^ polygon[0];
-    return abs(ans / 2);
+// 多边形的面积
+double polygon_area(vector<vec> &p) {
+    T area = 0;
+    for (int i = 1; i < p.size(); i++) area += p[i - 1] ^ p[i];
+    area += p.back() ^ p[0];
+    return abs(area / 2.0);
+}
+
+// 多边形的周长
+double polygon_length(vector<vec> &p) {
+    double length = 0;
+    for (int i = 1; i < p.size(); i++) length += (p[i - 1] - p[i]).length();
+    length += (p.back() - p[0]).length();
+    return length;
+}
+
+// 多边形直径的两个端点
+auto polygon_dia(vector<vec> &p) {
+    int n = p.size();
+    array<vec, 2> res{};
+    if (n <= 1) return res;
+    if (n == 2) return res = {p[0], p[1]};
+    T mx = 0;
+    for (int i = 0, j = 3; i < n; i++) {
+        while (abs((p[i] - p[j]) ^ (p[(i + 1) % n] - p[j])) <=
+               abs((p[i] - p[(j + 1) % n]) ^ (p[(i + 1) % n] - p[(j + 1) % n])))
+            j = (j + 1) % n;
+        if (auto tmp = distance(p[i], p[j]); tmp > mx) {
+            mx = tmp;
+            res = {p[i], p[j]};
+        }
+        if (auto tmp = distance(p[(i + 1) % n], p[j]); tmp > mx) {
+            mx = tmp;
+            res = {p[(i + 1) % n], p[j]};
+        }
+    }
+    return res;
+}
+
+// 凸包
+auto convex_hull(vector<vec> &p) {
+    sort(p.begin(), p.end(), [](vec &a, vec &b) { return equal(a.x, b.x) ? a.y < b.y : a.x < b.x; });
+
+    vector<int> sta(p.size() + 1, 0);
+    vector<bool> v(p.size(), false);
+    int tp = -1;
+    sta[++tp] = 0;
+
+    auto update_convex_hull = [&](int lim, int i) {
+        while (tp > lim && ((p[sta[tp]] - p[sta[tp - 1]]) ^ (p[i] - p[sta[tp]])) <= 0) sta[++tp] = i;
+        v[i] = true;
+    };
+
+    for (int i = 1; i < p.size(); i++) update_convex_hull(0, i);
+
+    int cnt = tp;
+    for (int i = p.size() - 1; i >= 0; i--) {
+        if (v[i]) continue;
+        update_convex_hull(cnt, i);
+    }
+
+    vector<vec> res(tp);
+    for (int i = 0; i < tp; i++) res[i] = p[sta[i]];
+    return res;
+}
+
+// 以整点为顶点的线段上的整点个数
+T count(const vec &a, const vec &b) {
+    vec c = a - b;
+    return gcd(abs(c.x), abs(c.y)) + 1;
+}
+
+// 以整点为顶点的多边形边上整点个数
+T count(vector<vec> &p) {
+    T cnt = 0;
+    for (int i = 1; i < p.size(); i++) cnt += count(p[i - 1], p[i]);
+    cnt += count(p.back(), p[0]);
+    return cnt - p.size();
 }
 
 // 直线
-struct Line{
+struct line {
     vec point, direction;
-
-    Line(){}
-    Line(const vec& _point, const vec& _direction) :point(_point), direction(_direction){}
+    line(const vec &p, const vec &d) : point(p), direction(d) {}
 };
 
-// 两直线是否垂直
-bool perpendicular(const Line& a, const Line& b){
-    return a.direction * b.direction == 0;
+// 点到直线距离
+double distance(const vec &a, const line &b) {
+    return abs((b.point - a) ^ (b.point + b.direction - a)) / b.direction.length();
 }
+
+// 两直线是否垂直
+bool perpendicular(const line &a, const line &b) { return equal(a.direction * b.direction, 0); }
 
 // 两直线是否平行
-bool parallel(const Line& a, const Line& b){
-    return (a.direction ^ b.direction) == 0;
+bool parallel(const line &a, const line &b) { return equal(a.direction ^ b.direction, 0); }
+
+// 两直线交点
+vec intersection(T A, T B, T C, T D, T E, T F) {
+    return {(B * F - C * E) / (A * E - B * D), (C * D - A * F) / (A * E - B * D)};
 }
 
 // 两直线交点
-vec intersection(const T& A, const  T& B, const T& C, const T& D, const T& E, const T& F){
-    return { (B * F - C * E) / (A * E - B * D),(C * D - A * F) / (A * E - B * D) };
-}
-
-// 两直线交点
-vec intersection(const Line& a, const Line& b){
+vec intersection(const line &a, const line &b) {
     return intersection(a.direction.y, -a.direction.x, a.direction.x * a.point.y - a.direction.y * a.point.x,
-        b.direction.y, -b.direction.x, b.direction.x * b.point.y - b.direction.y * b.point.x);
+                        b.direction.y, -b.direction.x, b.direction.x * b.point.y - b.direction.y * b.point.x);
 }
 ```
 
