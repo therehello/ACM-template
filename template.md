@@ -1,53 +1,48 @@
-- [ACM 模板](#acm-%E6%A8%A1%E6%9D%BF)
-  - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
-    - [并查集](#%E5%B9%B6%E6%9F%A5%E9%9B%86)
-    - [树状数组](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84)
-      - [一维](#%E4%B8%80%E7%BB%B4)
-      - [二维](#%E4%BA%8C%E7%BB%B4)
-      - [三维](#%E4%B8%89%E7%BB%B4)
-    - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
-    - [可持久化线段树](#%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E7%BA%BF%E6%AE%B5%E6%A0%91)
-  - [图论](#%E5%9B%BE%E8%AE%BA)
-    - [最短路](#%E6%9C%80%E7%9F%AD%E8%B7%AF)
-      - [dijkstra](#dijkstra)
-    - [树上问题](#%E6%A0%91%E4%B8%8A%E9%97%AE%E9%A2%98)
-      - [最近公公祖先](#%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%AC%E7%A5%96%E5%85%88)
-        - [倍增法](#%E5%80%8D%E5%A2%9E%E6%B3%95)
-        - [树剖](#%E6%A0%91%E5%89%96)
-      - [树链剖分](#%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86)
-    - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
-    - [拓扑排序](#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
-  - [字符串](#%E5%AD%97%E7%AC%A6%E4%B8%B2)
-    - [kmp](#kmp)
-    - [哈希](#%E5%93%88%E5%B8%8C)
-    - [manacher](#manacher)
-  - [数学](#%E6%95%B0%E5%AD%A6)
-    - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
-    - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
-    - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
-    - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
-    - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
-    - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
-  - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
-  - [杂项](#%E6%9D%82%E9%A1%B9)
-    - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
-    - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
-    - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
-    - [分数](#%E5%88%86%E6%95%B0)
-    - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
-    - [对拍](#%E5%AF%B9%E6%8B%8D)
-      - [linux/Mac](#linuxmac)
-      - [windows](#windows)
-    - [开栈](#%E5%BC%80%E6%A0%88)
-      - [windowns](#windowns)
-      - [linux](#linux)
-    - [日期](#%E6%97%A5%E6%9C%9F)
+# 1. ACM 模板
 
-# ACM 模板
+<!-- TOC -->
 
-## 数据结构
+- [1. ACM 模板](#1-acm-模板)
+  - [1.1. 数据结构](#11-数据结构)
+    - [1.1.1. 并查集](#111-并查集)
+    - [1.1.2. 树状数组](#112-树状数组)
+    - [1.1.3. 线段树](#113-线段树)
+    - [1.1.4. 可持久化线段树](#114-可持久化线段树)
+    - [1.1.5. st 表](#115-st-表)
+  - [1.2. 图论](#12-图论)
+    - [1.2.1. 最短路](#121-最短路)
+    - [1.2.2. 树上问题](#122-树上问题)
+      - [1.2.2.1. 最近公公祖先](#1221-最近公公祖先)
+      - [1.2.2.2. 树链剖分](#1222-树链剖分)
+    - [1.2.3. 强连通分量](#123-强连通分量)
+    - [1.2.4. 拓扑排序](#124-拓扑排序)
+  - [1.3. 字符串](#13-字符串)
+    - [1.3.1. kmp](#131-kmp)
+    - [1.3.2. 哈希](#132-哈希)
+    - [1.3.3. manacher](#133-manacher)
+  - [1.4. 数学](#14-数学)
+    - [1.4.1. 线性筛法](#141-线性筛法)
+    - [1.4.2. 分解质因数](#142-分解质因数)
+    - [1.4.3. 组合数](#143-组合数)
+    - [1.4.4. 盒子与球](#144-盒子与球)
+    - [1.4.5. 线性基](#145-线性基)
+    - [1.4.6. 矩阵快速幂](#146-矩阵快速幂)
+  - [1.5. 计算几何](#15-计算几何)
+  - [1.6. 杂项](#16-杂项)
+    - [1.6.1. 高精度](#161-高精度)
+    - [1.6.2. 扫描线](#162-扫描线)
+    - [1.6.3. 模运算](#163-模运算)
+    - [1.6.4. 分数](#164-分数)
+    - [1.6.5. 表达式求值](#165-表达式求值)
+    - [1.6.6. 对拍](#166-对拍)
+    - [1.6.7. 开栈](#167-开栈)
+    - [1.6.8. 日期](#168-日期)
 
-### 并查集
+<!-- /TOC -->
+
+## 1.1. 数据结构
+
+### 1.1.1. 并查集
 
 ```cpp
 struct dsu{
@@ -68,9 +63,9 @@ struct dsu{
 };
 ```
 
-### 树状数组
+### 1.1.2. 树状数组
 
-#### 一维
+一维
 
 ```cpp
 template<class T>
@@ -93,7 +88,7 @@ struct Fenwick_tree {
 };
 ```
 
-#### 二维
+二维
 
 ```cpp
 template<class T>
@@ -118,7 +113,7 @@ struct Fenwick_tree_2 {
 };
 ```
 
-#### 三维
+三维
 
 ```cpp
 template<class T>
@@ -149,7 +144,7 @@ struct Fenwick_tree_3 {
 };
 ```
 
-### 线段树
+### 1.1.3. 线段树
 
 ```cpp
 template <class Data, class Num>
@@ -209,7 +204,7 @@ struct Data{
 };
 ```
 
-### 可持久化线段树
+### 1.1.4. 可持久化线段树
 
 ```cpp
 constexpr int MAXN = 200000;
@@ -253,7 +248,34 @@ struct Persistent_seg {
 };
 ```
 
-## 图论
+### 1.1.5. st 表
+
+```cpp
+auto lg = []() {
+    array<int, 10000001> lg;
+    lg[1] = 0;
+    for (int i = 2; i <= 10000000; i++) lg[i] = lg[i >> 1] + 1;
+    return lg;
+}();
+template <typename T>
+struct st {
+    int n;
+    vector<vector<T>> a;
+    st(vector<T>& _a) : n(_a.size()) {
+        a.assign(lg[n] + 1, vector<int>(n));
+        for (int i = 0; i < n; i++) a[0][i] = _a[i];
+        for (int j = 1; j <= lg[n]; j++)
+            for (int i = 0; i + (1 << j) - 1 < n; i++)
+                a[j][i] = max(a[j - 1][i], a[j - 1][i + (1 << (j - 1))]);
+    }
+    T query(int l, int r) {
+        int k = lg[r - l + 1];
+        return max(a[k][l], a[k][r - (1 << k) + 1]);
+    }
+};
+```
+
+## 1.2. 图论
 
 存图
 
@@ -267,9 +289,9 @@ struct Graph{
 };
 ```
 
-### 最短路
+### 1.2.1. 最短路
 
-#### dijkstra
+dijkstra
 
 ```cpp
 void dij(Graph& graph, vector<int>& dis, int t){
@@ -291,11 +313,11 @@ void dij(Graph& graph, vector<int>& dis, int t){
 }
 ```
 
-### 树上问题
+### 1.2.2. 树上问题
 
-#### 最近公公祖先
+#### 1.2.2.1. 最近公公祖先
 
-##### 倍增法
+倍增法
 
 ```cpp
 vector<int> dep;
@@ -332,7 +354,7 @@ int lca(int x, int y){
 }
 ```
 
-##### 树剖
+树剖
 
 ```cpp
 int lca(int x, int y){
@@ -345,7 +367,7 @@ int lca(int x, int y){
 }
 ```
 
-#### 树链剖分
+#### 1.2.2.2. 树链剖分
 
 ```cpp
 vector<int> fa, siz, dep, son, dfn, rnk, top;
@@ -384,7 +406,7 @@ void hld(int root){
 }
 ```
 
-### 强连通分量
+### 1.2.3. 强连通分量
 
 ```cpp
 void tarjan(Graph& g1, Graph& g2){
@@ -420,7 +442,7 @@ void tarjan(Graph& g1, Graph& g2){
 }
 ```
 
-### 拓扑排序
+### 1.2.4. 拓扑排序
 
 ```cpp
 void toposort(Graph& g, vector<int>& dis){
@@ -444,9 +466,9 @@ void toposort(Graph& g, vector<int>& dis){
 }
 ```
 
-## 字符串
+## 1.3. 字符串
 
-### kmp
+### 1.3.1. kmp
 
 ```cpp
 vector<int> kmp(string&& s) {
@@ -460,7 +482,7 @@ vector<int> kmp(string&& s) {
 }
 ```
 
-### 哈希
+### 1.3.2. 哈希
 
 ```cpp
 constexpr int N = 2e6;
@@ -497,7 +519,7 @@ struct Hash{
 };
 ```
 
-### manacher
+### 1.3.3. manacher
 
 ```cpp
 void manacher(const string& _s, vector<int>& r){
@@ -512,9 +534,9 @@ void manacher(const string& _s, vector<int>& r){
 }
 ```
 
-## 数学
+## 1.4. 数学
 
-### 线性筛法
+### 1.4.1. 线性筛法
 
 ```cpp
 auto [min_prime,primes] = [](){
@@ -534,7 +556,7 @@ auto [min_prime,primes] = [](){
 }();
 ```
 
-### 分解质因数
+### 1.4.2. 分解质因数
 
 ```cpp
 void num_primes(int num, vector<int>& ans) {
@@ -549,7 +571,7 @@ void num_primes(int num, vector<int>& ans) {
 }
 ```
 
-### 组合数
+### 1.4.3. 组合数
 
 ```cpp
 modint C(int n, int m){
@@ -559,7 +581,7 @@ modint C(int n, int m){
 }
 ```
 
-### 盒子与球
+### 1.4.4. 盒子与球
 
 $n个球,m个盒$
 
@@ -574,7 +596,7 @@ $n个球,m个盒$
 |✕|✕|✓|$m^n$|
 |✕|✕|✕|$m!*g_{n,m}$|
 
-### 线性基
+### 1.4.5. 线性基
 
 ```cpp
 // 线性基
@@ -612,7 +634,7 @@ struct basis{
 };
 ```
 
-### 矩阵快速幂
+### 1.4.6. 矩阵快速幂
 
 ```cpp
 constexpr ll mod = 2147493647;
@@ -644,7 +666,7 @@ Mat ksm(Mat a, ll b){
 }
 ```
 
-## 计算几何
+## 1.5. 计算几何
 
 ```cpp
 #define PI M_PI
@@ -826,9 +848,9 @@ vec intersection(const line &a, const line &b) {
 }
 ```
 
-## 杂项
+## 1.6. 杂项
 
-### 高精度
+### 1.6.1. 高精度
 
 ```cpp
 struct bignum{
@@ -898,7 +920,7 @@ struct bignum{
 };
 ```
 
-### 扫描线
+### 1.6.2. 扫描线
 
 ```cpp
 #define ls (pos << 1)
@@ -963,7 +985,7 @@ ll area(vector<Rectangle>& rec){
 }
 ```
 
-### 模运算
+### 1.6.3. 模运算
 
 ```cpp
 class modint{
@@ -990,7 +1012,7 @@ public:
 };
 ```
 
-### 分数
+### 1.6.4. 分数
 
 ```cpp
 struct frac{
@@ -1044,7 +1066,7 @@ struct frac{
 };
 ```
 
-### 表达式求值
+### 1.6.5. 表达式求值
 
 ```cpp
 // 格式化表达式
@@ -1114,9 +1136,9 @@ int calc(const string& s){
 }
 ```
 
-### 对拍
+### 1.6.6. 对拍
 
-#### linux/Mac
+linux/Mac
 
 ```bash
 g++ a.cpp -o program/a -O2 -std=c++17
@@ -1138,7 +1160,7 @@ while true; do
 done
 ```
 
-#### windows
+windows
 
 ```bash
 @echo off
@@ -1160,15 +1182,17 @@ set cnt=0
 if not errorlevel 1 goto again
 ```
 
-### 开栈
+### 1.6.7. 开栈
+
 任选一种
+
 ```bash
 -Wl,--stack=0x10000000
 -Wl,-stack_size -Wl,0x10000000
 -Wl,-z,stack-size=0x10000000
 ```
 
-### 日期
+### 1.6.8. 日期
 
 ```cpp
 int month[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
