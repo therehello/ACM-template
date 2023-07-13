@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os.path
 import re
 import sys
@@ -73,16 +74,7 @@ def section(match: re.Match):
 
 
 def cpp(match: re.Match):
-    code = match.group(2)
-    if match.group(1) == "cpp":
-        code_path = os.path.join(dir_name, "tmp_creat_by_md2tex.cpp")
-        with open(code_path, "w") as f:
-            f.write(code)
-        cmd = f'clang-format -i --style="{{BasedOnStyle: Google, UseTab: Never, IndentWidth: 4, TabWidth: 4, ColumnLimit: 80, AllowShortIfStatementsOnASingleLine: true}}" {code_path}'
-        os.system(cmd)
-        with open(code_path, "r") as f:
-            code = f.read()
-        os.remove(code_path)
+    code = match.group(1)
     return f"\\begin{{lstlisting}}[style=cpp]\n{code}\\end{{lstlisting}}"
 
 
@@ -110,8 +102,9 @@ tex_file_name = file_name + ".tex"
 tex_file_path = os.path.join(os.path.dirname(file_path), tex_file_name)
 
 md = re.sub("(##+) (.*?)\n", section, md)
-md = re.sub("```(.*?)\n(.*?)```", cpp, md, flags=re.DOTALL)
-md = re.sub("# (.*?)\n", "", md)
+md = re.sub("```.*?\n(.*?)```", cpp, md, flags=re.DOTALL)
+md = re.sub("# .*?\n", "", md)
+md = re.sub("<!-- TOC -->.*?<!-- /TOC -->", "", md, flags=re.DOTALL)
 md = re.sub(r"!\[.*?]\((.*?)\)", picture, md)
 md = md.strip()
 

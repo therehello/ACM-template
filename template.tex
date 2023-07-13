@@ -101,8 +101,7 @@ struct Fenwick_tree {
             pos += lowbit(pos);
         }
     }
-
-   private:
+private:
     int n;
     vector<T> tree;
 };
@@ -128,8 +127,7 @@ struct Fenwick_tree_2 {
         for (int i = x; i <= n; i += lowbit(i))
             for (int j = y; j <= m; j += lowbit(j)) tree[i][j] += num;
     }
-
-   private:
+private:
     int n, m;
     vector<vector<T>> tree;
 };
@@ -165,8 +163,7 @@ struct Fenwick_tree_3 {
             for (int j = y; j <= m; j += lowbit(j))
                 for (int p = z; p <= k; p += lowbit(p)) tree[i][j][p] += num;
     }
-
-   private:
+private:
     int n, m, k;
     vector<vector<vector<T>>> tree;
 };
@@ -184,8 +181,7 @@ struct Segment_Tree {
         tree.assign(n * 4 + 1, {});
         build(a, 1, 1, n);
     }
-
-   private:
+private:
     int n;
     struct Tree {
         int l, r;
@@ -278,10 +274,8 @@ struct Persistent_seg {
             return tree.size() - 1;
         }
         int mid = l + r >> 1, ls = tree[rt].ls, rs = tree[rt].rs;
-        if (idx <= mid)
-            ls = update(ls, idx, val, l, mid);
-        else
-            rs = update(rs, idx, val, mid + 1, r);
+        if (idx <= mid) ls = update(ls, idx, val, l, mid);
+        else rs = update(rs, idx, val, mid + 1, r);
         tree.push_back({ls, rs, tree[ls].val + tree[rs].val});
         return tree.size() - 1;
     }
@@ -289,10 +283,8 @@ struct Persistent_seg {
         if (l == r) return l;
         int mid = l + r >> 1;
         int lcnt = tree[tree[rt2].ls].val - tree[tree[rt1].ls].val;
-        if (k <= lcnt)
-            return query(tree[rt1].ls, tree[rt2].ls, k, l, mid);
-        else
-            return query(tree[rt1].rs, tree[rt2].rs, k - lcnt, mid + 1, r);
+        if (k <= lcnt) return query(tree[rt1].ls, tree[rt2].ls, k, l, mid);
+        else return query(tree[rt1].rs, tree[rt2].rs, k - lcnt, mid + 1, r);
     }
 };
 \end{lstlisting}
@@ -394,9 +386,8 @@ void binary_jump(int root) {
 }
 int lca(int x, int y) {
     if (dep[x] < dep[y]) swap(x, y);
-    for (int i = 20; i >= 0; i--) {
+    for (int i = 20; i >= 0; i--)
         if (dep[fa[x][i]] >= dep[y]) x = fa[x][i];
-    }
     if (x == y) return x;
     for (int i = 20; i >= 0; i--) {
         if (fa[x][i] != fa[y][i]) {
@@ -474,13 +465,11 @@ void tarjan(Graph& g1, Graph& g2) {
         dfn[t] = low[t] = ++dfn_tail;
         sta.push(t);
         exist[t] = 1;
-        for (auto& [to] : g1.graph[t]) {
+        for (auto& [to] : g1.graph[t])
             if (!dfn[to]) {
                 dfs(to);
                 low[t] = min(low[t], low[to]);
-            } else if (exist[to])
-                low[t] = min(low[t], dfn[to]);
-        }
+            } else if (exist[to]) low[t] = min(low[t], dfn[to]);
         if (dfn[t] == low[t]) {
             cnt++;
             while (int temp = sta.top()) {
@@ -670,8 +659,7 @@ struct basis {
     void insert(unsigned ll x) {
         for (int i = 63; i >= 0; i--) {
             if ((x >> i) & 1) {
-                if (p[i])
-                    x ^= p[i];
+                if (p[i]) x ^= p[i];
                 else {
                     p[i] = x;
                     break;
@@ -691,9 +679,8 @@ struct basis {
     // 最大异或值
     unsigned ll max_basis() {
         unsigned ll res = 0;
-        for (int i = 63; i >= 0; i--) {
+        for (int i = 63; i >= 0; i--)
             if ((res ^ p[i]) > res) res ^= p[i];
-        }
         return res;
     }
 };
@@ -967,11 +954,9 @@ struct bignum {
 
     bignum operator*(const bignum& other) {
         vector<int> res(num.size() + other.num.size() - 1, 0);
-        for (int i = 0; i < num.size(); i++) {
-            for (int j = 0; j < other.num.size(); j++) {
+        for (int i = 0; i < num.size(); i++)
+            for (int j = 0; j < other.num.size(); j++)
                 res[i + j] += (num[i] - '0') * (other.num[j] - '0');
-            }
-        }
         int g = 0;
         for (int i = 0; i < res.size(); i++) {
             res[i] += g;
@@ -993,10 +978,8 @@ struct bignum {
     bool operator<(const bignum& other) {
         if (num.size() == other.num.size())
             for (int i = num.size() - 1; i >= 0; i--)
-                if (num[i] == other.num[i])
-                    continue;
-                else
-                    return num[i] < other.num[i];
+                if (num[i] == other.num[i]) continue;
+                else return num[i] < other.num[i];
         return num.size() < other.num.size();
     }
 
@@ -1088,8 +1071,7 @@ ll area(vector<Rectangle>& rec) {
 \begin{lstlisting}[style=cpp]
 class modint {
     ll num;
-
-   public:
+public:
     modint(ll num = 0) : num(num % mod) {}
     modint pow(modint other) {
         modint res(1), temp = *this;
@@ -1124,15 +1106,13 @@ class modint {
 struct frac {
     ll a, b;
     frac() : a(0), b(1) {}
-    frac(ll a, ll b = 1) {
+    frac(ll _a, ll _b) : a(_a), b(_b) {
+        assert(b);
         if (a) {
-            ll temp = gcd(a, b);
-            this->a = a / temp;
-            this->b = b / temp;
-        } else {
-            this->a = 0;
-            this->b = 1;
-        }
+            int tmp = gcd(a, b);
+            a /= tmp;
+            b /= tmp;
+        } else *this = frac();
     }
     frac operator+(const frac& other) {
         return frac(a * other.b + other.a * b, b * other.b);
@@ -1142,18 +1122,22 @@ struct frac {
         res.a = -res.a;
         return res;
     }
-    frac operator-(const frac& other) { return -other + *this; }
-    frac operator*(const frac& other) { return frac(a * other.a, b * other.b); }
-    frac operator/(const frac& other) {
+    frac operator-(const frac& other) const { return -other + *this; }
+    frac operator*(const frac& other) const {
+        return frac(a * other.a, b * other.b);
+    }
+    frac operator/(const frac& other) const {
         assert(other.a);
         return *this * frac(other.b, other.a);
     }
-    bool operator<(const frac& other) { return (*this - other).a < 0; }
-    bool operator<=(const frac& other) { return (*this - other).a <= 0; }
-    bool operator>(const frac& other) { return (*this - other).a > 0; }
-    bool operator>=(const frac& other) { return (*this - other).a >= 0; }
-    bool operator==(const frac& other) { return a == other.a && b == other.b; }
-    bool operator!=(const frac& other) { return !(*this == other); }
+    bool operator<(const frac& other) const { return (*this - other).a < 0; }
+    bool operator<=(const frac& other) const { return (*this - other).a <= 0; }
+    bool operator>=(const frac& other) const { return (*this - other).a >= 0; }
+    bool operator>(const frac& other) const { return (*this - other).a > 0; }
+    bool operator==(const frac& other) const {
+        return a == other.a && b == other.b;
+    }
+    bool operator!=(const frac& other) const { return !(*this == other); }
 };
 \end{lstlisting}
 
@@ -1167,8 +1151,7 @@ string format(const string& s1) {
     char ch;
     while ((ch = ss.get()) != EOF) {
         if (ch == ' ') continue;
-        if (isdigit(ch))
-            s2 += ch;
+        if (isdigit(ch)) s2 += ch;
         else {
             if (s2.back() != ' ') s2 += ' ';
             s2 += ch;
@@ -1186,10 +1169,8 @@ string convert(const string& s1) {
     string s2, temp;
     stack<char> op;
     while (ss >> temp) {
-        if (isdigit(temp[0]))
-            s2 += temp + ' ';
-        else if (temp[0] == '(')
-            op.push('(');
+        if (isdigit(temp[0])) s2 += temp + ' ';
+        else if (temp[0] == '(') op.push('(');
         else if (temp[0] == ')') {
             while (op.top() != '(') {
                 s2 += op.top();
@@ -1222,23 +1203,17 @@ int calc(const string& s) {
     stringstream ss(s);
     string temp;
     while (ss >> temp) {
-        if (isdigit(temp[0]))
-            num.push(stoi(temp));
+        if (isdigit(temp[0])) num.push(stoi(temp));
         else {
             int b = num.top();
             num.pop();
             int a = num.top();
             num.pop();
-            if (temp[0] == '+')
-                a += b;
-            else if (temp[0] == '-')
-                a -= b;
-            else if (temp[0] == '*')
-                a *= b;
-            else if (temp[0] == '/')
-                a /= b;
-            else if (temp[0] == '^')
-                a = ksm(a, b);
+            if (temp[0] == '+') a += b;
+            else if (temp[0] == '-') a -= b;
+            else if (temp[0] == '*') a *= b;
+            else if (temp[0] == '/') a /= b;
+            else if (temp[0] == '^') a = ksm(a, b);
             num.push(a);
         }
     }
