@@ -704,9 +704,9 @@ Mat ksm(Mat a, ll b) {
 ## 计算几何
 
 ```cpp
-#define PI M_PI
+const double PI = acos(-1);
 constexpr double eps = 1e-8;
-using T = int;
+using T = ll;
 
 template <typename T>
 bool equal(T a, T b) {
@@ -802,7 +802,7 @@ auto polygon_dia(vector<vec> &p) {
     if (n <= 1) return res;
     if (n == 2) return res = {p[0], p[1]};
     T mx = 0;
-    for (int i = 0, j = 3; i < n; i++) {
+    for (int i = 0, j = 2; i < n; i++) {
         while (abs((p[i] - p[j]) ^ (p[(i + 1) % n] - p[j])) <=
                abs((p[i] - p[(j + 1) % n]) ^ (p[(i + 1) % n] - p[(j + 1) % n])))
             j = (j + 1) % n;
@@ -832,8 +832,9 @@ auto convex_hull(vector<vec> &p) {
     auto update_convex_hull = [&](int lim, int i) {
         while (tp > lim &&
                ((p[sta[tp]] - p[sta[tp - 1]]) ^ (p[i] - p[sta[tp]])) <= 0)
-            sta[++tp] = i;
-        v[i] = true;
+            v[sta[tp--]] = 0;
+        sta[++tp] = i;
+        v[i] = 1;
     };
 
     for (int i = 1; i < p.size(); i++) update_convex_hull(0, i);
