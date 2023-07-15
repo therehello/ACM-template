@@ -613,7 +613,7 @@ auto [min_prime, prime] = []() {
 \subsection{分解质因数}
 
 \begin{lstlisting}[style=cpp]
-auto num_primes(int num) {
+auto num_prime(int num) {
     vector<array<int, 2>> res;
     for (auto& i : prime) {
         if (i > num / i) break;
