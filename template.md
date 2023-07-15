@@ -611,6 +611,7 @@ auto num_prime(int num) {
         }
     }
     if (num > 1) res.push_back({num, 1});
+    return res;
 }
 ```
 
