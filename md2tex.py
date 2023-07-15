@@ -79,7 +79,7 @@ def cpp(match: re.Match):
 
 
 def picture(match: re.Match):
-    return f"\\begin{{figure}}\n    \\flushleft\n    \\includegraphics[]{{{match.group(1)}}}\n    \\label{{fig:left}}\n\\end{{figure}}"
+    return f"\\begin{{figure}}[H]\n    \\flushleft\n    \\includegraphics[]{{{match.group(1)}}}\n    \\label{{fig:left}}\n\\end{{figure}}"
 
 
 args = sys.argv[1:]
