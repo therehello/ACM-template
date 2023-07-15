@@ -578,35 +578,39 @@ void manacher(const string& _s, vector<int>& r) {
 ### 线性筛法
 
 ```cpp
-auto [min_prime, primes] = []() {
+auto [min_prime, prime] = []() {
     constexpr int N = 10000000;
-    vector<int> min_prime(N + 1, 0), primes;
+    vector<int> min_prime(N + 1, 0), prime;
     for (int i = 2; i <= N; i++) {
         if (min_prime[i] == 0) {
             min_prime[i] = i;
-            primes.push_back(i);
+            prime.push_back(i);
         }
-        for (auto& prime : primes) {
-            if (prime > min_prime[i] || prime > N / i) break;
-            min_prime[prime * i] = prime;
+        for (auto& j : prime) {
+            if (j > min_prime[i] || j > N / i) break;
+            min_prime[j * i] = j;
         }
     }
-    return tuple{min_prime, primes};
+    return tuple{min_prime, prime};
 }();
 ```
 
 ### 分解质因数
 
 ```cpp
-void num_primes(int num, vector<int>& ans) {
-    for (auto& prime : primes) {
-        if (prime > num / prime) break;
-        if (num % prime == 0) {
-            while (num % prime == 0) num /= prime;
-            ans.push_back(prime);
+auto num_primes(int num) {
+    vector<array<int, 2>> res;
+    for (auto& i : prime) {
+        if (i > num / i) break;
+        if (num % i == 0) {
+            res.push_back({i, 0});
+            while (num % i == 0) {
+                num /= i;
+                res.back()[1]++;
+            }
         }
     }
-    if (num > 1) ans.push_back(num);
+    if (num > 1) res.push_back({num, 1});
 }
 ```
 
