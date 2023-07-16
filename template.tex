@@ -639,9 +639,8 @@ modint C(int n, int m) {
     if (m == 0) return 1;
     if (n <= mod)
         return factorial[n] * factorial[m].inv() * factorial[n - m].inv();
-    else
-        return C(n % mod, m % mod) *
-               C(n / mod, m / mod);  // n >= mod 时需要这个
+    else return C(n % mod, m % mod) * C(n / mod, m / mod);
+    // n >= mod 时需要这个
 }
 \end{lstlisting}
 
