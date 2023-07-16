@@ -512,6 +512,8 @@ auto kmp(string& s) {
         if (s[i] == s[j + 1]) j++;
         next[i] = j;
     }
+    // next 意为长度
+    for (auto& i : next) i++;
     return next;
 }
 ```
