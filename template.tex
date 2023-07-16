@@ -520,8 +520,8 @@ void toposort(Graph& g, vector<int>& dis) {
 \subsection{kmp}
 
 \begin{lstlisting}[style=cpp]
-vector<int> kmp(string&& s) {
-    vector<int> next(s.size(), -1);
+auto kmp(string& s) {
+    vector next(s.size(), -1);
     for (int i = 1, j = -1; i < s.size(); i++) {
         while (j >= 0 && s[i] != s[j + 1]) j = next[j];
         if (s[i] == s[j + 1]) j++;
