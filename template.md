@@ -709,8 +709,8 @@ Mat ksm(Mat a, ll b) {
 ## 计算几何
 
 ```cpp
-const double PI = acos(-1);
-constexpr double eps = 1e-8;
+double PI = acos(-1);
+double eps = 1e-8;
 using T = ll;
 
 template <typename T>
