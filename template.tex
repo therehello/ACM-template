@@ -1,5 +1,6 @@
 \documentclass[UTF8]{ctexart}
 \usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{afterpage}
 \usepackage{xcolor}
 \usepackage{fontspec}
 \usepackage{listings}
@@ -31,6 +32,14 @@
   showstringspaces=false
 }
 
+\newcommand\blankpage{
+    \null
+    \thispagestyle{empty}
+    \addtocounter{page}{-1}
+    \newpage
+}
+
+
 \setmonofont{Consolas} % 设置代码字体
 
 \CTEXsetup[format={\Large\bfseries}]{section}
@@ -50,6 +59,8 @@
     {\fontsize{12pt}{0pt}\selectfont therehello\par} % 作者
     \today % 日期
 \end{titlepage}
+
+\blankpage
 
 \tableofcontents
 
@@ -316,6 +327,8 @@ struct st {
 };
 \end{lstlisting}
 
+\clearpage
+
 \section{图论}
 
 存图
@@ -515,6 +528,8 @@ void toposort(Graph& g, vector<int>& dis) {
 }
 \end{lstlisting}
 
+\clearpage
+
 \section{字符串}
 
 \subsection{kmp}
@@ -589,6 +604,8 @@ void manacher(const string& _s, vector<int>& r) {
     }
 }
 \end{lstlisting}
+
+\clearpage
 
 \section{数学}
 
@@ -725,6 +742,8 @@ Mat ksm(Mat a, ll b) {
     return res;
 }
 \end{lstlisting}
+
+\clearpage
 
 \section{计算几何}
 
@@ -925,6 +944,8 @@ vec intersection(const line &a, const line &b) {
                         b.direction.x * b.point.y - b.direction.y * b.point.x);
 }
 \end{lstlisting}
+
+\clearpage
 
 \section{杂项}
 

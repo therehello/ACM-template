@@ -5,6 +5,7 @@ import sys
 
 begin = r"""\documentclass[UTF8]{ctexart}
 \usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{afterpage}
 \usepackage{xcolor}
 \usepackage{fontspec}
 \usepackage{listings}
@@ -36,6 +37,14 @@ begin = r"""\documentclass[UTF8]{ctexart}
   showstringspaces=false
 }
 
+\newcommand\blankpage{
+    \null
+    \thispagestyle{empty}
+    \addtocounter{page}{-1}
+    \newpage
+}
+
+
 \setmonofont{Consolas} % 设置代码字体
 
 \CTEXsetup[format={\Large\bfseries}]{section}
@@ -56,9 +65,9 @@ begin = r"""\documentclass[UTF8]{ctexart}
     \today % 日期
 \end{titlepage}
 
-\tableofcontents
+\blankpage
 
-\clearpage
+\tableofcontents
 
 """
 
@@ -68,9 +77,12 @@ end = "\n\n\\end{sloppypar}\n\\end{document}"
 def section(match: re.Match):
     level = len(match.group(1)) - 2
     name = match.group(2)
+    clearpage = ""
+    if level == 0:
+        clearpage = "\\clearpage\n\n"
     if level == 3:
         return "\\" + "paragraph{" + name + "}\n"
-    return "\\" + "sub" * level + "section{" + name + "}\n"
+    return clearpage + "\\" + "sub" * level + "section{" + name + "}\n"
 
 
 def cpp(match: re.Match):
