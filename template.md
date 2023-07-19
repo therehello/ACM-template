@@ -21,6 +21,7 @@
         - [哈希](#%E5%93%88%E5%B8%8C)
         - [manacher](#manacher)
     - [数学](#%E6%95%B0%E5%AD%A6)
+        - [扩展欧几里得](#%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97)
         - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
         - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
         - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
@@ -576,6 +577,49 @@ void manacher(const string& _s, vector<int>& r) {
 ```
 
 ## 数学
+
+### 扩展欧几里得
+
+$x=x+k*dx,y=y-k*dy$
+
+若要求 $x>0$，$k>-\frac{x}{dx}\Rightarrow k\ge\lceil \frac{-x+1}{dx}\rceil$
+
+若要求 $x\ge0$，$k>-\frac{x}{dx}\Rightarrow k\ge\lceil -\frac{x}{dx}\rceil$
+
+若要求 $y>0$，$k<\frac{y}{dy}\Rightarrow k\le\lfloor \frac{y-1}{dy}\rfloor$
+
+若要求 $y\ge0$，$k<\frac{y}{dy}\Rightarrow k\le\lceil \frac{y}{dy}\rceil$
+
+
+```cpp
+int __exgcd(int a, int b, int& x, int& y) {
+    if (!b) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int d = __exgcd(b, a % b, x, y);
+    int t = x;
+    x = y;
+    y = t - (a / b) * y;
+    return d;
+}
+array<int, 2> exgcd(int a, int b, int c) {
+    int x, y;
+    int gcd_a_b = __exgcd(a, b, x, y);
+    if (c % gcd_a_b) return {INT_MAX, INT_MAX};
+    x *= c / gcd_a_b;
+    y *= c / gcd_a_b;
+    int dx = b / gcd_a_b;
+    int dy = a / gcd_a_b;
+    x = x + k* dx y = y - k* dy
+                      // 调整为 x >=0 的最小解
+                      int k = ceil(-1.0 * x / dx);
+    x += k * dx;
+    y -= k * dy;
+    return {x, y};
+}
+```
 
 ### 线性筛法
 
