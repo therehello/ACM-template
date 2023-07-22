@@ -782,9 +782,9 @@ struct vec {
 
     // 逆时针旋转
     void rotate(const double &theta) {
-        double temp = x;
+        double tmp = x;
         x = x * cos(theta) - y * sin(theta);
-        y = y * cos(theta) + temp * sin(theta);
+        y = y * cos(theta) + tmp * sin(theta);
     }
 
     bool operator==(const vec &other) const {
@@ -802,7 +802,7 @@ struct vec {
     vec operator/(const T &other) const { return {x / other, y / other}; }
     T operator*(const vec &other) const { return x * other.x + y * other.y; }
 
-    // 叉积 结果大于0，a在b的顺时针，小于0，a在b的逆时针,
+    // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
     // 等于0共线，可能同向或反向，结果绝对值表示 a b形成的平行四边行的面积
     T operator^(const vec &other) const { return x * other.y - y * other.x; }
 
@@ -879,7 +879,7 @@ auto convex_hull(vector<vec> &p) {
     int tp = -1;
     sta[++tp] = 0;
 
-    auto update_convex_hull = [&](int lim, int i) {
+    auto update = [&](int lim, int i) {
         while (tp > lim &&
                ((p[sta[tp]] - p[sta[tp - 1]]) ^ (p[i] - p[sta[tp]])) <= 0)
             v[sta[tp--]] = 0;
@@ -887,12 +887,12 @@ auto convex_hull(vector<vec> &p) {
         v[i] = 1;
     };
 
-    for (int i = 1; i < p.size(); i++) update_convex_hull(0, i);
+    for (int i = 1; i < p.size(); i++) update(0, i);
 
     int cnt = tp;
     for (int i = p.size() - 1; i >= 0; i--) {
         if (v[i]) continue;
-        update_convex_hull(cnt, i);
+        update(cnt, i);
     }
 
     vector<vec> res(tp);
@@ -948,6 +948,11 @@ vec intersection(const line &a, const line &b) {
                         a.direction.x * a.point.y - a.direction.y * a.point.x,
                         b.direction.y, -b.direction.x,
                         b.direction.x * b.point.y - b.direction.y * b.point.x);
+}
+
+// 判断点在直线哪边，大于0在左边，等于0在线上，小于0在右边
+T point_side_of_line(const vec &a, const line &b) {
+    return b.direction ^ (a - b.point);
 }
 ```
 
