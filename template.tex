@@ -643,9 +643,9 @@ array<int, 2> exgcd(int a, int b, int c) {
     y *= c / gcd_a_b;
     int dx = b / gcd_a_b;
     int dy = a / gcd_a_b;
-    x = x + k* dx y = y - k* dy
-                      // 调整为 x >=0 的最小解
-                      int k = ceil(-1.0 * x / dx);
+    // x = x + k* dx y = y - k* dy
+    // 调整为 x >=0 的最小解
+    int k = ceil(-1.0 * x / dx);
     x += k * dx;
     y -= k * dy;
     return {x, y};
@@ -818,10 +818,11 @@ struct vec {
     }
 
     // 逆时针旋转
-    void rotate(const double &theta) {
+    vec &rotate(const double &theta) {
         double tmp = x;
         x = x * cos(theta) - y * sin(theta);
         y = y * cos(theta) + tmp * sin(theta);
+        return *this;
     }
 
     bool operator==(const vec &other) const {
@@ -840,7 +841,7 @@ struct vec {
     T operator*(const vec &other) const { return x * other.x + y * other.y; }
 
     // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
-    // 等于0共线，可能同向或反向，结果绝对值表示 a b形成的平行四边行的面积
+    // 等于0共线，可能同向或反向，结果绝对值表示 a b 形成的平行四边行的面积
     T operator^(const vec &other) const { return x * other.y - y * other.x; }
 
     friend istream &operator>>(istream &input, vec &data) {
@@ -854,6 +855,8 @@ struct vec {
     }
 };
 
+T cross(const vec &a, const vec &b, const vec &c) { return (a - c) ^ (b - c); }
+
 // 两点间的距离
 T distance(const vec &a, const vec &b) {
     return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
@@ -864,6 +867,16 @@ double angle(const vec &a, const vec &b) {
     double theta = abs(a.angle() - b.angle());
     if (theta > PI) theta = 2 * PI - theta;
     return theta;
+}
+
+// 判断点是否在凸包内
+bool in_polygon(const vec &a, vector<vec> &p) {
+    int n = p.size();
+    if (n == 1) return a == p[0];
+    if (cross(a, p[1], p[0]) > 0 || cross(p.back(), a, p[0]) > 0) return 0;
+    auto cmp = [&p](vec &x, const vec &y) { return ((x - p[0]) ^ y) >= 0; };
+    int i = lower_bound(p.begin() + 2, p.end(), a - p[0], cmp) - p.begin() - 1;
+    return cross(p[(i + 1) % n], a, p[i]) >= 0;
 }
 
 // 多边形的面积
@@ -882,61 +895,6 @@ double polygon_length(vector<vec> &p) {
     return length;
 }
 
-// 多边形直径的两个端点
-auto polygon_dia(vector<vec> &p) {
-    int n = p.size();
-    array<vec, 2> res{};
-    if (n <= 1) return res;
-    if (n == 2) return res = {p[0], p[1]};
-    T mx = 0;
-    for (int i = 0, j = 2; i < n; i++) {
-        while (abs((p[i] - p[j]) ^ (p[(i + 1) % n] - p[j])) <=
-               abs((p[i] - p[(j + 1) % n]) ^ (p[(i + 1) % n] - p[(j + 1) % n])))
-            j = (j + 1) % n;
-        if (auto tmp = distance(p[i], p[j]); tmp > mx) {
-            mx = tmp;
-            res = {p[i], p[j]};
-        }
-        if (auto tmp = distance(p[(i + 1) % n], p[j]); tmp > mx) {
-            mx = tmp;
-            res = {p[(i + 1) % n], p[j]};
-        }
-    }
-    return res;
-}
-
-// 凸包
-auto convex_hull(vector<vec> &p) {
-    sort(p.begin(), p.end(), [](vec &a, vec &b) {
-        return equal(a.x, b.x) ? a.y < b.y : a.x < b.x;
-    });
-
-    vector<int> sta(p.size() + 1, 0);
-    vector<bool> v(p.size(), false);
-    int tp = -1;
-    sta[++tp] = 0;
-
-    auto update = [&](int lim, int i) {
-        while (tp > lim &&
-               ((p[sta[tp]] - p[sta[tp - 1]]) ^ (p[i] - p[sta[tp]])) <= 0)
-            v[sta[tp--]] = 0;
-        sta[++tp] = i;
-        v[i] = 1;
-    };
-
-    for (int i = 1; i < p.size(); i++) update(0, i);
-
-    int cnt = tp;
-    for (int i = p.size() - 1; i >= 0; i--) {
-        if (v[i]) continue;
-        update(cnt, i);
-    }
-
-    vector<vec> res(tp);
-    for (int i = 0; i < tp; i++) res[i] = p[sta[i]];
-    return res;
-}
-
 // 以整点为顶点的线段上的整点个数
 T count(const vec &a, const vec &b) {
     vec c = a - b;
@@ -951,6 +909,79 @@ T count(vector<vec> &p) {
     return cnt - p.size();
 }
 
+// 凸包直径的两个端点
+auto polygon_dia(vector<vec> &p) {
+    int n = p.size();
+    array<vec, 2> res{};
+    if (n == 1) return res;
+    if (n == 2) return res = {p[0], p[1]};
+    T mx = 0;
+    for (int i = 0, j = 2; i < n; i++) {
+        while (abs(cross(p[i], p[(i + 1) % n], p[j])) <=
+               abs(cross(p[i], p[(i + 1) % n], p[(j + 1) % n])))
+            j = (j + 1) % n;
+        if (T tmp = distance(p[i], p[j]); tmp > mx) {
+            mx = tmp;
+            res = {p[i], p[j]};
+        }
+        if (T tmp = distance(p[(i + 1) % n], p[j]); tmp > mx) {
+            mx = tmp;
+            res = {p[(i + 1) % n], p[j]};
+        }
+    }
+    return res;
+}
+
+// 凸包
+auto convex_hull(vector<vec> &p) {
+    sort(p.begin(), p.end(), [](vec &a, vec &b) {
+        return equal(a.x, b.x) ? a.y < b.y : a.x < b.x;
+    });
+    int n = p.size();
+    vector sta(n + 1, 0);
+    vector v(n, false);
+    int tp = -1;
+    sta[++tp] = 0;
+    auto update = [&](int lim, int i) {
+        while (tp > lim &&
+               ((p[sta[tp]] - p[sta[tp - 1]]) ^ (p[i] - p[sta[tp]])) <= 0)
+            v[sta[tp--]] = 0;
+        sta[++tp] = i;
+        v[i] = 1;
+    };
+    for (int i = 1; i < n; i++) update(0, i);
+    int cnt = tp;
+    for (int i = n - 1; i >= 0; i--) {
+        if (v[i]) continue;
+        update(cnt, i);
+    }
+    vector<vec> res(tp);
+    for (int i = 0; i < tp; i++) res[i] = p[sta[i]];
+    return res;
+}
+
+// 闵可夫斯基和 两个点集的和构成一个凸包
+auto minkowski(vector<vec> &a, vector<vec> &b) {
+    int n = a.size(), m = b.size();
+    vector<vec> c{a[0] + b[0]};
+    c.reserve(n + m);
+    int i = 0, j = 0;
+    while (i < n && j < m) {
+        vec x = a[(i + 1) % n] - a[i];
+        vec y = b[(j + 1) % m] - b[j];
+        c.push_back(c.back() + ((x ^ y) >= 0 ? (i++, x) : (j++, y)));
+    }
+    while (i + 1 < n) {
+        c.push_back(c.back() + a[(i + 1) % n] - a[i]);
+        i++;
+    }
+    while (j + 1 < m) {
+        c.push_back(c.back() + b[(j + 1) % m] - b[j]);
+        j++;
+    }
+    return c;
+}
+
 // 直线
 struct line {
     vec point, direction;
@@ -962,6 +993,9 @@ double distance(const vec &a, const line &b) {
     return abs((b.point - a) ^ (b.point + b.direction - a)) /
            b.direction.length();
 }
+
+// 判断点在直线哪边，大于0在左边，等于0在线上，小于0在右边
+T side_line(const vec &a, const line &b) { return b.direction ^ (a - b.point); }
 
 // 两直线是否垂直
 bool perpendicular(const line &a, const line &b) {
@@ -985,11 +1019,6 @@ vec intersection(const line &a, const line &b) {
                         a.direction.x * a.point.y - a.direction.y * a.point.x,
                         b.direction.y, -b.direction.x,
                         b.direction.x * b.point.y - b.direction.y * b.point.x);
-}
-
-// 判断点在直线哪边，大于0在左边，等于0在线上，小于0在右边
-T point_side_of_line(const vec &a, const line &b) {
-    return b.direction ^ (a - b.point);
 }
 \end{lstlisting}
 

@@ -612,9 +612,9 @@ array<int, 2> exgcd(int a, int b, int c) {
     y *= c / gcd_a_b;
     int dx = b / gcd_a_b;
     int dy = a / gcd_a_b;
-    x = x + k* dx y = y - k* dy
-                      // 调整为 x >=0 的最小解
-                      int k = ceil(-1.0 * x / dx);
+    // x = x + k* dx y = y - k* dy
+    // 调整为 x >=0 的最小解
+    int k = ceil(-1.0 * x / dx);
     x += k * dx;
     y -= k * dy;
     return {x, y};
