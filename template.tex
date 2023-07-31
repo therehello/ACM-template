@@ -1022,6 +1022,77 @@ vec intersection(const line &a, const line &b) {
 }
 \end{lstlisting}
 
+\subsection{扫描线}
+
+\begin{lstlisting}[style=cpp]
+#define ls (pos << 1)
+#define rs (ls | 1)
+#define mid ((tree[pos].l + tree[pos].r) >> 1)
+struct Rectangle {
+    ll x_l, y_l, x_r, y_r;
+};
+ll area(vector<Rectangle>& rec) {
+    struct Line {
+        ll x, y_up, y_down;
+        int pd;
+    };
+    vector<Line> line(rec.size() * 2);
+    vector<ll> y_set(rec.size() * 2);
+    for (int i = 0; i < rec.size(); i++) {
+        y_set[i * 2] = rec[i].y_l;
+        y_set[i * 2 + 1] = rec[i].y_r;
+        line[i * 2] = {rec[i].x_l, rec[i].y_r, rec[i].y_l, 1};
+        line[i * 2 + 1] = {rec[i].x_r, rec[i].y_r, rec[i].y_l, -1};
+    }
+    sort(y_set.begin(), y_set.end());
+    y_set.erase(unique(y_set.begin(), y_set.end()), y_set.end());
+    sort(line.begin(), line.end(), [](Line a, Line b) { return a.x < b.x; });
+    struct Data {
+        int l, r;
+        ll len, cnt, raw_len;
+    };
+    vector<Data> tree(4 * y_set.size());
+    function<void(int, int, int)> build = [&](int pos, int l, int r) {
+        tree[pos].l = l;
+        tree[pos].r = r;
+        if (l == r) {
+            tree[pos].raw_len = y_set[r + 1] - y_set[l];
+            tree[pos].cnt = tree[pos].len = 0;
+            return;
+        }
+        build(ls, l, mid);
+        build(rs, mid + 1, r);
+        tree[pos].raw_len = tree[ls].raw_len + tree[rs].raw_len;
+    };
+    function<void(int, int, int, int)> update = [&](int pos, int l, int r,
+                                                    int num) {
+        if (l <= tree[pos].l && tree[pos].r <= r) {
+            tree[pos].cnt += num;
+            tree[pos].len = tree[pos].cnt ? tree[pos].raw_len
+                            : tree[pos].l == tree[pos].r
+                                ? 0
+                                : tree[ls].len + tree[rs].len;
+            return;
+        }
+        if (l <= mid) update(ls, l, r, num);
+        if (r > mid) update(rs, l, r, num);
+        tree[pos].len =
+            tree[pos].cnt ? tree[pos].raw_len : tree[ls].len + tree[rs].len;
+    };
+    build(1, 0, y_set.size() - 2);
+    auto find_pos = [&](ll num) {
+        return lower_bound(y_set.begin(), y_set.end(), num) - y_set.begin();
+    };
+    ll res = 0;
+    for (int i = 0; i < line.size() - 1; i++) {
+        update(1, find_pos(line[i].y_down), find_pos(line[i].y_up) - 1,
+               line[i].pd);
+        res += (line[i + 1].x - line[i].x) * tree[1].len;
+    }
+    return res;
+}
+\end{lstlisting}
+
 \clearpage
 
 \section{杂项}
@@ -1098,77 +1169,6 @@ struct bignum {
         return out << a.num;
     }
 };
-\end{lstlisting}
-
-\subsection{扫描线}
-
-\begin{lstlisting}[style=cpp]
-#define ls (pos << 1)
-#define rs (ls | 1)
-#define mid ((tree[pos].l + tree[pos].r) >> 1)
-struct Rectangle {
-    ll x_l, y_l, x_r, y_r;
-};
-ll area(vector<Rectangle>& rec) {
-    struct Line {
-        ll x, y_up, y_down;
-        int pd;
-    };
-    vector<Line> line(rec.size() * 2);
-    vector<ll> y_set(rec.size() * 2);
-    for (int i = 0; i < rec.size(); i++) {
-        y_set[i * 2] = rec[i].y_l;
-        y_set[i * 2 + 1] = rec[i].y_r;
-        line[i * 2] = {rec[i].x_l, rec[i].y_r, rec[i].y_l, 1};
-        line[i * 2 + 1] = {rec[i].x_r, rec[i].y_r, rec[i].y_l, -1};
-    }
-    sort(y_set.begin(), y_set.end());
-    y_set.erase(unique(y_set.begin(), y_set.end()), y_set.end());
-    sort(line.begin(), line.end(), [](Line a, Line b) { return a.x < b.x; });
-    struct Data {
-        int l, r;
-        ll len, cnt, raw_len;
-    };
-    vector<Data> tree(4 * y_set.size());
-    function<void(int, int, int)> build = [&](int pos, int l, int r) {
-        tree[pos].l = l;
-        tree[pos].r = r;
-        if (l == r) {
-            tree[pos].raw_len = y_set[r + 1] - y_set[l];
-            tree[pos].cnt = tree[pos].len = 0;
-            return;
-        }
-        build(ls, l, mid);
-        build(rs, mid + 1, r);
-        tree[pos].raw_len = tree[ls].raw_len + tree[rs].raw_len;
-    };
-    function<void(int, int, int, int)> update = [&](int pos, int l, int r,
-                                                    int num) {
-        if (l <= tree[pos].l && tree[pos].r <= r) {
-            tree[pos].cnt += num;
-            tree[pos].len = tree[pos].cnt ? tree[pos].raw_len
-                            : tree[pos].l == tree[pos].r
-                                ? 0
-                                : tree[ls].len + tree[rs].len;
-            return;
-        }
-        if (l <= mid) update(ls, l, r, num);
-        if (r > mid) update(rs, l, r, num);
-        tree[pos].len =
-            tree[pos].cnt ? tree[pos].raw_len : tree[ls].len + tree[rs].len;
-    };
-    build(1, 0, y_set.size() - 2);
-    auto find_pos = [&](ll num) {
-        return lower_bound(y_set.begin(), y_set.end(), num) - y_set.begin();
-    };
-    ll res = 0;
-    for (int i = 0; i < line.size() - 1; i++) {
-        update(1, find_pos(line[i].y_down), find_pos(line[i].y_up) - 1,
-               line[i].pd);
-        res += (line[i + 1].x - line[i].x) * tree[1].len;
-    }
-    return res;
-}
 \end{lstlisting}
 
 \subsection{模运算}
