@@ -25,6 +25,7 @@
         - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
         - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
         - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
+        - [数论分块](#%E6%95%B0%E8%AE%BA%E5%88%86%E5%9D%97)
         - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
         - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
         - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
@@ -678,6 +679,27 @@ modint C(int n, int m) {
     if (n <= mod) return fac[n] * ifac[m] * ifac[n - m];
     // n >= mod 时需要这个
     return C(n % mod, m % mod) * C(n / mod, m / mod);
+}
+```
+
+### 数论分块
+
+求解形如 $\sum_{i=1}^{n}f(i)g(\lfloor\frac{n}{i}\rfloor)$ 的合式
+
+$s(n) = \sum_{i=1}^{n}f(i)$
+
+```cpp
+modint sqrt_decomposition(int n) {
+    auto s = [&](int x) { return x; };
+    auto g = [&](int x) { return x; };
+    int l = 1;
+    modint res = 0;
+    while (l <= n) {
+        int r = n / (n / l);
+        res = res + (ll)(s(r) - s(l - 1)) * g(n / l);
+        l = r + 1;
+    }
+    return res;
 }
 ```
 
