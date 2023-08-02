@@ -664,12 +664,18 @@ auto num_prime(int num) {
 ### 组合数
 
 ```cpp
+array<modint, N + 1> fac, ifac;
+fac[0] = ifac[0] = 1;
+for (int i = 1; i <= N; i++) {
+    fac[i] = fac[i - 1] * i;
+    ifac[i] = fac[i].inv();
+}
 modint C(int n, int m) {
+    if (n < m) return 0;
     if (m == 0) return 1;
-    if (n <= mod)
-        return factorial[n] * factorial[m].inv() * factorial[n - m].inv();
-    else return C(n % mod, m % mod) * C(n / mod, m / mod);
+    if (n <= mod) return fac[n] * ifac[m] * ifac[n - m];
     // n >= mod 时需要这个
+    return C(n % mod, m % mod) * C(n / mod, m / mod);
 }
 ```
 
@@ -1135,33 +1141,35 @@ struct bignum {
 ### 模运算
 
 ```cpp
-class modint {
-    ll num;
-public:
-    modint(ll num = 0) : num(num % mod) {}
-    modint pow(modint other) {
-        modint res(1), temp = *this;
-        while (other.num) {
-            if (other.num & 1) res = res * temp;
-            temp = temp * temp;
-            other.num >>= 1;
+constexpr int N = 1e5;
+constexpr int mod = 1e9 + 7;
+struct modint {
+    int x;
+    modint(ll _x = 0) : x(_x % mod) {}
+    modint pow(ll b) const {
+        modint res(1), a = *this;
+        while (b) {
+            if (b & 1) res = res * a;
+            a = a * a;
+            b >>= 1;
         }
         return res;
     }
-    modint inv() { return this->pow(mod - 2); }
-    modint operator+(modint other) { return modint(this->num + other.num); }
-    modint operator-() { return {-this->num}; }
-    modint operator-(modint other) { return modint(-other + *this); }
-    modint operator*(modint other) { return modint(this->num * other.num); }
-    modint operator/(modint other) { return *this * other.inv(); }
+    modint inv() const { return pow(mod - 2); }
+    modint operator+(const modint& other) { return modint(x + other.x); }
+    modint operator-() const { return {-x}; }
+    modint operator-(const modint& other) { return modint(-other + *this); }
+    modint operator*(const modint& other) { return modint((ll)x * other.x); }
+    modint operator/(const modint& other) { return *this * other.inv(); }
     friend istream& operator>>(istream& is, modint& other) {
-        is >> other.num;
-        other.num %= mod;
+        ll _x;
+        is >> _x;
+        other = modint(_x);
         return is;
     }
     friend ostream& operator<<(ostream& os, modint other) {
-        other.num = (other.num + mod) % mod;
-        return os << other.num;
+        other.x = (other.x + mod) % mod;
+        return os << other.x;
     }
 };
 ```
