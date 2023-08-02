@@ -35,10 +35,10 @@
         - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
         - [分数](#%E5%88%86%E6%95%B0)
         - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
+        - [日期](#%E6%97%A5%E6%9C%9F)
         - [对拍](#%E5%AF%B9%E6%8B%8D)
         - [编译常用选项](#%E7%BC%96%E8%AF%91%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
         - [开栈](#%E5%BC%80%E6%A0%88)
-        - [日期](#%E6%97%A5%E6%9C%9F)
 
 <!-- /TOC -->
 
@@ -1391,6 +1391,37 @@ int calc(const string& s) {
 }
 ```
 
+### 日期
+
+```cpp
+int month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+int pre[13];
+vector<int> leap;
+struct Date {
+    int y, m, d;
+    bool operator<(const Date& other) const {
+        return array<int, 3>{y, m, d} <
+               array<int, 3>{other.y, other.m, other.d};
+    }
+    Date(const string& s) {
+        stringstream ss(s);
+        char ch;
+        ss >> y >> ch >> m >> ch >> d;
+    }
+    int dis() const {
+        int yd = (y - 1) * 365 +
+                 (upper_bound(leap.begin(), leap.end(), y - 1) - leap.begin());
+        int md =
+            pre[m - 1] + (m > 2 && (y % 4 == 0 && y % 100 || y % 400 == 0));
+        return yd + md + d;
+    }
+    int dis(const Date& other) const { return other.dis() - dis(); }
+};
+for (int i = 1; i <= 12; i++) pre[i] = pre[i - 1] + month[2];
+for (int i = 1; i <= 1000000; i++)
+    if (i % 4 == 0 && i % 100 || i % 400 == 0) leap.push_back(i);
+```
+
 ### 对拍
 
 linux/Mac
@@ -1453,33 +1484,3 @@ if not errorlevel 1 goto again
 -Wl,-z,stack-size=0x10000000
 ```
 
-### 日期
-
-```cpp
-int month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-int pre[13];
-vector<int> leap;
-struct Date {
-    int y, m, d;
-    bool operator<(const Date& other) const {
-        return array<int, 3>{y, m, d} <
-               array<int, 3>{other.y, other.m, other.d};
-    }
-    Date(const string& s) {
-        stringstream ss(s);
-        char ch;
-        ss >> y >> ch >> m >> ch >> d;
-    }
-    int dis() const {
-        int yd = (y - 1) * 365 +
-                 (upper_bound(leap.begin(), leap.end(), y - 1) - leap.begin());
-        int md =
-            pre[m - 1] + (m > 2 && (y % 4 == 0 && y % 100 || y % 400 == 0));
-        return yd + md + d;
-    }
-    int dis(const Date& other) const { return other.dis() - dis(); }
-};
-for (int i = 1; i <= 12; i++) pre[i] = pre[i - 1] + month[2];
-for (int i = 1; i <= 1000000; i++)
-    if (i % 4 == 0 && i % 100 || i % 400 == 0) leap.push_back(i);
-```
