@@ -1475,6 +1475,12 @@ set cnt=0
 if not errorlevel 1 goto again
 \end{lstlisting}
 
+\subsection{编译常用选项}
+
+\begin{lstlisting}[style=cpp]
+-Wall -Woverflow -Wextra -Wpedantic -Wfloat-equal -Wshadow -fsanitize=address,undefined
+\end{lstlisting}
+
 \subsection{开栈}
 
 不同的编译器可能命令不一样

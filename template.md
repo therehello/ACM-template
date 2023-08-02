@@ -36,6 +36,7 @@
         - [分数](#%E5%88%86%E6%95%B0)
         - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
         - [对拍](#%E5%AF%B9%E6%8B%8D)
+        - [编译常用选项](#%E7%BC%96%E8%AF%91%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
         - [开栈](#%E5%BC%80%E6%A0%88)
         - [日期](#%E6%97%A5%E6%9C%9F)
 
@@ -1434,6 +1435,12 @@ set cnt=0
 
     fc output.a output.b
 if not errorlevel 1 goto again
+```
+
+### 编译常用选项
+
+```bash
+-Wall -Woverflow -Wextra -Wpedantic -Wfloat-equal -Wshadow -fsanitize=address,undefined
 ```
 
 ### 开栈
