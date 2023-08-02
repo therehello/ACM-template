@@ -1438,7 +1438,7 @@ if not errorlevel 1 goto again
 
 ### 开栈
 
-任选一种
+不同的编译器可能命令不一样
 
 ```bash
 -Wl,--stack=0x10000000
