@@ -39,6 +39,7 @@
         - [对拍](#%E5%AF%B9%E6%8B%8D)
         - [编译常用选项](#%E7%BC%96%E8%AF%91%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
         - [开栈](#%E5%BC%80%E6%A0%88)
+        - [clang-format](#clang-format)
 
 <!-- /TOC -->
 
@@ -1482,5 +1483,17 @@ if not errorlevel 1 goto again
 -Wl,--stack=0x10000000
 -Wl,-stack_size -Wl,0x10000000
 -Wl,-z,stack-size=0x10000000
+```
+
+### clang-format
+
+```bash
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 80
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AccessModifierOffset: -4
+EmptyLineBeforeAccessModifier: Leave
+RemoveBracesLLVM: true
 ```
 
