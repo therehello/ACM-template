@@ -710,6 +710,27 @@ modint C(int n, int m) {
 }
 \end{lstlisting}
 
+\subsection{数论分块}
+
+求解形如 $\sum_{i=1}^{n}f(i)g(\lfloor\frac{n}{i}\rfloor)$ 的合式
+
+$s(n) = \sum_{i=1}^{n}f(i)$
+
+\begin{lstlisting}[style=cpp]
+modint sqrt_decomposition(int n) {
+    auto s = [&](int x) { return x; };
+    auto g = [&](int x) { return x; };
+    int l = 1;
+    modint res = 0;
+    while (l <= n) {
+        int r = n / (n / l);
+        res = res + (ll)(s(r) - s(l - 1)) * g(n / l);
+        l = r + 1;
+    }
+    return res;
+}
+\end{lstlisting}
+
 \subsection{盒子与球}
 
 $n$ 个球，$m$ 个盒
