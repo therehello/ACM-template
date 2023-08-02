@@ -1522,5 +1522,17 @@ if not errorlevel 1 goto again
 -Wl,-z,stack-size=0x10000000
 \end{lstlisting}
 
+\subsection{clang-format}
+
+\begin{lstlisting}[style=cpp]
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 80
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AccessModifierOffset: -4
+EmptyLineBeforeAccessModifier: Leave
+RemoveBracesLLVM: true
+\end{lstlisting}
+
 \end{sloppypar}
 \end{document}
