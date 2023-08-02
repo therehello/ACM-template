@@ -797,16 +797,20 @@ Mat ksm(Mat a, ll b) {
 \section{计算几何}
 
 \begin{lstlisting}[style=cpp]
-double PI = acos(-1);
 double eps = 1e-8;
+const double PI = acos(-1);
 using T = ll;
 
 template <typename T>
-bool equal(T a, T b) {
-    return a == b;
+int cmp(T a, T b) {
+    return a != b ? a < b ? -1 : 1 : 0;
 }
-// 两浮点数是否相等
-bool equal(double a, double b) { return abs(a - b) < eps; }
+
+int cmp(double a, double b) {
+    double c = a - b;
+    if (abs(c) < eps) return 0;
+    return c < 0 ? -1 : 1;
+}
 
 // 向量
 struct vec {
@@ -832,11 +836,13 @@ struct vec {
     }
 
     bool operator==(const vec &other) const {
-        return equal(x, other.x) && equal(y, other.y);
+        return !cmp(x, other.x) && !cmp(y, other.y);
     }
     bool operator<(const vec &other) const {
-        return equal(angle(), other.angle()) ? x < other.x
-                                             : angle() < other.angle();
+        int tmp = cmp(angle(), other.angle());
+        if (tmp) return tmp == -1 ? 0 : 1;
+        tmp = cmp(x, other.x);
+        return tmp == -1 ? 0 : 1;
     }
 
     vec operator+(const vec &other) const { return {x + other.x, y + other.y}; }
@@ -941,7 +947,10 @@ auto polygon_dia(vector<vec> &p) {
 // 凸包
 auto convex_hull(vector<vec> &p) {
     sort(p.begin(), p.end(), [](vec &a, vec &b) {
-        return equal(a.x, b.x) ? a.y < b.y : a.x < b.x;
+        int tmp = cmp(a.x, b.x);
+        if (tmp) return tmp == -1 ? 0 : 1;
+        tmp = cmp(a.y, b.y);
+        return tmp == -1 ? 0 : 1;
     });
     int n = p.size();
     vector sta(n + 1, 0);
@@ -991,7 +1000,7 @@ auto minkowski(vector<vec> &a, vector<vec> &b) {
 // 直线
 struct line {
     vec point, direction;
-    line(const vec &p, const vec &d) : point(p), direction(d) {}
+    line(const vec &p = vec(), const vec &d = vec()) : point(p), direction(d) {}
 };
 
 // 点到直线距离
@@ -1005,12 +1014,20 @@ T side_line(const vec &a, const line &b) { return b.direction ^ (a - b.point); }
 
 // 两直线是否垂直
 bool perpendicular(const line &a, const line &b) {
-    return equal(a.direction * b.direction, 0);
+    return !cmp(a.direction * b.direction, 0);
+}
+
+// 点的垂线是否与线段有交点
+bool perpendicular(const vec &a, const line &b) {
+    vec perpen(-b.direction.y, b.direction.x);
+    bool cross1 = (perpen ^ (b.point - a)) > 0;
+    bool cross2 = (perpen ^ (b.point + b.direction - a)) > 0;
+    return cross1 != cross2;
 }
 
 // 两直线是否平行
 bool parallel(const line &a, const line &b) {
-    return equal(a.direction ^ b.direction, 0);
+    return !cmp(a.direction ^ b.direction, 0);
 }
 
 // 两直线交点
@@ -1025,6 +1042,84 @@ vec intersection(const line &a, const line &b) {
                         a.direction.x * a.point.y - a.direction.y * a.point.x,
                         b.direction.y, -b.direction.x,
                         b.direction.x * b.point.y - b.direction.y * b.point.x);
+}
+
+struct circle {
+    vec o;
+    double r;
+    circle(const vec &_o, T _r) : o(_o), r(_r){};
+    // 点与圆的关系 -1在圆内，0在圆上，1在圆外
+    int relation(const vec &other) const {
+        double len = (other - o).length();
+        return cmp(len, r);
+    }
+    double area() { return PI * r * r; }
+};
+
+// 圆与直线交点
+auto intersection(const circle &c, const line &l) {
+    double d = distance(c.o, l);
+    vector<vec> res;
+    double len = l.direction.length();
+    vec mid = l.point + l.direction * ((c.o - l.point) * l.direction / len);
+    if (!cmp(d, c.r)) res.push_back(mid);
+    else if (d < c.r) {
+        d = sqrt(c.r * c.r - d * d) / len;
+        res.push_back(mid + l.direction * d);
+        res.push_back(mid - l.direction * d);
+    }
+    return res;
+}
+
+// oab三角形与圆相交的面积
+double area(const circle &c, const vec &a, const vec &b) {
+    vec oa = a - c.o, ob = b - c.o;
+    T cab = oa ^ ob;
+    if (!cmp(cab, 0)) return 0;
+    if (c.relation(a) != 1 && c.relation(b) != 1) return cab / 2.0;
+    vec ba = a - b, bo = -ob;
+    vec ab = -ba, ao = -oa;
+    auto r = c.r;
+    double ang;
+    double loa = oa.length(), lob = ob.length(), lab = ab.length();
+    double x =
+        (ba * bo + sqrt(r * r * lab * lab - (ba ^ bo) * (ba ^ bo))) / lab;
+    double y =
+        (ab * ao + sqrt(r * r * lab * lab - (ab ^ ao) * (ab ^ ao))) / lab;
+    if (cmp(lob, r) == -1 && cmp(loa, r) != -1) {
+        ang = cab * (1 - x / lab) / (r * loa);
+        ang = min(max((double)-1, ang), (double)1);
+        return (asin(ang) * r * r + cab * x / lab) / 2;
+    }
+    if (cmp(lob, r) != -1 && cmp(loa, r) == -1) {
+        ang = cab * (1 - y / lab) / (r * lob);
+        ang = min(max((double)-1, ang), (double)1);
+        return (asin(ang) * r * r + cab * y / lab) / 2;
+    }
+    if (cmp(abs(cab), r * lab) != -1 || cmp(ab * ao, 0) != 1 ||
+        cmp(ba * bo, 0) != 1) {
+        ang = cab / (loa * lob);
+        ang = min(max((double)-1, ang), (double)1);
+        double tmp = -asin(ang);
+        if (cmp(oa * ob, 0) == -1)
+            if (cmp(cab, 0) == -1) tmp -= PI;
+            else tmp += PI;
+        else tmp = -tmp;
+        return tmp * r * r / 2;
+    }
+    ang = cab * (1 - x / lab) / (r * loa);
+    ang = min(max((double)-1, ang), (double)1);
+    double ang2 = cab * (1 - y / lab) / (r * lob);
+    ang2 = min(max((double)-1, ang2), (double)1);
+    return ((asin(ang) + asin(ang2)) * r * r + cab * ((x + y) / lab - 1)) / 2;
+}
+
+// 多边形与圆相交的面积
+double area(vector<vec> &p, circle c) {
+    double res = 0;
+    for (int i = 1; i < p.size(); i++) res += area(c, p[i - 1], p[i]);
+    res += area(c, p.back(), p[0]);
+    return abs(res);
 }
 \end{lstlisting}
 
