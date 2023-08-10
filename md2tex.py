@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import math
 import os.path
 import re
 import sys
@@ -93,6 +94,16 @@ def cpp(match: re.Match):
 def picture(match: re.Match):
     return f"\\begin{{figure}}[H]\n    \\flushleft\n    \\includegraphics[]{{{match.group(1)}}}\n    \\label{{fig:left}}\n\\end{{figure}}"
 
+def item(match: re.Match):
+    res = "\n\n\\begin{itemize}\n"
+    for i in re.findall("- (.*?)\n", match.group(0)):
+        res = res + "   \\item " + i + "\n"
+    res = res + "\\end{itemize}\n\n"
+    print(res)
+    return res
+
+def textbf(match: re.Match):
+    return r"\textbf{" + match.group(1) + "}"
 
 args = sys.argv[1:]
 
@@ -117,7 +128,9 @@ md = re.sub("(##+) (.*?)\n", section, md)
 md = re.sub("```.*?\n(.*?)```", cpp, md, flags=re.DOTALL)
 md = re.sub("# .*?\n", "", md)
 md = re.sub("<!-- TOC -->.*?<!-- /TOC -->", "", md, flags=re.DOTALL)
-md = re.sub(r"!\[.*?]\((.*?)\)", picture, md)
+md = re.sub("!\[.*?]\((.*?)\)", picture, md)
+md = re.sub("\n\n-.*?\n\n", item, md, flags=re.DOTALL)
+md = re.sub("\*\*(.*?)\*\*", textbf, md)
 md = md.strip()
 
 tex = begin + md + end

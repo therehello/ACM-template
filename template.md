@@ -26,6 +26,17 @@
         - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
         - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
         - [数论分块](#%E6%95%B0%E8%AE%BA%E5%88%86%E5%9D%97)
+        - [积性函数](#%E7%A7%AF%E6%80%A7%E5%87%BD%E6%95%B0)
+            - [定义](#%E5%AE%9A%E4%B9%89)
+            - [例子](#%E4%BE%8B%E5%AD%90)
+        - [狄利克雷卷积](#%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E5%8D%B7%E7%A7%AF)
+            - [性质](#%E6%80%A7%E8%B4%A8)
+            - [例子](#%E4%BE%8B%E5%AD%90)
+        - [莫比乌斯反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%8D%E6%BC%94)
+            - [莫比乌斯函数性质](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%87%BD%E6%95%B0%E6%80%A7%E8%B4%A8)
+            - [莫比乌斯变换/反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%98%E6%8D%A2%E5%8F%8D%E6%BC%94)
+        - [杜教筛](#%E6%9D%9C%E6%95%99%E7%AD%9B)
+            - [示例](#%E7%A4%BA%E4%BE%8B)
         - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
         - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
         - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
@@ -692,14 +703,114 @@ $s(n) = \sum_{i=1}^{n}f(i)$
 modint sqrt_decomposition(int n) {
     auto s = [&](int x) { return x; };
     auto g = [&](int x) { return x; };
-    int l = 1;
     modint res = 0;
-    while (l <= n) {
+    while (l <= R) {
         int r = n / (n / l);
-        res = res + (ll)(s(r) - s(l - 1)) * g(n / l);
+        res = res + (s(r) - s(l - 1)) * g(n / l);
         l = r + 1;
     }
     return res;
+}
+```
+
+### 积性函数
+
+#### 定义
+
+函数 $f(n)$ 满足 $f(1)=1$ 且 $\forall x,y\in\mathbf{N}^*,\gcd(x,y)=1$ 都有 $f(xy)=f(x)f(y)$，则 $f(n)$ 为积性函数。
+
+函数 $f(n)$ 满足 $f(1)=1$ 且 $\forall x,y\in\mathbf{N}^*$ 都有 $f(xy)=f(x)f(y)$，则 $f(n)$ 为完全积性函数。
+
+#### 例子
+
+- 单位函数：$\varepsilon(n)=[n=1]$。（完全积性）
+- 恒等函数：$\operatorname{id}_k(n)=n^k$。（完全积性）
+- 常数函数：$1(n)=1$。（完全积性）
+- 除数函数：$\sigma_{k}(n)=\sum_{d\mid n}d^{k}$。$\sigma_{0}(n)$ 通常简记作 $d(n)$ 或 $\tau(n)$，$\sigma_{1}(n)$ 通常简记作 $\sigma(n)$。
+- 欧拉函数：$\varphi(n)=\sum_{i=1}^n[\gcd(i,n)=1]$。
+- 莫比乌斯函数：$\mu(n)=\begin{cases}1&n=1\\0&\exists d>1,d^{2}\mid n\\(-1)^{\omega(n)}&\text{otherwise}\end{cases}$，其中 $\omega(n)$ 表示 $n$ 的本质不同质因子个数，它是一个加性函数。
+
+### 狄利克雷卷积
+
+对于两个数论函数 $f(x)$ 和 $g(x)$，则它们的狄利克雷卷积得到的结果 $h(x)$ 定义为：
+
+$h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
+
+可以简记为：$h=f*g$。
+
+#### 性质
+
+**交换律：**$f*g=g*f$。
+
+**结合律：**$(f*g)*h=f*(g*h)$。
+
+**分配律：**$(f+g)*h=f*h+g*h$。
+
+**等式的性质：**$f=g$ 的充要条件是 $f*h=g*h$，其中数论函数 $h(x)$ 要满足 $h(1)\ne 0$。
+
+#### 例子
+
+- $\varepsilon=\mu \ast 1\iff\varepsilon(n)=\sum_{d\mid n}\mu(d)$
+- $id = \varphi * 1 \iff id(n)=\sum_{d\mid n} \varphi(d)$
+- $d=1 \ast 1\iff d(n)=\sum_{d\mid n}1$
+- $\sigma=\operatorname{id} \ast 1\iff\sigma(n)=\sum_{d\mid n}d$
+- $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d}$)
+
+### 莫比乌斯反演
+
+#### 莫比乌斯函数性质
+
+- $\sum_{d\mid n}\mu(d)=\begin{cases}1&n=1\\0&n\neq 1\\\end{cases}$，即 $\sum_{d\mid n}\mu(d)=\varepsilon(n)$，$\mu * 1 =\varepsilon$
+- $\displaystyle [\gcd(i,j)=1]=\sum_{d\mid\gcd(i,j)}\mu(d)$
+
+#### 莫比乌斯变换/反演
+
+$f(n)=\sum_{d\mid n}g(d)$，那么有 $g(n)=\sum_{d\mid n}\mu(d)f(\frac{n}{d})=\sum_{n|d}\mu(\frac{d}{n})f(d)$
+。
+
+用狄利克雷卷积表示则为 $f=g\ast1$，有 $g=f\ast\mu$。
+
+$f \rightarrow g$ 称为莫比乌斯反演，$g \rightarrow f$ 称为莫比乌斯反演。
+
+### 杜教筛
+
+杜教筛被用于处理一类数论函数的前缀和问题。对于数论函数 $f$，杜教筛可以在低于线性时间的复杂度内计算 $S(n)=\sum_{i=1}^{n}f(i)$。
+
+$$
+\begin{aligned}
+    S(n) & = \frac{\sum_{i=1}^n (f * g)(i) - \sum_{i=2}^n g(i)S\left(\left\lfloor\frac{n}{i}\right\rfloor\right)}{g(1)}
+\end{aligned}
+$$
+
+可以构造恰当的数论函数 $g$ 使得：
+
+- 可以快速计算 $\sum_{i=1}^n(f * g)(i)$。
+- 可以快速计算 $g$ 的单点值，用数论分块求解 $\sum_{i=2}^ng(i)S\left(\left\lfloor\frac{n}{i}\right\rfloor\right)$。
+
+#### 示例
+
+```cpp
+ll sum_phi(ll n) {
+    if (n <= N) return sp[n];
+    if (sp2.count(n)) return sp2[n];
+    ll res = 0, l = 2;
+    while (l <= n) {
+        ll r = n / (n / l);
+        res = res + (r - l + 1) * sum_phi(n / l);
+        l = r + 1;
+    }
+    return sp2[n] = (ll)n * (n + 1) / 2 - res;
+}
+ll sum_miu(ll n) {
+    if (n <= N) return sm[n];
+    if (sm2.count(n)) return sm2[n];
+    ll res = 0, l = 2;
+    while (l <= n) {
+        ll r = n / (n / l);
+        res = res + (r - l + 1) * sum_miu(n / l);
+        l = r + 1;
+    }
+    return sm2[n] = 1 - res;
 }
 ```
 
