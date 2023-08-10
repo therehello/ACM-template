@@ -805,6 +805,7 @@ struct vec {
     vec(T _x = 0, T _y = 0) : x(_x), y(_y) {}
 
     // 模
+    double length2() const { return x * x + y * y; }
     double length() const { return sqrt(x * x + y * y); }
 
     // 与x轴正方向的夹角
@@ -854,11 +855,18 @@ struct vec {
     }
 };
 
+bool xycmp(const vec &a, const vec &b) {
+    int tmp = cmp(a.x, b.x);
+    if (tmp) return tmp == -1 ? 0 : 1;
+    tmp = cmp(a.y, b.y);
+    return tmp == -1 ? 0 : 1;
+}
+
 T cross(const vec &a, const vec &b, const vec &c) { return (a - c) ^ (b - c); }
 
 // 两点间的距离
 T distance(const vec &a, const vec &b) {
-    return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
 }
 
 // 两向量夹角
@@ -933,12 +941,7 @@ auto polygon_dia(vector<vec> &p) {
 
 // 凸包
 auto convex_hull(vector<vec> &p) {
-    sort(p.begin(), p.end(), [](vec &a, vec &b) {
-        int tmp = cmp(a.x, b.x);
-        if (tmp) return tmp == -1 ? 0 : 1;
-        tmp = cmp(a.y, b.y);
-        return tmp == -1 ? 0 : 1;
-    });
+    sort(p.begin(), p.end(), xycmp);
     int n = p.size();
     vector sta(n + 1, 0);
     vector v(n, false);
@@ -964,6 +967,8 @@ auto convex_hull(vector<vec> &p) {
 
 // 闵可夫斯基和 两个点集的和构成一个凸包
 auto minkowski(vector<vec> &a, vector<vec> &b) {
+    rotate(a.begin(), min_element(a.begin(), a.end(), xycmp), a.end());
+    rotate(b.begin(), min_element(b.begin(), b.end(), xycmp), b.end());
     int n = a.size(), m = b.size();
     vector<vec> c{a[0] + b[0]};
     c.reserve(n + m);
@@ -982,6 +987,19 @@ auto minkowski(vector<vec> &a, vector<vec> &b) {
         j++;
     }
     return c;
+}
+
+// 过凸多边形外一点求凸多边形的切线，返回切点下标
+auto tangent(const vec &a, vector<vec> &p) {
+    int n = p.size();
+    int l = -1, r = -1;
+    for (int i = 0; i < n; i++) {
+        T tmp1 = cross(p[i], p[(i - 1 + n) % n], a);
+        T tmp2 = cross(p[i], p[(i + 1) % n], a);
+        if (l == -1 && tmp1 <= 0 && tmp2 <= 0) l = i;
+        else if (r == -1 && tmp1 >= 0 && tmp2 >= 0) r = i;
+    }
+    return array{l, r};
 }
 
 // 直线
@@ -1004,6 +1022,11 @@ bool perpendicular(const line &a, const line &b) {
     return !cmp(a.direction * b.direction, 0);
 }
 
+// 两直线是否平行
+bool parallel(const line &a, const line &b) {
+    return !cmp(a.direction ^ b.direction, 0);
+}
+
 // 点的垂线是否与线段有交点
 bool perpendicular(const vec &a, const line &b) {
     vec perpen(-b.direction.y, b.direction.x);
@@ -1012,9 +1035,10 @@ bool perpendicular(const vec &a, const line &b) {
     return cross1 != cross2;
 }
 
-// 两直线是否平行
-bool parallel(const line &a, const line &b) {
-    return !cmp(a.direction ^ b.direction, 0);
+// 点到线段距离
+double distance_seg(const vec &a, const line &b) {
+    if (perpendicular(a, b)) return distance(a, b);
+    return min(distance(a, b.point), distance(a, b.point + b.direction));
 }
 
 // 两直线交点
