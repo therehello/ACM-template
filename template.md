@@ -24,6 +24,7 @@
         - [扩展欧几里得](#%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97)
         - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
         - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
+        - [pollard rho](#pollard-rho)
         - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
         - [数论分块](#%E6%95%B0%E8%AE%BA%E5%88%86%E5%9D%97)
         - [积性函数](#%E7%A7%AF%E6%80%A7%E5%87%BD%E6%95%B0)
@@ -602,7 +603,7 @@ $x=x+k*dx,y=y-k*dy$
 
 若要求 $y>0$，$k<\frac{y}{dy}\Rightarrow k\le\lfloor \frac{y-1}{dy}\rfloor$
 
-若要求 $y\ge0$，$k<\frac{y}{dy}\Rightarrow k\le\lceil \frac{y}{dy}\rceil$
+若要求 $y\ge0$，$k<\frac{y}{dy}\Rightarrow k\le\lfloor \frac{y}{dy}\rfloor$
 
 
 ```cpp
@@ -638,40 +639,116 @@ array<int, 2> exgcd(int a, int b, int c) {
 ### 线性筛法
 
 ```cpp
-auto [min_prime, prime] = []() {
-    constexpr int N = 10000000;
-    vector<int> min_prime(N + 1, 0), prime;
+constexpr int N = 10000000;
+array<int, N + 1> min_prime;
+vector<int> primes;
+bool ok = []() {
     for (int i = 2; i <= N; i++) {
         if (min_prime[i] == 0) {
             min_prime[i] = i;
-            prime.push_back(i);
+            primes.push_back(i);
         }
-        for (auto& j : prime) {
+        for (auto& j : primes) {
             if (j > min_prime[i] || j > N / i) break;
             min_prime[j * i] = j;
         }
     }
-    return tuple{min_prime, prime};
+    return 1;
 }();
 ```
 
 ### 分解质因数
 
 ```cpp
-auto num_prime(int num) {
+auto getprimes(int n) {
     vector<array<int, 2>> res;
-    for (auto& i : prime) {
-        if (i > num / i) break;
-        if (num % i == 0) {
+    for (auto& i : primes) {
+        if (i > n / i) break;
+        if (n % i == 0) {
             res.push_back({i, 0});
-            while (num % i == 0) {
-                num /= i;
+            while (n % i == 0) {
+                n /= i;
                 res.back()[1]++;
             }
         }
     }
-    if (num > 1) res.push_back({num, 1});
+    if (n > 1) res.push_back({n, 1});
     return res;
+}
+```
+
+### pollard rho
+
+```cpp
+using LL = __int128_t;
+
+random_device rd;
+mt19937 seed(rd());
+
+ll power(ll a, ll b, ll mod) {
+    ll res = 1;
+    while (b) {
+        if (b & 1) res = (LL)res * a % mod;
+        a = (LL)a * a % mod;
+        b >>= 1;
+    }
+    return res;
+}
+
+bool isprime(ll n) {
+    static array primes{2, 3, 5, 7, 11, 13, 17, 19, 23};
+    static unordered_map<ll, bool> S;
+    if (n < 2) return 0;
+    if (S.count(n)) return S[n];
+    ll d = n - 1, r = 0;
+    while (!(d & 1)) {
+        r++;
+        d >>= 1;
+    }
+    for (auto& a : primes) {
+        if (a == n) return S[n] = 1;
+        ll x = power(a, d, n);
+        if (x == 1 || x == n - 1) continue;
+        for (int i = 0; i < r - 1; i++) {
+            x = (LL)x * x % n;
+            if (x == n - 1) break;
+        }
+        if (x != n - 1) return S[n] = 0;
+    }
+    return S[n] = 1;
+}
+
+ll pollard_rho(ll n) {
+    ll s = 0, t = 0;
+    ll c = seed() % (n - 1) + 1;
+    ll val = 1;
+    for (int goal = 1;; goal *= 2, s = t, val = 1) {
+        for (int step = 1; step <= goal; step++) {
+            t = ((LL)t * t + c) % n;
+            val = (LL)val * abs(t - s) % n;
+            if (step % 127 == 0) {
+                ll g = gcd(val, n);
+                if (g > 1) return g;
+            }
+        }
+        ll g = gcd(val, n);
+        if (g > 1) return g;
+    }
+}
+auto getprimes(ll n) {
+    unordered_set<ll> S;
+    auto get = [&](auto self, ll n) {
+        if (n < 2) return;
+        if (isprime(n)) {
+            S.insert(n);
+            return;
+        }
+        ll mx = pollard_rho(n);
+        self(self, n / mx);
+        self(self, mx);
+    };
+    get(get, n);
+    return S;
 }
 ```
 

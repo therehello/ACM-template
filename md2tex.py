@@ -99,7 +99,6 @@ def item(match: re.Match):
     for i in re.findall("- (.*?)\n", match.group(0)):
         res = res + "   \\item " + i + "\n"
     res = res + "\\end{itemize}\n\n"
-    print(res)
     return res
 
 def textbf(match: re.Match):
