@@ -930,15 +930,21 @@ $n$ 个球，$m$ 个盒
 \begin{lstlisting}[style=cpp]
 // 线性基
 struct basis {
-    array<unsigned ll, 64> p{};
+    int rnk = 0;
+    array<ull, 64> p{};
 
     // 将x插入此线性基中
-    void insert(unsigned ll x) {
+    void insert(ull x) {
         for (int i = 63; i >= 0; i--) {
             if ((x >> i) & 1) {
                 if (p[i]) x ^= p[i];
                 else {
+                    for (int j = 0; j < i; j++)
+                        if (x >> j & 1) x ^= p[j];
+                    for (int j = i + 1; j <= 63; j++)
+                        if (p[j] >> i & 1) p[j] ^= x;
                     p[i] = x;
+                    rnk++;
                     break;
                 }
             }
@@ -954,8 +960,8 @@ struct basis {
     }
 
     // 最大异或值
-    unsigned ll max_basis() {
-        unsigned ll res = 0;
+    ull max_basis() {
+        ull res = 0;
         for (int i = 63; i >= 0; i--)
             if ((res ^ p[i]) > res) res ^= p[i];
         return res;
