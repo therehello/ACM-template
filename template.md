@@ -621,7 +621,7 @@ int __exgcd(int a, int b, int& x, int& y) {
 
 array<int, 2> exgcd(int a, int b, int c) {
     int x, y;
-    int g = __exgcd(a, b, x, y); 
+    int g = __exgcd(a, b, x, y);
     if (c % g) return {INT_MAX, INT_MAX};
     int dx = b / g;
     int dy = a / g;
