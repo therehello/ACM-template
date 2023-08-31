@@ -595,16 +595,17 @@ void manacher(const string& _s, vector<int>& r) {
 
 ### 扩展欧几里得
 
+需保证 $a,b>=0$
+
 $x=x+k*dx,y=y-k*dy$
 
-若要求 $x>0$，$k>-\frac{x}{dx}\Rightarrow k\ge\lceil \frac{-x+1}{dx}\rceil$
+若要求 $x\ge p$，$k\ge\lceil \frac{p-x}{dx}\rceil$
 
-若要求 $x\ge0$，$k>-\frac{x}{dx}\Rightarrow k\ge\lceil -\frac{x}{dx}\rceil$
+若要求 $x\le q$，$k\le\lfloor \frac{q-x}{dx}\rfloor$
 
-若要求 $y>0$，$k<\frac{y}{dy}\Rightarrow k\le\lfloor \frac{y-1}{dy}\rfloor$
+若要求 $y\ge p$，$k\le\lfloor \frac{y-p}{dy}\rfloor$
 
-若要求 $y\ge0$，$k<\frac{y}{dy}\Rightarrow k\le\lfloor \frac{y}{dy}\rfloor$
-
+若要求 $y\le q$，$k\ge\lceil \frac{y-q}{dy}\rceil$
 
 ```cpp
 int __exgcd(int a, int b, int& x, int& y) {
@@ -613,25 +614,20 @@ int __exgcd(int a, int b, int& x, int& y) {
         y = 0;
         return a;
     }
-    int d = __exgcd(b, a % b, x, y);
-    int t = x;
-    x = y;
-    y = t - (a / b) * y;
-    return d;
+    int g = __exgcd(b, a % b, y, x);
+    y -= a / b * x;
+    return g;
 }
+
 array<int, 2> exgcd(int a, int b, int c) {
     int x, y;
-    int gcd_a_b = __exgcd(a, b, x, y);
-    if (c % gcd_a_b) return {INT_MAX, INT_MAX};
-    x *= c / gcd_a_b;
-    y *= c / gcd_a_b;
-    int dx = b / gcd_a_b;
-    int dy = a / gcd_a_b;
-    // x = x + k* dx y = y - k* dy
-    // 调整为 x >=0 的最小解
-    int k = ceil(-1.0 * x / dx);
-    x += k * dx;
-    y -= k * dy;
+    int g = __exgcd(a, b, x, y); 
+    if (c % g) return {INT_MAX, INT_MAX};
+    int dx = b / g;
+    int dy = a / g;
+    x = c / g % dx * x % dx;
+    if (x < 0) x += dx;
+    y = (c - a * x) / b;
     return {x, y};
 }
 ```
