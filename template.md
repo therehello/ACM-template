@@ -2,57 +2,62 @@
 
 <!-- TOC -->
 
-- [ACM常用算法模板](#acm%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95%E6%A8%A1%E6%9D%BF)
-    - [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
-        - [并查集](#%E5%B9%B6%E6%9F%A5%E9%9B%86)
-        - [树状数组](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84)
-        - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
-        - [可持久化线段树](#%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E7%BA%BF%E6%AE%B5%E6%A0%91)
-        - [st 表](#st-%E8%A1%A8)
-    - [图论](#%E5%9B%BE%E8%AE%BA)
-        - [最短路](#%E6%9C%80%E7%9F%AD%E8%B7%AF)
-        - [树上问题](#%E6%A0%91%E4%B8%8A%E9%97%AE%E9%A2%98)
-            - [最近公公祖先](#%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%AC%E7%A5%96%E5%85%88)
-            - [树链剖分](#%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86)
-        - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
-        - [拓扑排序](#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
-    - [字符串](#%E5%AD%97%E7%AC%A6%E4%B8%B2)
-        - [kmp](#kmp)
-        - [哈希](#%E5%93%88%E5%B8%8C)
-        - [manacher](#manacher)
-    - [数学](#%E6%95%B0%E5%AD%A6)
-        - [扩展欧几里得](#%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97)
-        - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
-        - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
-        - [pollard rho](#pollard-rho)
-        - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
-        - [数论分块](#%E6%95%B0%E8%AE%BA%E5%88%86%E5%9D%97)
-        - [积性函数](#%E7%A7%AF%E6%80%A7%E5%87%BD%E6%95%B0)
-            - [定义](#%E5%AE%9A%E4%B9%89)
-            - [例子](#%E4%BE%8B%E5%AD%90)
-        - [狄利克雷卷积](#%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E5%8D%B7%E7%A7%AF)
-            - [性质](#%E6%80%A7%E8%B4%A8)
-            - [例子](#%E4%BE%8B%E5%AD%90)
-        - [莫比乌斯反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%8D%E6%BC%94)
-            - [莫比乌斯函数性质](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%87%BD%E6%95%B0%E6%80%A7%E8%B4%A8)
-            - [莫比乌斯变换/反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%98%E6%8D%A2%E5%8F%8D%E6%BC%94)
-        - [杜教筛](#%E6%9D%9C%E6%95%99%E7%AD%9B)
-            - [示例](#%E7%A4%BA%E4%BE%8B)
-        - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
-        - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
-        - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
-    - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
-        - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
-    - [杂项](#%E6%9D%82%E9%A1%B9)
-        - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
-        - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
-        - [分数](#%E5%88%86%E6%95%B0)
-        - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
-        - [日期](#%E6%97%A5%E6%9C%9F)
-        - [对拍](#%E5%AF%B9%E6%8B%8D)
-        - [编译常用选项](#%E7%BC%96%E8%AF%91%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
-        - [开栈](#%E5%BC%80%E6%A0%88)
-        - [clang-format](#clang-format)
+- [数据结构](#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84)
+    - [并查集](#%E5%B9%B6%E6%9F%A5%E9%9B%86)
+    - [树状数组](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84)
+        - [一维](#%E4%B8%80%E7%BB%B4)
+        - [二维](#%E4%BA%8C%E7%BB%B4)
+        - [三维](#%E4%B8%89%E7%BB%B4)
+    - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
+    - [普通平衡树](#%E6%99%AE%E9%80%9A%E5%B9%B3%E8%A1%A1%E6%A0%91)
+        - [树状数组实现](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84%E5%AE%9E%E7%8E%B0)
+    - [可持久化线段树](#%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E7%BA%BF%E6%AE%B5%E6%A0%91)
+    - [st 表](#st-%E8%A1%A8)
+- [图论](#%E5%9B%BE%E8%AE%BA)
+    - [最短路](#%E6%9C%80%E7%9F%AD%E8%B7%AF)
+        - [dijkstra](#dijkstra)
+    - [树上问题](#%E6%A0%91%E4%B8%8A%E9%97%AE%E9%A2%98)
+        - [最近公公祖先](#%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%AC%E7%A5%96%E5%85%88)
+        - [树链剖分](#%E6%A0%91%E9%93%BE%E5%89%96%E5%88%86)
+    - [强连通分量](#%E5%BC%BA%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F)
+    - [拓扑排序](#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F)
+- [字符串](#%E5%AD%97%E7%AC%A6%E4%B8%B2)
+    - [kmp](#kmp)
+    - [哈希](#%E5%93%88%E5%B8%8C)
+    - [manacher](#manacher)
+- [数学](#%E6%95%B0%E5%AD%A6)
+    - [扩展欧几里得](#%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97)
+    - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
+    - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
+    - [pollard rho](#pollard-rho)
+    - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
+    - [数论分块](#%E6%95%B0%E8%AE%BA%E5%88%86%E5%9D%97)
+    - [积性函数](#%E7%A7%AF%E6%80%A7%E5%87%BD%E6%95%B0)
+        - [定义](#%E5%AE%9A%E4%B9%89)
+        - [例子](#%E4%BE%8B%E5%AD%90)
+    - [狄利克雷卷积](#%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E5%8D%B7%E7%A7%AF)
+        - [性质](#%E6%80%A7%E8%B4%A8)
+        - [例子](#%E4%BE%8B%E5%AD%90)
+    - [莫比乌斯反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%8D%E6%BC%94)
+        - [莫比乌斯函数性质](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%87%BD%E6%95%B0%E6%80%A7%E8%B4%A8)
+        - [莫比乌斯变换/反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%98%E6%8D%A2%E5%8F%8D%E6%BC%94)
+    - [杜教筛](#%E6%9D%9C%E6%95%99%E7%AD%9B)
+        - [示例](#%E7%A4%BA%E4%BE%8B)
+    - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
+    - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
+    - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
+- [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
+    - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
+- [杂项](#%E6%9D%82%E9%A1%B9)
+    - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
+    - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
+    - [分数](#%E5%88%86%E6%95%B0)
+    - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
+    - [日期](#%E6%97%A5%E6%9C%9F)
+    - [对拍](#%E5%AF%B9%E6%8B%8D)
+    - [编译常用选项](#%E7%BC%96%E8%AF%91%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
+    - [开栈](#%E5%BC%80%E6%A0%88)
+    - [clang-format](#clang-format)
 
 <!-- /TOC -->
 
@@ -63,23 +68,24 @@
 ```cpp
 struct dsu {
     int n;
-    vector<int> fa;
-    dsu(int _n) : n(_n) {
-        fa.resize(n + 1);
+    vector<int> fa, sz;
+    dsu(int _n) : n(_n), fa(n + 1), sz(n + 1, 1) {
         iota(fa.begin(), fa.end(), 0);
     }
     int find(int x) { return x == fa[x] ? x : fa[x] = find(fa[x]); }
     int merge(int x, int y) {
         int fax = find(x), fay = find(y);
-        if (fax == fay) return 0;      // 一个集合
-        return fa[find(x)] = find(y);  // 合并到哪个集合了
+        if (fax == fay) return 0;  // 一个集合
+        sz[fay] += fax;
+        return fa[fax] = fay;  // 合并到哪个集合了
     }
+    int size(int x) { return sz[find(x)]; }
 };
 ```
 
 ### 树状数组
 
-一维
+#### 一维
 
 ```cpp
 template <class T>
@@ -108,7 +114,7 @@ private:
 };
 ```
 
-二维
+#### 二维
 
 ```cpp
 template <class T>
@@ -134,7 +140,7 @@ private:
 };
 ```
 
-三维
+#### 三维
 
 ```cpp
 template <class T>
@@ -245,6 +251,88 @@ struct Data {
     }
 };
 ```
+### 普通平衡树
+
+#### 树状数组实现
+    
+需要预先处理出来所有可能的数。
+
+```cpp
+template <typename T>
+struct treap {
+    int n, size;
+    vector<int> t;
+    vector<T> t2, S;
+    treap(const vector<T>& b) {
+        S = b;
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+        n = S.size();
+        size = 0;
+        t = vector<int>(n + 1);
+        t2 = vector<T>(n + 1);
+    }
+    int pos(T x) { return lower_bound(S.begin(), S.end(), x) - S.begin() + 1; }
+    int sum(int pos) {
+        int res = 0;
+        while (pos) {
+            res += t[pos];
+            pos -= lowbit(pos);
+        }
+        return res;
+    }
+
+    // 插入cnt个x
+    void insert(T x, int cnt) {
+        size += cnt;
+        for (int i = pos(x); i <= n; i += lowbit(i)) {
+            t[i] += cnt;
+            t2[i] += cnt * x;
+        }
+    }
+
+    // 删除cnt个x
+    void erase(T x, int cnt) { insert(x, -cnt); }
+
+    // x的排名
+    int rank(T x) { return sum(pos(x) - 1) + 1; }
+
+    // 统计出现次数
+    int count(T x) { return sum(pos(x)) - sum(pos(x) - 1); }
+
+    // 第k小
+    T kth(int k) {
+        int cnt = 0, x = 0;
+        for (int i = log2(n); i >= 0; i--) {
+            x += 1 << i;
+            if (x >= n || cnt + t[x] >= k) x -= 1 << i;
+            else cnt += t[x];
+        }
+        return S[x];
+    }
+
+    // 前k小的数之和
+    T pre_sum(int k) {
+        int cnt = 0, x = 0;
+        T res = 0;
+        for (int i = log2(n); i >= 0; i--) {
+            x += 1 << i;
+            if (x >= n || cnt + t[x] >= k) x -= 1 << i;
+            else {
+                cnt += t[x];
+                res += t2[x];
+            }
+        }
+        return res + (k - cnt) * S[x];
+    }
+
+    // 小于x，最大的数
+    T prev(int x) { return kth(sum(pos(x) - 1)); }
+
+    // 大于x，最小的数
+    T next(int x) { return kth(sum(pos(x)) + 1); }
+};
+```
 
 ### 可持久化线段树
 
@@ -338,7 +426,7 @@ struct Graph {
 
 ### 最短路
 
-dijkstra
+#### dijkstra
 
 ```cpp
 void dij(Graph& graph, vector<int>& dis, int t) {
@@ -827,7 +915,7 @@ $h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
 - $id = \varphi * 1 \iff id(n)=\sum_{d\mid n} \varphi(d)$
 - $d=1 \ast 1\iff d(n)=\sum_{d\mid n}1$
 - $\sigma=\operatorname{id} \ast 1\iff\sigma(n)=\sum_{d\mid n}d$
-- $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d}$)
+- $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d})$
 
 ### 莫比乌斯反演
 

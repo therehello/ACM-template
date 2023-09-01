@@ -73,23 +73,24 @@
 \begin{lstlisting}[style=cpp]
 struct dsu {
     int n;
-    vector<int> fa;
-    dsu(int _n) : n(_n) {
-        fa.resize(n + 1);
+    vector<int> fa, sz;
+    dsu(int _n) : n(_n), fa(n + 1), sz(n + 1, 1) {
         iota(fa.begin(), fa.end(), 0);
     }
     int find(int x) { return x == fa[x] ? x : fa[x] = find(fa[x]); }
     int merge(int x, int y) {
         int fax = find(x), fay = find(y);
-        if (fax == fay) return 0;      // 一个集合
-        return fa[find(x)] = find(y);  // 合并到哪个集合了
+        if (fax == fay) return 0;  // 一个集合
+        sz[fay] += fax;
+        return fa[fax] = fay;  // 合并到哪个集合了
     }
+    int size(int x) { return sz[find(x)]; }
 };
 \end{lstlisting}
 
 \subsection{树状数组}
 
-一维
+\subsubsection{一维}
 
 \begin{lstlisting}[style=cpp]
 template <class T>
@@ -118,7 +119,7 @@ private:
 };
 \end{lstlisting}
 
-二维
+\subsubsection{二维}
 
 \begin{lstlisting}[style=cpp]
 template <class T>
@@ -144,7 +145,7 @@ private:
 };
 \end{lstlisting}
 
-三维
+\subsubsection{三维}
 
 \begin{lstlisting}[style=cpp]
 template <class T>
@@ -255,6 +256,88 @@ struct Data {
     }
 };
 \end{lstlisting}
+\subsection{普通平衡树}
+
+\subsubsection{树状数组实现}
+    
+需要预先处理出来所有可能的数。
+
+\begin{lstlisting}[style=cpp]
+template <typename T>
+struct treap {
+    int n, size;
+    vector<int> t;
+    vector<T> t2, S;
+    treap(const vector<T>& b) {
+        S = b;
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+        n = S.size();
+        size = 0;
+        t = vector<int>(n + 1);
+        t2 = vector<T>(n + 1);
+    }
+    int pos(T x) { return lower_bound(S.begin(), S.end(), x) - S.begin() + 1; }
+    int sum(int pos) {
+        int res = 0;
+        while (pos) {
+            res += t[pos];
+            pos -= lowbit(pos);
+        }
+        return res;
+    }
+
+    // 插入cnt个x
+    void insert(T x, int cnt) {
+        size += cnt;
+        for (int i = pos(x); i <= n; i += lowbit(i)) {
+            t[i] += cnt;
+            t2[i] += cnt * x;
+        }
+    }
+
+    // 删除cnt个x
+    void erase(T x, int cnt) { insert(x, -cnt); }
+
+    // x的排名
+    int rank(T x) { return sum(pos(x) - 1) + 1; }
+
+    // 统计出现次数
+    int count(T x) { return sum(pos(x)) - sum(pos(x) - 1); }
+
+    // 第k小
+    T kth(int k) {
+        int cnt = 0, x = 0;
+        for (int i = log2(n); i >= 0; i--) {
+            x += 1 << i;
+            if (x >= n || cnt + t[x] >= k) x -= 1 << i;
+            else cnt += t[x];
+        }
+        return S[x];
+    }
+
+    // 前k小的数之和
+    T pre_sum(int k) {
+        int cnt = 0, x = 0;
+        T res = 0;
+        for (int i = log2(n); i >= 0; i--) {
+            x += 1 << i;
+            if (x >= n || cnt + t[x] >= k) x -= 1 << i;
+            else {
+                cnt += t[x];
+                res += t2[x];
+            }
+        }
+        return res + (k - cnt) * S[x];
+    }
+
+    // 小于x，最大的数
+    T prev(int x) { return kth(sum(pos(x) - 1)); }
+
+    // 大于x，最小的数
+    T next(int x) { return kth(sum(pos(x)) + 1); }
+};
+\end{lstlisting}
 
 \subsection{可持久化线段树}
 
@@ -350,7 +433,7 @@ struct Graph {
 
 \subsection{最短路}
 
-dijkstra
+\subsubsection{dijkstra}
 
 \begin{lstlisting}[style=cpp]
 void dij(Graph& graph, vector<int>& dis, int t) {
@@ -846,7 +929,7 @@ $h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
    \item $id = \varphi * 1 \iff id(n)=\sum_{d\mid n} \varphi(d)$
    \item $d=1 \ast 1\iff d(n)=\sum_{d\mid n}1$
    \item $\sigma=\operatorname{id} \ast 1\iff\sigma(n)=\sum_{d\mid n}d$
-   \item $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d}$)
+   \item $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d})$
 \end{itemize}
 
 \subsection{莫比乌斯反演}
