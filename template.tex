@@ -94,28 +94,27 @@ struct dsu {
 
 \begin{lstlisting}[style=cpp]
 template <class T>
-struct Fenwick_tree {
-    Fenwick_tree(int n) : n(n), tree(n + 1, 0) {}
+struct fenwick {
+    int n;
+    vector<T> t;
+    fenwick(int _n) : n(_n), t(n + 1) {}
     T query(int l, int r) {
         auto query = [&](int pos) {
             T res = 0;
             while (pos) {
-                res += tree[pos];
+                res += t[pos];
                 pos -= lowbit(pos);
             }
             return res;
         };
         return query(r) - query(l - 1);
     }
-    void update(int pos, T num) {
+    void add(int pos, T num) {
         while (pos <= n) {
-            tree[pos] += num;
+            t[pos] += num;
             pos += lowbit(pos);
         }
     }
-private:
-    int n;
-    vector<T> tree;
 };
 \end{lstlisting}
 
