@@ -1566,26 +1566,15 @@ struct bignum {
 ### 模运算
 
 ```cpp
-constexpr int N = 1e5;
-constexpr int mod = 1e9 + 7;
 struct modint {
     int x;
     modint(ll _x = 0) : x(_x % mod) {}
-    modint pow(ll b) const {
-        modint res(1), a = *this;
-        while (b) {
-            if (b & 1) res = res * a;
-            a = a * a;
-            b >>= 1;
-        }
-        return res;
-    }
-    modint inv() const { return pow(mod - 2); }
-    modint operator+(const modint& other) { return modint(x + other.x); }
+    modint inv() const { return power(*this, mod - 2); }
+    modint operator+(const modint& b) { return {x + b.x}; }
     modint operator-() const { return {-x}; }
-    modint operator-(const modint& other) { return modint(-other + *this); }
-    modint operator*(const modint& other) { return modint((ll)x * other.x); }
-    modint operator/(const modint& other) { return *this * other.inv(); }
+    modint operator-(const modint& b) { return {-b + *this}; }
+    modint operator*(const modint& b) { return {(ll)x * b.x}; }
+    modint operator/(const modint& b) { return *this * b.inv(); }
     friend istream& operator>>(istream& is, modint& other) {
         ll _x;
         is >> _x;
