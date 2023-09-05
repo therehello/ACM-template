@@ -847,7 +847,7 @@ auto ok = []() {
         ifac[i] = fac[i].inv();
     }
     return true;
-};
+}();
 
 modint C(int n, int m) {
     if (n < m) return 0;
