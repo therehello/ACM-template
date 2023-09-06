@@ -936,6 +936,20 @@ $h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
    \item $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d})$
 \end{itemize}
 
+\subsection{欧拉函数}
+
+\begin{lstlisting}[style=cpp]
+array<int, N + 1> phi;
+auto _ = []() {
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (phi[i] == i)
+            for (int j = i; j <= N; j += i) phi[j] = phi[j] / i * (i - 1);
+    }
+    return true;
+}();
+\end{lstlisting}
+
 \subsection{莫比乌斯反演}
 
 \subsubsection{莫比乌斯函数性质}

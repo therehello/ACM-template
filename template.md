@@ -38,6 +38,7 @@
     - [狄利克雷卷积](#%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E5%8D%B7%E7%A7%AF)
         - [性质](#%E6%80%A7%E8%B4%A8)
         - [例子](#%E4%BE%8B%E5%AD%90)
+    - [欧拉函数](#%E6%AC%A7%E6%8B%89%E5%87%BD%E6%95%B0)
     - [莫比乌斯反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%8D%E6%BC%94)
         - [莫比乌斯函数性质](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%87%BD%E6%95%B0%E6%80%A7%E8%B4%A8)
         - [莫比乌斯变换/反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%98%E6%8D%A2%E5%8F%8D%E6%BC%94)
@@ -920,6 +921,20 @@ $h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
 - $d=1 \ast 1\iff d(n)=\sum_{d\mid n}1$
 - $\sigma=\operatorname{id} \ast 1\iff\sigma(n)=\sum_{d\mid n}d$
 - $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d})$
+
+### 欧拉函数
+
+```cpp
+array<int, N + 1> phi;
+auto _ = []() {
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (phi[i] == i)
+            for (int j = i; j <= N; j += i) phi[j] = phi[j] / i * (i - 1);
+    }
+    return true;
+}();
+```
 
 ### 莫比乌斯反演
 
