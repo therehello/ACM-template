@@ -943,6 +943,25 @@ auto _ = []() {
 - $\sum_{d\mid n}\mu(d)=\begin{cases}1&n=1\\0&n\neq 1\\\end{cases}$，即 $\sum_{d\mid n}\mu(d)=\varepsilon(n)$，$\mu * 1 =\varepsilon$
 - $\displaystyle [\gcd(i,j)=1]=\sum_{d\mid\gcd(i,j)}\mu(d)$
 
+```cpp
+array<int, N + 1> miu;
+array<bool, N + 1> ispr;
+auto _ = []() {
+    miu.fill(1);
+    ispr.fill(1);
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        miu[i] = -1;
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if ((j / i) % i == 0) miu[j] = 0;
+            else miu[j] *= -1;
+        }
+    }
+    return true;
+}();
+```
+
 #### 莫比乌斯变换/反演
 
 $f(n)=\sum_{d\mid n}g(d)$，那么有 $g(n)=\sum_{d\mid n}\mu(d)f(\frac{n}{d})=\sum_{n|d}\mu(\frac{d}{n})f(d)$
