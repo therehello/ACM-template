@@ -839,20 +839,18 @@ auto getprimes(ll n) {
 ### 组合数
 
 ```cpp
-constexpr int N = 2e5 + 1;
+constexpr int N = 1e7;
 array<modint, N + 1> fac, ifac;
-auto ok = []() {
-    fac[0] = ifac[0] = 1;
-    for (int i = 1; i <= N; i++) {
-        fac[i] = fac[i - 1] * i;
-        ifac[i] = fac[i].inv();
-    }
+auto _ = []() {
+    fac[0] = 1;
+    for (int i = 1; i <= N; i++) fac[i] = fac[i - 1] * i;
+    ifac[N] = fac[N].inv();
+    for (int i = N - 1; i >= 0; i--) ifac[i] = ifac[i + 1] * (i + 1);
     return true;
 }();
 
 modint C(int n, int m) {
     if (n < m) return 0;
-    if (m == 0) return 1;
     if (n <= mod) return fac[n] * ifac[m] * ifac[n - m];
     // n >= mod 时需要这个
     return C(n % mod, m % mod) * C(n / mod, m / mod);
