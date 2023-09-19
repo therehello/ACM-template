@@ -81,7 +81,7 @@ struct dsu {
     int merge(int x, int y) {
         int fax = find(x), fay = find(y);
         if (fax == fay) return 0;  // 一个集合
-        sz[fay] += fax;
+        sz[fay] += sz[fax];
         return fa[fax] = fay;  // 合并到哪个集合了
     }
     int size(int x) { return sz[find(x)]; }
