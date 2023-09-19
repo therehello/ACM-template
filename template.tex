@@ -1128,9 +1128,9 @@ Mat ksm(Mat a, ll b) {
 \section{计算几何}
 
 \subsection{整数}
+
 \begin{lstlisting}[style=cpp]
-const double PI = acos(-1);
-constexpr double eps = 1e-8;
+constexpr double inf = 1e100;
 
 // 向量
 struct vec {
@@ -1139,7 +1139,8 @@ struct vec {
     }
 
     ll x, y;
-    vec(ll _x = 0, ll _y = 0) : x(_x), y(_y) {}
+    vec() : x(0), y(0) {}
+    vec(ll _x, ll _y) : x(_x), y(_y) {}
 
     // 模
     ll len2() const { return x * x + y * y; }
@@ -1149,7 +1150,6 @@ struct vec {
     bool up() const { return y > 0 || y == 0 && x >= 0; }
 
     bool operator==(const vec &b) const { return tie(x, y) == tie(b.x, b.y); }
-
     // 极角排序
     bool operator<(const vec &b) const {
         if (up() != b.up()) return up() > b.up();
@@ -1165,7 +1165,7 @@ struct vec {
 
     // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
     // 等于0共线，可能同向或反向，结果绝对值表示 a b 形成的平行四边行的面积
-    ll operator^(const vec &other) const { return x * other.y - y * other.x; }
+    ll operator^(const vec &b) const { return x * b.y - y * b.x; }
 
     friend istream &operator>>(istream &in, vec &data) {
         in >> data.x >> data.y;
@@ -1180,18 +1180,7 @@ struct vec {
 
 ll cross(const vec &a, const vec &b, const vec &c) { return (a - c) ^ (b - c); }
 
-// 判断点是否在凸包内
-bool in_polygon(const vec &a, vector<vec> &p) {
-    int n = p.size();
-    if (n == 0) return 0;
-    if (n == 1) return a == p[0];
-    if (cross(a, p[1], p[0]) > 0 || cross(p.back(), a, p[0]) > 0) return 0;
-    auto cmp = [&p](vec &x, const vec &y) { return ((x - p[0]) ^ y) >= 0; };
-    int i = lower_bound(p.begin() + 2, p.end(), a - p[0], cmp) - p.begin() - 1;
-    return cross(p[(i + 1) % n], a, p[i]) >= 0;
-}
-
-// 多边形的面积
+// 多边形的面积a
 double polygon_area(vector<vec> &p) {
     ll area = 0;
     for (int i = 1; i < p.size(); i++) area += p[i - 1] ^ p[i];
@@ -1200,7 +1189,7 @@ double polygon_area(vector<vec> &p) {
 }
 
 // 多边形的周长
-double polygon_length(vector<vec> &p) {
+double polygon_len(vector<vec> &p) {
     double len = 0;
     for (int i = 1; i < p.size(); i++) len += (p[i - 1] - p[i]).len();
     len += (p.back() - p[0]).len();
@@ -1219,6 +1208,20 @@ ll count(vector<vec> &p) {
     for (int i = 1; i < p.size(); i++) cnt += count(p[i - 1], p[i]);
     cnt += count(p.back(), p[0]);
     return cnt - p.size();
+}
+
+// 判断点是否在凸包内，凸包必须为逆时针顺序
+bool in_polygon(const vec &a, vector<vec> &p) {
+    int n = p.size();
+    if (n == 0) return 0;
+    if (n == 1) return a == p[0];
+    if (n == 2)
+        return cross(a, p[1], p[0]) == 0 && (p[0] - a) * (p[1] - a) <= 0;
+    if (cross(a, p[1], p[0]) > 0 || cross(p.back(), a, p[0]) > 0) return 0;
+    auto cmp = [&](vec &x, const vec &y) { return ((x - p[0]) ^ y) >= 0; };
+    int i =
+        lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
+    return cross(p[(i + 1) % n], a, p[i]) >= 0;
 }
 
 // 凸包直径的两个端点
@@ -1311,7 +1314,8 @@ auto tangent(const vec &a, vector<vec> &p) {
 // 直线
 struct line {
     vec p, d;
-    line(const vec &_p = vec(), const vec &_d = vec()) : p(_p), d(_d) {}
+    line() : p(vec()), d(vec()) {}
+    line(const vec &_p, const vec &_d) : p(_p), d(_d) {}
 };
 
 // 点到直线距离
@@ -1339,7 +1343,16 @@ bool perpen(const vec &a, const line &b) {
 // 点到线段距离
 double dis_seg(const vec &a, const line &b) {
     if (perpen(a, b)) return dis(a, b);
-    return min(dis(a, b.p), dis(a, b.p + b.d));
+    return min((b.p - a).len(), (b.p + b.d - a).len());
+}
+
+// 点到凸包距离
+double dis(const vec &a, vector<vec> &p) {
+    double res = inf;
+    for (int i = 1; i < p.size(); i++)
+        res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
+    return res;
 }
 
 // 两直线交点
@@ -1358,11 +1371,12 @@ vec intersection(const line &a, const line &b) {
 \subsection{浮点数}
 
 \begin{lstlisting}[style=cpp]
-constexpr double eps = 1e-8;
-const double PI = acos(-1);
+constexpr lf eps = 1e-6;
+constexpr lf inf = 1e100;
+const lf PI = acos(-1);
 
-int sgn(double a, double b) {
-    double c = a - b;
+int sgn(lf a, lf b) {
+    lf c = a - b;
     return c < -eps ? -1 : c < eps ? 0 : 1;
 }
 
@@ -1372,28 +1386,30 @@ struct vec {
         return sgn(a.x, b.x) ? a.x < b.x : sgn(a.y, b.y) < 0;
     }
 
-    double x, y;
-    vec(double _x = 0, double _y = 0) : x(_x), y(_y) {}
+    lf x, y;
+    vec() : x(0), y(0) {}
+    vec(lf _x, lf _y) : x(_x), y(_y) {}
 
     // 模
-    double len2() const { return x * x + y * y; }
-    double len() const { return sqrt(x * x + y * y); }
+    lf len2() const { return x * x + y * y; }
+    lf len() const { return sqrt(x * x + y * y); }
 
     // 与x轴正方向的夹角
-    double angle() const {
-        double angle = atan2(y, x);
+    lf angle() const {
+        lf angle = atan2(y, x);
         if (angle < 0) angle += 2 * PI;
         return angle;
     }
 
     // 逆时针旋转
-    vec rotate(const double &theta) {
+    vec rotate(const lf &theta) const {
         return {x * cos(theta) - y * sin(theta),
                 y * cos(theta) + x * sin(theta)};
     }
 
-    bool operator==(const vec &other) const {
-        return sgn(x, other.x) == 0 && sgn(y, other.y) == 0;
+    vec e() const {
+        lf tmp = len();
+        return {x / tmp, y / tmp};
     }
 
     // 是否在上半轴
@@ -1401,23 +1417,26 @@ struct vec {
         return sgn(y, 0) > 0 || sgn(y, 0) == 0 && sgn(x, 0) >= 0;
     }
 
+    bool operator==(const vec &other) const {
+        return sgn(x, other.x) == 0 && sgn(y, other.y) == 0;
+    }
     // 极角排序
     bool operator<(const vec &b) const {
         if (up() != b.up()) return up() > b.up();
-        double tmp = (*this) ^ b;
+        lf tmp = (*this) ^ b;
         return sgn(tmp, 0) ? tmp > 0 : cmp(*this, b);
     }
 
     vec operator+(const vec &b) const { return {x + b.x, y + b.y}; }
     vec operator-() const { return {-x, -y}; }
     vec operator-(const vec &b) const { return -b + (*this); }
-    vec operator*(double b) const { return {x * b, y * b}; }
-    vec operator/(double b) const { return {x / b, y / b}; }
-    double operator*(const vec &b) const { return x * b.x + y * b.y; }
+    vec operator*(lf b) const { return {x * b, y * b}; }
+    vec operator/(lf b) const { return {x / b, y / b}; }
+    lf operator*(const vec &b) const { return x * b.x + y * b.y; }
 
     // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
     // 等于0共线，可能同向或反向，结果绝对值表示 a b 形成的平行四边行的面积
-    double operator^(const vec &b) const { return x * b.y - y * b.x; }
+    lf operator^(const vec &b) const { return x * b.y - y * b.x; }
 
     friend istream &operator>>(istream &in, vec &data) {
         in >> data.x >> data.y;
@@ -1430,38 +1449,43 @@ struct vec {
     }
 };
 
-double cross(const vec &a, const vec &b, const vec &c) {
-    return (a - c) ^ (b - c);
-}
+lf cross(const vec &a, const vec &b, const vec &c) { return (a - c) ^ (b - c); }
 
-// 判断点是否在凸包内
-bool in_polygon(const vec &a, vector<vec> &p) {
-    int n = p.size();
-    if (n == 1) return a == p[0];
-    if (sgn(cross(a, p[1], p[0]), 0) > 0 ||
-        sgn(cross(p.back(), a, p[0]), 0) > 0)
-        return 0;
-    auto cmp = [&p](vec &x, const vec &y) {
-        return sgn((x - p[0]) ^ y, 0) >= 0;
-    };
-    int i = lower_bound(p.begin() + 2, p.end(), a - p[0], cmp) - p.begin() - 1;
-    return sgn(cross(p[(i + 1) % n], a, p[i]), 0) >= 0;
-}
+lf angle(const vec &a, const vec &b) { return atan2(abs(a ^ b), a * b); }
 
 // 多边形的面积
-double polygon_area(vector<vec> &p) {
-    double area = 0;
+lf polygon_area(vector<vec> &p) {
+    lf area = 0;
     for (int i = 1; i < p.size(); i++) area += p[i - 1] ^ p[i];
     area += p.back() ^ p[0];
     return abs(area / 2.0);
 }
 
 // 多边形的周长
-double polygon_length(vector<vec> &p) {
-    double len = 0;
+lf polygon_len(vector<vec> &p) {
+    lf len = 0;
     for (int i = 1; i < p.size(); i++) len += (p[i - 1] - p[i]).len();
     len += (p.back() - p[0]).len();
     return len;
+}
+
+// 判断点是否在凸包内，凸包必须为逆时针顺序
+bool in_polygon(const vec &a, vector<vec> &p) {
+    int n = p.size();
+    if (n == 0) return 0;
+    if (n == 1) return a == p[0];
+    if (n == 2)
+        return sgn(cross(a, p[1], p[0]), 0) == 0 &&
+               sgn((p[0] - a) * (p[1] - a), 0) <= 0;
+    if (sgn(cross(a, p[1], p[0]), 0) > 0 ||
+        sgn(cross(p.back(), a, p[0]), 0) > 0)
+        return 0;
+    auto cmp = [&](vec &x, const vec &y) {
+        return sgn((x - p[0]) ^ y, 0) >= 0;
+    };
+    int i =
+        lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
+    return sgn(cross(p[(i + 1) % n], a, p[i]), 0) >= 0;
 }
 
 // 凸包直径的两个端点
@@ -1470,12 +1494,12 @@ auto polygon_dia(vector<vec> &p) {
     array<vec, 2> res{};
     if (n == 1) return res;
     if (n == 2) return res = {p[0], p[1]};
-    double mx = 0;
+    lf mx = 0;
     for (int i = 0, j = 2; i < n; i++) {
         while (sgn(abs(cross(p[i], p[(i + 1) % n], p[j])),
                    abs(cross(p[i], p[(i + 1) % n], p[(j + 1) % n]))) <= 0)
             j = (j + 1) % n;
-        double tmp = (p[i] - p[j]).len();
+        lf tmp = (p[i] - p[j]).len();
         if (tmp > mx) {
             mx = tmp;
             res = {p[i], p[j]};
@@ -1514,7 +1538,7 @@ auto convex_hull(vector<vec> &p) {
     return res;
 }
 
-// 闵可夫斯基和 两个点集的和构成一个凸包
+// 闵可夫斯基和，两个点集的和构成一个凸包
 auto minkowski(vector<vec> &a, vector<vec> &b) {
     rotate(a.begin(), min_element(a.begin(), a.end(), vec::cmp), a.end());
     rotate(b.begin(), min_element(b.begin(), b.end(), vec::cmp), b.end());
@@ -1543,8 +1567,8 @@ auto tangent(const vec &a, vector<vec> &p) {
     int n = p.size();
     int l = -1, r = -1;
     for (int i = 0; i < n; i++) {
-        double tmp1 = cross(p[i], p[(i - 1 + n) % n], a);
-        double tmp2 = cross(p[i], p[(i + 1) % n], a);
+        lf tmp1 = cross(p[i], p[(i - 1 + n) % n], a);
+        lf tmp2 = cross(p[i], p[(i + 1) % n], a);
         if (l == -1 && sgn(tmp1, 0) <= 0 && sgn(tmp2, 0) <= 0) l = i;
         else if (r == -1 && sgn(tmp1, 0) >= 0 && sgn(tmp2, 0) >= 0) r = i;
     }
@@ -1554,15 +1578,16 @@ auto tangent(const vec &a, vector<vec> &p) {
 // 直线
 struct line {
     vec p, d;
-    line(const vec &_p = vec(), const vec &_d = vec()) : p(_p), d(_d) {}
+    line() : p(vec()), d(vec()) {}
+    line(const vec &_p, const vec &_d) : p(_p), d(_d) {}
 };
 
 // 点到直线距离
-double dis(const vec &a, const line &b) {
+lf dis(const vec &a, const line &b) {
     return abs((b.p - a) ^ (b.p + b.d - a)) / b.d.len();
 }
 
-// 判断点在直线哪边，大于0在左边，等于0在线上，小于0在右边
+// 点在直线哪边，大于0在左边，等于0在线上，小于0在右边
 int side_line(const vec &a, const line &b) { return sgn(b.d ^ (a - b.p), 0); }
 
 // 两直线是否垂直
@@ -1574,19 +1599,28 @@ bool parallel(const line &a, const line &b) { return sgn(a.d ^ b.d, 0) == 0; }
 // 点的垂线是否与线段有交点
 bool perpen(const vec &a, const line &b) {
     vec p(-b.d.y, b.d.x);
-    bool cross1 = (p ^ (b.p - a)) > 0;
-    bool cross2 = (p ^ (b.p + b.d - a)) > 0;
+    bool cross1 = sgn(p ^ (b.p - a), 0) > 0;
+    bool cross2 = sgn(p ^ (b.p + b.d - a), 0) > 0;
     return cross1 != cross2;
 }
 
 // 点到线段距离
-double disseg(const vec &a, const line &b) {
+lf dis_seg(const vec &a, const line &b) {
     if (perpen(a, b)) return dis(a, b);
-    return min(dis(a, b.p), dis(a, b.p + b.d));
+    return min((b.p - a).len(), (b.p + b.d - a).len());
+}
+
+// 点到凸包距离
+lf dis(const vec &a, vector<vec> &p) {
+    lf res = inf;
+    for (int i = 1; i < p.size(); i++)
+        res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
+    return res;
 }
 
 // 两直线交点
-vec intersection(double A, double B, double C, double D, double E, double F) {
+vec intersection(lf A, lf B, lf C, lf D, lf E, lf F) {
     return {(B * F - C * E) / (A * E - B * D),
             (C * D - A * F) / (A * E - B * D)};
 }
@@ -1599,29 +1633,62 @@ vec intersection(const line &a, const line &b) {
 
 struct circle {
     vec o;
-    double r;
-    circle(const vec &_o, double _r) : o(_o), r(_r){};
+    lf r;
+    circle(const vec &_o, lf _r) : o(_o), r(_r){};
     // 点与圆的关系 -1在圆内，0在圆上，1在圆外
     int relation(const vec &a) const {
-        double len = (a - o).len();
+        lf len = (a - o).len();
         return sgn(len, r);
     }
-    double area() { return PI * r * r; }
+    lf area() { return PI * r * r; }
 };
 
 // 圆与直线交点
 auto intersection(const circle &c, const line &l) {
-    double d = dis(c.o, l);
+    lf d = dis(c.o, l);
     vector<vec> res;
-    double len = l.d.len();
-    vec mid = l.p + l.d * ((c.o - l.p) * l.d / len);
+    vec mid = l.p + l.d.e() * ((c.o - l.p) * l.d / l.d.len());
     if (sgn(d, c.r) == 0) res.push_back(mid);
     else if (sgn(d, c.r) < 0) {
-        d = sqrt(c.r * c.r - d * d) / len;
-        res.push_back(mid + l.d * d);
-        res.push_back(mid - l.d * d);
+        d = sqrt(c.r * c.r - d * d);
+        res.push_back(mid + l.d.e() * d);
+        res.push_back(mid - l.d.e() * d);
     }
     return res;
+}
+
+// oab三角形与圆相交的面积
+lf area(const circle &c, const vec &a, const vec &b) {
+    if (sgn(cross(a, b, c.o), 0) == 0) return 0;
+    vector<vec> p;
+    p.push_back(a);
+    line l(a, b - a);
+    auto tmp = intersection(c, l);
+    if (tmp.size() == 2) {
+        for (auto &i : tmp)
+            if (sgn((a - i) * (b - i), 0) < 0) p.push_back(i);
+    }
+    p.push_back(b);
+    if (p.size() == 4 && sgn((p[0] - p[1]) * (p[2] - p[1]), 0) > 0)
+        swap(p[1], p[2]);
+    lf res = 0;
+    for (int i = 1; i < p.size(); i++)
+        if (c.relation(p[i - 1]) == 1 || c.relation(p[i]) == 1) {
+            lf ang = angle(p[i - 1] - c.o, p[i] - c.o);
+            res += c.r * c.r * ang / 2;
+        } else res += abs(cross(p[i - 1], p[i], c.o)) / 2.0;
+    return res;
+}
+
+// 多边形与圆相交的面积
+lf area(vector<vec> &p, circle c) {
+    lf res = 0;
+    for (int i = 0; i < p.size(); i++) {
+        int j = i + 1 == p.size() ? 0 : i + 1;
+        if (sgn(cross(p[i], p[j], c.o), 0) <= 0) res += area(c, p[i], p[j]);
+        else res -= area(c, p[i], p[j]);
+    }
+    return abs(res);
 }
 \end{lstlisting}
 
