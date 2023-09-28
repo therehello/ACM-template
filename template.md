@@ -634,41 +634,43 @@ auto kmp(string& s) {
 ### 哈希
 
 ```cpp
-constexpr int N = 2e6;
-constexpr ll mod[2] = {2000000011, 2000000033}, base[2] = {20011, 20033};
-vector<array<ll, 2>> pow_base(N);
-
-pow_base[0][0] = pow_base[0][1] = 1;
-for (int i = 1; i < N; i++) {
-    pow_base[i][0] = pow_base[i - 1][0] * base[0] % mod[0];
-    pow_base[i][1] = pow_base[i - 1][1] * base[1] % mod[1];
-}
+constexpr int N = 1e6;
+int pow_base[N + 1][2];
+constexpr ll mod[2] = {(int)2e9 + 11, (int)2e9 + 33},
+             base[2] = {(int)2e5 + 11, (int)2e5 + 33};
 
 struct Hash {
     int size;
-    vector<array<ll, 2>> hash;
+    vector<array<int, 2>> a;
     Hash() {}
     Hash(const string& s) {
         size = s.size();
-        hash.resize(size);
-        hash[0][0] = hash[0][1] = s[0];
+        a.resize(size);
+        a[0][0] = a[0][1] = s[0];
         for (int i = 1; i < size; i++) {
-            hash[i][0] = (hash[i - 1][0] * base[0] + s[i]) % mod[0];
-            hash[i][1] = (hash[i - 1][1] * base[1] + s[i]) % mod[1];
+            a[i][0] = (a[i - 1][0] * base[0] + s[i]) % mod[0];
+            a[i][1] = (a[i - 1][1] * base[1] + s[i]) % mod[1];
         }
     }
-    array<ll, 2> operator[](const array<int, 2>& range) const {
-        int l = range[0], r = range[1];
-        if (l == 0) return hash[r];
-        auto single_hash = [&](bool flag) {
-            return (hash[r][flag] -
-                    hash[l - 1][flag] * pow_base[r - l + 1][flag] % mod[flag] +
-                    mod[flag]) %
-                   mod[flag];
+    array<int, 2> get(int l, int r) const {
+        if (l == 0) return a[r];
+        auto getone = [&](bool f) {
+            int x = (a[r][f] - a[l - 1][f] * pow_base[r - l + 1][f]) % mod[f];
+            if (x < 0) x += mod[f];
+            return x;
         };
-        return {single_hash(0), single_hash(1)};
+        return {getone(0), getone(1)};
     }
 };
+
+auto _ = []() {
+    pow_base[0][0] = pow_base[0][1] = 1;
+    for (int i = 1; i <= N; i++) {
+        pow_base[i][0] = pow_base[i - 1][0] * base[0] % mod[0];
+        pow_base[i][1] = pow_base[i - 1][1] * base[1] % mod[1];
+    }
+    return true;
+}();
 ```
 
 ### manacher
