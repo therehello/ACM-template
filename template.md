@@ -676,10 +676,10 @@ auto _ = []() {
 ### manacher
 
 ```cpp
-void manacher(const string& _s, vector<int>& r) {
+auto manacher(const string& _s) {
     string s(_s.size() * 2 + 1, '$');
     for (int i = 0; i < _s.size(); i++) s[2 * i + 1] = _s[i];
-    r.resize(_s.size() * 2 + 1);
+    vector r(s.size(), 0);
     for (int i = 0, maxr = 0, mid = 0; i < s.size(); i++) {
         if (i < maxr) r[i] = min(r[mid * 2 - i], maxr - i);
         while (i - r[i] - 1 >= 0 && i + r[i] + 1 < s.size() &&
@@ -687,6 +687,7 @@ void manacher(const string& _s, vector<int>& r) {
             ++r[i];
         if (i + r[i] > maxr) maxr = i + r[i], mid = i;
     }
+    return r;
 }
 ```
 
