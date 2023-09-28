@@ -44,6 +44,7 @@
         - [莫比乌斯变换/反演](#%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%8F%98%E6%8D%A2%E5%8F%8D%E6%BC%94)
     - [杜教筛](#%E6%9D%9C%E6%95%99%E7%AD%9B)
         - [示例](#%E7%A4%BA%E4%BE%8B)
+    - [多项式](#%E5%A4%9A%E9%A1%B9%E5%BC%8F)
     - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
         - [球同，盒同，可空](#%E7%90%83%E5%90%8C%E7%9B%92%E5%90%8C%E5%8F%AF%E7%A9%BA)
         - [球不同，盒同，可空](#%E7%90%83%E4%B8%8D%E5%90%8C%E7%9B%92%E5%90%8C%E5%8F%AF%E7%A9%BA)
@@ -847,15 +848,8 @@ auto getprimes(ll n) {
 ### 组合数
 
 ```cpp
-constexpr int N = 1e7;
+constexpr int N = 1e6;
 array<modint, N + 1> fac, ifac;
-auto _ = []() {
-    fac[0] = 1;
-    for (int i = 1; i <= N; i++) fac[i] = fac[i - 1] * i;
-    ifac[N] = fac[N].inv();
-    for (int i = N - 1; i >= 0; i--) ifac[i] = ifac[i + 1] * (i + 1);
-    return true;
-}();
 
 modint C(int n, int m) {
     if (n < m) return 0;
@@ -863,6 +857,14 @@ modint C(int n, int m) {
     // n >= mod 时需要这个
     return C(n % mod, m % mod) * C(n / mod, m / mod);
 }
+
+auto _ = []() {
+    fac[0] = 1;
+    for (int i = 1; i <= N; i++) fac[i] = fac[i - 1] * i;
+    ifac[N] = fac[N].inv();
+    for (int i = N - 1; i >= 0; i--) ifac[i] = ifac[i + 1] * (i + 1);
+    return true;
+}();
 ```
 
 ### 数论分块
@@ -931,6 +933,7 @@ $h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
 ### 欧拉函数
 
 ```cpp
+constexpr int N = 1e6;
 array<int, N + 1> phi;
 auto _ = []() {
     iota(phi.begin() + 1, phi.end(), 1);
@@ -950,8 +953,10 @@ auto _ = []() {
 - $\displaystyle [\gcd(i,j)=1]=\sum_{d\mid\gcd(i,j)}\mu(d)$
 
 ```cpp
+constexpr int N = 1e6;
 array<int, N + 1> miu;
 array<bool, N + 1> ispr;
+
 auto _ = []() {
     miu.fill(1);
     ispr.fill(1);
@@ -1006,6 +1011,7 @@ ll sum_phi(ll n) {
     }
     return sp2[n] = (ll)n * (n + 1) / 2 - res;
 }
+
 ll sum_miu(ll n) {
     if (n <= N) return sm[n];
     if (sm2.count(n)) return sm2[n];
@@ -1019,6 +1025,265 @@ ll sum_miu(ll n) {
 }
 ```
 
+### 多项式
+
+```cpp
+constexpr int N = 1e6;
+array<int, N + 1> inv;
+
+int power(int a, int b) {
+    int res = 1;
+    while (b) {
+        if (b & 1) res = 1ll * res * a % mod;
+        a = 1ll * a * a % mod;
+        b >>= 1;
+    }
+    return res;
+}
+
+namespace NFTS {
+int g = 3;
+vector<int> rev, roots{0, 1};
+void dft(vector<int> &a) {
+    int n = a.size();
+    if (rev.size() != n) {
+        int k = countr_zero(n) - 1;
+        rev.resize(n);
+        for (int i = 0; i < n; ++i) rev[i] = rev[i >> 1] >> 1 | (i & 1) << k;
+    }
+    if (roots.size() < n) {
+        int k = countr_zero(roots.size());
+        roots.resize(n);
+        while ((1 << k) < n) {
+            int e = power(g, (mod - 1) >> (k + 1));
+            for (int i = 1 << (k - 1); i < (1 << k); ++i) {
+                roots[2 * i] = roots[i];
+                roots[2 * i + 1] = 1ll * roots[i] * e % mod;
+            }
+            ++k;
+        }
+    }
+    for (int i = 0; i < n; ++i)
+        if (rev[i] < i) swap(a[i], a[rev[i]]);
+    for (int k = 1; k < n; k *= 2) {
+        for (int i = 0; i < n; i += 2 * k) {
+            for (int j = 0; j < k; ++j) {
+                int u = a[i + j];
+                int v = 1ll * a[i + j + k] * roots[k + j] % mod;
+                int x = u + v, y = u - v;
+                if (x >= mod) x -= mod;
+                if (y < 0) y += mod;
+                a[i + j] = x;
+                a[i + j + k] = y;
+            }
+        }
+    }
+}
+void idft(vector<int> &a) {
+    int n = a.size();
+    reverse(a.begin() + 1, a.end());
+    dft(a);
+    int inv_n = power(n, mod - 2);
+    for (int i = 0; i < n; ++i) a[i] = 1ll * a[i] * inv_n % mod;
+}
+}  // namespace NFTS
+
+struct poly {
+    poly &format() {
+        while (!a.empty() && a.back() == 0) a.pop_back();
+        return *this;
+    }
+    poly &reverse() {
+        ::reverse(a.begin(), a.end());
+        return *this;
+    }
+    vector<int> a;
+    poly() {}
+    poly(int x) {
+        if (x) a = {x};
+    }
+    poly(const vector<int> &_a) : a(_a) {}
+    int size() const { return a.size(); }
+    int &operator[](int id) { return a[id]; }
+    int at(int id) const {
+        if (id < 0 || id >= (int)a.size()) return 0;
+        return a[id];
+    }
+    poly operator-() const {
+        auto A = *this;
+        for (auto &x : A.a) x = (x == 0 ? 0 : mod - x);
+        return A;
+    }
+    poly mulXn(int n) const {
+        auto b = a;
+        b.insert(b.begin(), n, 0);
+        return poly(b);
+    }
+    poly modXn(int n) const {
+        if (n > size()) return *this;
+        return poly({a.begin(), a.begin() + n});
+    }
+    poly divXn(int n) const {
+        if (size() <= n) return poly();
+        return poly({a.begin() + n, a.end()});
+    }
+    poly &operator+=(const poly &rhs) {
+        if (size() < rhs.size()) a.resize(rhs.size());
+        for (int i = 0; i < rhs.size(); ++i)
+            if ((a[i] += rhs.a[i]) >= mod) a[i] -= mod;
+        return *this;
+    }
+    poly &operator-=(const poly &rhs) {
+        if (size() < rhs.size()) a.resize(rhs.size());
+        for (int i = 0; i < rhs.size(); ++i)
+            if ((a[i] -= rhs.a[i]) < 0) a[i] += mod;
+        return *this;
+    }
+    poly &operator*=(poly rhs) {
+        int n = size(), m = rhs.size(), tot = max(1, n + m - 1);
+        int sz = 1 << __lg(tot * 2 - 1);
+        a.resize(sz);
+        rhs.a.resize(sz);
+        NFTS::dft(a);
+        NFTS::dft(rhs.a);
+        for (int i = 0; i < sz; ++i) a[i] = 1ll * a[i] * rhs.a[i] % mod;
+        NFTS::idft(a);
+        return *this;
+    }
+    poly &operator/=(poly rhs) {
+        int n = size(), m = rhs.size();
+        if (n < m) return (*this) = poly();
+        reverse();
+        rhs.reverse();
+        (*this) *= rhs.inv(n - m + 1);
+        a.resize(n - m + 1);
+        reverse();
+        return *this;
+    }
+    poly &operator%=(poly rhs) { return (*this) -= (*this) / rhs * rhs; }
+    poly operator+(const poly &rhs) const { return poly(*this) += rhs; }
+    poly operator-(const poly &rhs) const { return poly(*this) -= rhs; }
+    poly operator*(poly rhs) const { return poly(*this) *= rhs; }
+    poly operator/(poly rhs) const { return poly(*this) /= rhs; }
+    poly operator%(poly rhs) const { return poly(*this) %= rhs; }
+    poly powModPoly(int n, poly p) {
+        poly r(1), x(*this);
+        while (n) {
+            if (n & 1) (r *= x) %= p;
+            (x *= x) %= p;
+            n >>= 1;
+        }
+        return r;
+    }
+    int inner(const poly &rhs) {
+        int r = 0, n = min(size(), rhs.size());
+        for (int i = 0; i < n; ++i) r = (r + 1ll * a[i] * rhs.a[i]) % mod;
+        return r;
+    }
+    poly derivation() const {
+        if (a.empty()) return poly();
+        int n = size();
+        vector<int> r(n - 1);
+        for (int i = 1; i < n; ++i) r[i - 1] = 1ll * a[i] * i % mod;
+        return poly(r);
+    }
+    poly integral() const {
+        if (a.empty()) return poly();
+        int n = size();
+        vector<int> r(n + 1);
+        for (int i = 0; i < n; ++i) r[i + 1] = 1ll * a[i] * ::inv[i + 1] % mod;
+        return poly(r);
+    }
+    poly inv(int n) const {
+        assert(a[0] != 0);
+        poly x(power(a[0], mod - 2));
+        int k = 1;
+        while (k < n) {
+            k *= 2;
+            x *= (poly(2) - modXn(k) * x).modXn(k);
+        }
+        return x.modXn(n);
+    }
+    // 需要保证首项为 1
+    poly log(int n) const {
+        return (derivation() * inv(n)).integral().modXn(n);
+    }
+    // 需要保证首项为 0
+    poly exp(int n) const {
+        poly x(1);
+        int k = 1;
+        while (k < n) {
+            k *= 2;
+            x = (x * (poly(1) - x.log(k) + modXn(k))).modXn(k);
+        }
+        return x.modXn(n);
+    }
+    // 需要保证首项为 1，开任意次方可以先 ln 再 exp 实现。
+    poly sqrt(int n) const {
+        poly x(1);
+        int k = 1;
+        while (k < n) {
+            k *= 2;
+            x += modXn(k) * x.inv(k);
+            x = x.modXn(k) * inv2;
+        }
+        return x.modXn(n);
+    }
+    // 减法卷积，也称转置卷积 {\rm MULT}(F(x),G(x))=\sum_{i\ge0}(\sum_{j\ge
+    // 0}f_{i+j}g_j)x^i
+    poly mulT(poly rhs) const {
+        if (rhs.size() == 0) return poly();
+        int n = rhs.size();
+        ::reverse(rhs.a.begin(), rhs.a.end());
+        return ((*this) * rhs).divXn(n - 1);
+    }
+    int eval(int x) {
+        int r = 0, t = 1;
+        for (int i = 0, n = size(); i < n; ++i) {
+            r = (r + 1ll * a[i] * t) % mod;
+            t = 1ll * t * x % mod;
+        }
+        return r;
+    }
+    // 多点求值新科技：https://jkloverdcoi.github.io/2020/08/04/转置原理及其应用/
+    // 模板例题：https://www.luogu.com.cn/problem/P5050
+    auto evals(vector<int> &x) const {
+        if (size() == 0) return vector(x.size(), 0);
+        int n = x.size();
+        vector ans(n, 0);
+        vector<poly> g(4 * n);
+        auto build = [&](auto self, int l, int r, int p) -> void {
+            if (r - l == 1) {
+                g[p] = poly({1, x[l] ? mod - x[l] : 0});
+            } else {
+                int m = (l + r) / 2;
+                self(self, l, m, 2 * p);
+                self(self, m, r, 2 * p + 1);
+                g[p] = g[2 * p] * g[2 * p + 1];
+            }
+        };
+        build(build, 0, n, 1);
+        auto solve = [&](auto self, int l, int r, int p, poly f) -> void {
+            if (r - l == 1) {
+                ans[l] = f[0];
+            } else {
+                int m = (l + r) / 2;
+                self(self, l, m, 2 * p, f.mulT(g[2 * p + 1]).modXn(m - l));
+                self(self, m, r, 2 * p + 1, f.mulT(g[2 * p]).modXn(r - m));
+            }
+        };
+        solve(solve, 0, n, 1, mulT(g[1].inv(size())).modXn(n));
+        return ans;
+    }
+};  // 全家桶测试：https://www.luogu.com.cn/training/3015#information
+
+auto _ = []() {
+    inv[0] = inv[1] = 1;
+    for (int i = 2; i < inv.size(); i++)
+        inv[i] = 1ll * (mod - mod / i) * inv[mod % i] % mod;
+    return true;
+}();
+```
 ### 盒子与球
 
 $n$ 个球，$m$ 个盒
@@ -1030,11 +1295,9 @@ $n$ 个球，$m$ 个盒
 ```cpp
 int solve(int n, int m) {
     vector a(n + 1, 0);
-    for (int i = 1; i <= m; i++) {
-        for (int j = i, k = 1; j <= n; j += i, k++) {
+    for (int i = 1; i <= m; i++)
+        for (int j = i, k = 1; j <= n; j += i, k++)
             a[j] = (a[j] + inv[k]) % mod;
-        }
-    }
     auto p = poly(a).exp(n + 1);
     return (p.a[n] + mod) % mod;
 }
