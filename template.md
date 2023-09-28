@@ -1028,6 +1028,7 @@ ll sum_miu(ll n) {
 ### 多项式
 
 ```cpp
+#define countr_zero(n) __builtin_ctz(n)
 constexpr int N = 1e6;
 array<int, N + 1> inv;
 
