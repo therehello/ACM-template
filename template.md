@@ -45,6 +45,12 @@
     - [杜教筛](#%E6%9D%9C%E6%95%99%E7%AD%9B)
         - [示例](#%E7%A4%BA%E4%BE%8B)
     - [盒子与球](#%E7%9B%92%E5%AD%90%E4%B8%8E%E7%90%83)
+        - [球同，盒同，可空](#%E7%90%83%E5%90%8C%E7%9B%92%E5%90%8C%E5%8F%AF%E7%A9%BA)
+        - [球不同，盒同，可空](#%E7%90%83%E4%B8%8D%E5%90%8C%E7%9B%92%E5%90%8C%E5%8F%AF%E7%A9%BA)
+        - [球同，盒不同，可空](#%E7%90%83%E5%90%8C%E7%9B%92%E4%B8%8D%E5%90%8C%E5%8F%AF%E7%A9%BA)
+        - [球同，盒不同，不可空](#%E7%90%83%E5%90%8C%E7%9B%92%E4%B8%8D%E5%90%8C%E4%B8%8D%E5%8F%AF%E7%A9%BA)
+        - [球不同，盒不同，可空](#%E7%90%83%E4%B8%8D%E5%90%8C%E7%9B%92%E4%B8%8D%E5%90%8C%E5%8F%AF%E7%A9%BA)
+        - [球不同，盒不同，不可空](#%E7%90%83%E4%B8%8D%E5%90%8C%E7%9B%92%E4%B8%8D%E5%90%8C%E4%B8%8D%E5%8F%AF%E7%A9%BA)
     - [线性基](#%E7%BA%BF%E6%80%A7%E5%9F%BA)
     - [矩阵快速幂](#%E7%9F%A9%E9%98%B5%E5%BF%AB%E9%80%9F%E5%B9%82)
 - [计算几何](#%E8%AE%A1%E7%AE%97%E5%87%A0%E4%BD%95)
@@ -1019,11 +1025,67 @@ $n$ 个球，$m$ 个盒
 
 ![box and ball](box-and-ball.png)
 
-扩展：
+#### 球同，盒同，可空
 
-$n$ 个相同的球，$m$ 个不同的盒，每个盒子超过 $k$ 个球，问方案数？
+```cpp
+int solve(int n, int m) {
+    vector a(n + 1, 0);
+    for (int i = 1; i <= m; i++) {
+        for (int j = i, k = 1; j <= n; j += i, k++) {
+            a[j] = (a[j] + inv[k]) % mod;
+        }
+    }
+    auto p = poly(a).exp(n + 1);
+    return (p.a[n] + mod) % mod;
+}
+```
 
-可以考虑容斥，$f(d)$ 表示至少有 $d$ 个盒子装了 $>k$ 个球方案数，总方案数则为 $f(0) - f(1) + f(2) -\dots$
+若要求不超过  $k$ 个，答案为 $[x^ny^m]\prod\limits_{i=0}^k \left(\sum\limits_{j=0}^m x^{ij}y^j\right)$。
+
+#### 球不同，盒同，可空
+
+```cpp
+int solve(int n, int m) {
+    vector a(n + 1, 0);
+    vector b(n + 1, 0);
+    for (int i = 0; i <= n; i++) {
+        a[i] = ifac[i];
+        if (i & 1) a[i] = -a[i];
+        b[i] = 1ll * power(i, n) * ifac[i] % mod;
+    }
+    auto p = poly(a) * poly(b);
+    int ans = 0;
+    for (int i = 1; i <= min(n, m); i++) ans = (ans + p.a[i]) % mod;
+    return (ans + mod) % mod;
+}
+```
+
+若要求不超过  $k$ 个，答案为 $m! \cdot [x^ny^m]\prod\limits_{i=0}^k \left(\sum\limits_{j=0}^n\frac{1}{i!^j} x^{ij}y^j\right)$。
+
+#### 球同，盒不同，可空
+
+若要求不超过  $k$ 个，答案为 $[x^n]\left(\sum\limits_{i=0}^kx^i\right)^m = [x^n]\frac{(x^{k+1}-1)^m}{(x-1)^m}$。
+
+也可以考虑容斥，令 $f(i)$ 表示至少有 $i$ 个盒子装了 $>k$ 个球方案数，$f(i) = \tbinom{m}{i}\tbinom{n-(k+1)i+m-1}{m-1}$。
+
+总方案数则为 $\sum\limits_{i=0}^{m}(-1)^if(i)$。
+
+#### 球同，盒不同，不可空
+
+若要求不超过  $k$ 个，答案为 $[x^n]\left(\sum\limits_{i=1}^kx^i\right)^m = [x^n]\frac{(x^k-1)^mx^m}{(x-1)^m}$。
+
+也可以考虑容斥，令 $f(i)$ 表示至少有 $i$ 个盒子装了 $>k$ 个球方案数，$f(i) = \tbinom{m}{i}\tbinom{n-ki-1}{m-1}$。
+
+总方案数则为 $\sum\limits_{i=0}^{m}(-1)^if(i)$。
+
+#### 球不同，盒不同，可空
+
+若要求不超过  $k$ 个，答案为 $m!\cdot[x^n]\left(\sum\limits_{i=0}^k\frac{1}{i!}x^i\right)^m$。
+
+#### 球不同，盒不同，不可空
+
+若要求不超过  $k$ 个，答案为 $m!\cdot[x^n]\left(\sum\limits_{i=1}^k\frac{1}{i!}x^i\right)^m$。
+
 
 ### 线性基
 

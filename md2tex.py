@@ -92,7 +92,7 @@ def cpp(match: re.Match):
 
 
 def picture(match: re.Match):
-    return f"\\begin{{figure}}[H]\n    \\flushleft\n    \\includegraphics[]{{{match.group(1)}}}\n    \\label{{fig:left}}\n\\end{{figure}}"
+    return f"\\begin{{figure}}[H]\n    \\flushleft\n    \\includegraphics[width=0.95\\textwidth]{{{match.group(1)}}}\n    \\label{{fig:left}}\n\\end{{figure}}"
 
 def item(match: re.Match):
     res = "\n\n\\begin{itemize}\n"
