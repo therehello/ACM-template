@@ -267,13 +267,14 @@ struct Data {
 需要预先处理出来所有可能的数。
 
 ```cpp
+int lowbit(int x) { return x & -x; }
+
 template <typename T>
 struct treap {
     int n, size;
     vector<int> t;
     vector<T> t2, S;
-    treap(const vector<T>& b) {
-        S = b;
+    treap(const vector<T>& a) : S(a) {
         sort(S.begin(), S.end());
         S.erase(unique(S.begin(), S.end()), S.end());
         n = S.size();
@@ -294,25 +295,34 @@ struct treap {
     // 插入cnt个x
     void insert(T x, int cnt) {
         size += cnt;
-        for (int i = pos(x); i <= n; i += lowbit(i)) {
+        int i = pos(x);
+        assert(i <= n && S[i - 1] == x);
+        for (; i <= n; i += lowbit(i)) {
             t[i] += cnt;
             t2[i] += cnt * x;
         }
     }
 
     // 删除cnt个x
-    void erase(T x, int cnt) { insert(x, -cnt); }
+    void erase(T x, int cnt) {
+        assert(cnt <= count(x));
+        insert(x, -cnt);
+    }
 
     // x的排名
-    int rank(T x) { return sum(pos(x) - 1) + 1; }
+    int rank(T x) {
+        assert(count(x));
+        return sum(pos(x) - 1) + 1;
+    }
 
     // 统计出现次数
     int count(T x) { return sum(pos(x)) - sum(pos(x) - 1); }
 
     // 第k小
     T kth(int k) {
+        assert(0 < k && k <= size);
         int cnt = 0, x = 0;
-        for (int i = log2(n); i >= 0; i--) {
+        for (int i = __lg(n); i >= 0; i--) {
             x += 1 << i;
             if (x >= n || cnt + t[x] >= k) x -= 1 << i;
             else cnt += t[x];
@@ -322,9 +332,10 @@ struct treap {
 
     // 前k小的数之和
     T pre_sum(int k) {
+        assert(0 < k && k <= size);
         int cnt = 0, x = 0;
         T res = 0;
-        for (int i = log2(n); i >= 0; i--) {
+        for (int i = __lg(n); i >= 0; i--) {
             x += 1 << i;
             if (x >= n || cnt + t[x] >= k) x -= 1 << i;
             else {
@@ -336,10 +347,10 @@ struct treap {
     }
 
     // 小于x，最大的数
-    T prev(int x) { return kth(sum(pos(x) - 1)); }
+    T prev(T x) { return kth(sum(pos(x) - 1)); }
 
     // 大于x，最小的数
-    T next(int x) { return kth(sum(pos(x)) + 1); }
+    T next(T x) { return kth(sum(pos(x)) + 1); }
 };
 ```
 
