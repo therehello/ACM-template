@@ -654,7 +654,8 @@ struct Hash {
     array<int, 2> get(int l, int r) const {
         if (l == 0) return a[r];
         auto getone = [&](bool f) {
-            int x = (a[r][f] - a[l - 1][f] * pow_base[r - l + 1][f]) % mod[f];
+            int x =
+                (a[r][f] - 1ll * a[l - 1][f] * pow_base[r - l + 1][f]) % mod[f];
             if (x < 0) x += mod[f];
             return x;
         };
