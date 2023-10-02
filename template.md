@@ -60,6 +60,7 @@
     - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
 - [杂项](#%E6%9D%82%E9%A1%B9)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
+    - [离散化](#%E7%A6%BB%E6%95%A3%E5%8C%96)
     - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
     - [分数](#%E5%88%86%E6%95%B0)
     - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
@@ -2154,6 +2155,26 @@ struct bignum {
     friend ostream& operator<<(ostream& out, bignum a) {
         reverse(a.num.begin(), a.num.end());
         return out << a.num;
+    }
+};
+```
+
+### 离散化
+
+```cpp
+template <typename T>
+struct Hash {
+    vector<int> S;
+    vector<T> a;
+    Hash(const vector<int>& b) : S(b) {
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+        a = vector<T>(S.size());
+    }
+    T& operator[](int i) const {
+        auto pos = lower_bound(S.begin(), S.end(), i) - S.begin();
+        assert(pos != S.size() && S[pos] == i);
+        return a[pos];
     }
 };
 ```

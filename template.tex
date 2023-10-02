@@ -2175,6 +2175,26 @@ struct bignum {
 };
 \end{lstlisting}
 
+\subsection{离散化}
+
+\begin{lstlisting}[style=cpp]
+template <typename T>
+struct Hash {
+    vector<int> S;
+    vector<T> a;
+    Hash(const vector<int>& b) : S(b) {
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+        a = vector<T>(S.size());
+    }
+    T& operator[](int i) const {
+        auto pos = lower_bound(S.begin(), S.end(), i) - S.begin();
+        assert(pos != S.size() && S[pos] == i);
+        return a[pos];
+    }
+};
+\end{lstlisting}
+
 \subsection{模运算}
 
 \begin{lstlisting}[style=cpp]
