@@ -2182,14 +2182,30 @@ struct Hash {
 ### 模运算
 
 ```cpp
+constexpr int mod = 998244353;
+
+template <typename T>
+T power(T a, int b) {
+    T res = 1;
+    while (b) {
+        if (b & 1) res = res * a;
+        a = a * a;
+        b >>= 1;
+    }
+    return res;
+}
+
 struct modint {
     int x;
-    modint(ll _x = 0) : x(_x % mod) {}
+    modint(int _x = 0) : x(_x) {
+        if (x < 0) x += mod;
+        else if (x >= mod) x -= mod;
+    }
     modint inv() const { return power(*this, mod - 2); }
-    modint operator+(const modint& b) { return {x + b.x}; }
+    modint operator+(const modint& b) { return x + b.x; }
     modint operator-() const { return {-x}; }
-    modint operator-(const modint& b) { return {-b + *this}; }
-    modint operator*(const modint& b) { return {(ll)x * b.x}; }
+    modint operator-(const modint& b) { return -b + *this; }
+    modint operator*(const modint& b) { return int((ll)x * b.x % mod); }
     modint operator/(const modint& b) { return *this * b.inv(); }
     friend istream& operator>>(istream& is, modint& other) {
         ll _x;
@@ -2198,7 +2214,6 @@ struct modint {
         return is;
     }
     friend ostream& operator<<(ostream& os, modint other) {
-        other.x = (other.x + mod) % mod;
         return os << other.x;
     }
 };
