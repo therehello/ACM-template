@@ -59,6 +59,7 @@
     - [浮点数](#%E6%B5%AE%E7%82%B9%E6%95%B0)
     - [扫描线](#%E6%89%AB%E6%8F%8F%E7%BA%BF)
 - [杂项](#%E6%9D%82%E9%A1%B9)
+    - [快读](#%E5%BF%AB%E8%AF%BB)
     - [高精度](#%E9%AB%98%E7%B2%BE%E5%BA%A6)
     - [离散化](#%E7%A6%BB%E6%95%A3%E5%8C%96)
     - [模运算](#%E6%A8%A1%E8%BF%90%E7%AE%97)
@@ -2084,6 +2085,41 @@ ll area(vector<Rectangle>& rec) {
 ```
 
 ## 杂项
+
+### 快读
+
+```cpp
+namespace IO {
+constexpr int N = (1 << 20) + 1;
+char Buffer[N];
+int p = N;
+
+char& get() {
+    if (p == N) {
+        fread(Buffer, 1, N, stdin);
+        p = 0;
+    }
+    return Buffer[p++];
+}
+
+template <typename T = int>
+T read() {
+    T x = 0;
+    bool f = 1;
+    char c = get();
+    while (!isdigit(c)) {
+        f = c != '-';
+        c = get();
+    }
+    while (isdigit(c)) {
+        x = x * 10 + c - '0';
+        c = get();
+    }
+    return f ? x : -x;
+}
+}  // namespace IO
+using IO::read;
+```
 
 ### 高精度
 

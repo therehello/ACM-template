@@ -2101,6 +2101,41 @@ ll area(vector<Rectangle>& rec) {
 
 \section{杂项}
 
+\subsection{快读}
+
+\begin{lstlisting}[style=cpp]
+namespace IO {
+constexpr int N = (1 << 20) + 1;
+char Buffer[N];
+int p = N;
+
+char& get() {
+    if (p == N) {
+        fread(Buffer, 1, N, stdin);
+        p = 0;
+    }
+    return Buffer[p++];
+}
+
+template <typename T = int>
+T read() {
+    T x = 0;
+    bool f = 1;
+    char c = get();
+    while (!isdigit(c)) {
+        f = c != '-';
+        c = get();
+    }
+    while (isdigit(c)) {
+        x = x * 10 + c - '0';
+        c = get();
+    }
+    return f ? x : -x;
+}
+}  // namespace IO
+using IO::read;
+\end{lstlisting}
+
 \subsection{高精度}
 
 \begin{lstlisting}[style=cpp]
