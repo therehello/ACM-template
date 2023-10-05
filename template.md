@@ -1379,17 +1379,12 @@ struct basis {
     // 将x插入此线性基中
     void insert(ull x) {
         for (int i = 63; i >= 0; i--) {
-            if ((x >> i) & 1) {
-                if (p[i]) x ^= p[i];
-                else {
-                    for (int j = 0; j < i; j++)
-                        if (x >> j & 1) x ^= p[j];
-                    for (int j = i + 1; j <= 63; j++)
-                        if (p[j] >> i & 1) p[j] ^= x;
-                    p[i] = x;
-                    rnk++;
-                    break;
-                }
+            if (!(x >> i & 1)) continue;
+            if (p[i]) x ^= p[i];
+            else {
+                p[i] = x;
+                rnk++;
+                break;
             }
         }
     }
@@ -2412,22 +2407,20 @@ for (int i = 1; i <= 1000000; i++)
 linux/Mac
 
 ```bash
-g++ a.cpp -o program/a -O2 -std=c++17
-g++ b.cpp -o program/b -O2 -std=c++17
-g++ suiji.cpp -o program/suiji -O2 -std=c++17
+g++ a.cpp -o a -O2 -std=c++17
+g++ b.cpp -o b -O2 -std=c++17
+g++ random.cpp -o random -O2 -std=c++17
 
 cnt=0
 
 while true; do
     let cnt++
     echo TEST:$cnt
-
-    ./program/suiji > in
-    ./program/a < in > out.a
-    ./program/b < in > out.b
-
+    ./random > in
+    ./a < in > out.a
+    ./b < in > out.b
     diff out.a out.b
-    if [ $? -ne 0 ];then break;fi
+    if [ $? -ne 0 ]; then break; fi
 done
 ```
 
@@ -2436,20 +2429,19 @@ windows
 ```bash
 @echo off
 
-g++ a.cpp -o program/a -O2 -std=c++17
-g++ b.cpp -o program/b -O2 -std=c++17
-g++ suiji.cpp -o program/suiji -O2 -std=c++17
+g++ a.cpp -o a -O2 -std=c++17
+g++ b.cpp -o b -O2 -std=c++17
+g++ random.cpp -o random -O2 -std=c++17
 
 set cnt=0
 
 :again
     set /a cnt=cnt+1
     echo TEST:%cnt%
-    .\program\suiji > in
-    .\program\a < in > out.a
-    .\program\b < in > out.b
-
-    fc output.a output.b
+    .\random > in
+    .\a < in > out.a
+    .\b < in > out.b
+    fc out.a out.b
 if not errorlevel 1 goto again
 ```
 
@@ -2461,9 +2453,10 @@ if not errorlevel 1 goto again
 
 ### 开栈
 
-不同的编译器可能命令不一样
+不同的系统/编译器可能命令不一样
 
 ```bash
+ulimit -s
 -Wl,--stack=0x10000000
 -Wl,-stack_size -Wl,0x10000000
 -Wl,-z,stack-size=0x10000000
@@ -2471,13 +2464,14 @@ if not errorlevel 1 goto again
 
 ### clang-format
 
+转储配置
 ```bash
-BasedOnStyle: Google
-IndentWidth: 4
-ColumnLimit: 80
-AllowShortIfStatementsOnASingleLine: AllIfsAndElse
-AccessModifierOffset: -4
-EmptyLineBeforeAccessModifier: Leave
-RemoveBracesLLVM: true
+clang-format -style=Google -dump-config > ./.clang-format
 ```
 
+.clang-format
+```txt
+BasedOnStyle: Google
+IndentWidth: 4
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+```
