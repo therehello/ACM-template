@@ -2471,6 +2471,7 @@ clang-format -style=Google -dump-config > ./.clang-format
 ```
 
 .clang-format
+
 ```txt
 BasedOnStyle: Google
 IndentWidth: 4
