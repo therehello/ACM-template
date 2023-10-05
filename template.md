@@ -66,6 +66,7 @@
     - [分数](#%E5%88%86%E6%95%B0)
     - [表达式求值](#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC)
     - [日期](#%E6%97%A5%E6%9C%9F)
+    - [__builtin函数](#__builtin%E5%87%BD%E6%95%B0)
     - [对拍](#%E5%AF%B9%E6%8B%8D)
     - [编译常用选项](#%E7%BC%96%E8%AF%91%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9)
     - [开栈](#%E5%BC%80%E6%A0%88)
@@ -2401,6 +2402,15 @@ for (int i = 1; i <= 12; i++) pre[i] = pre[i - 1] + month[2];
 for (int i = 1; i <= 1000000; i++)
     if (i % 4 == 0 && i % 100 || i % 400 == 0) leap.push_back(i);
 ```
+
+### __builtin函数
+
+如果是 long long 型，记得函数后多加个 ll。
+
+- __builtin_ctz，从最低位连续的 0 的个数，如果传入 0 则行为未定义。
+- __builtin_clz，从最高位连续的 0 的个数，如果传入 0 则行为未定义。
+- __bulitin_popcount，二进制 1 的个数。
+- __builtin_parity，二进制 1 的个数奇偶性。 
 
 ### 对拍
 
