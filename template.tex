@@ -1700,7 +1700,9 @@ vec intersection(const line &a, const line &b) {
 \subsection{浮点数}
 
 \begin{lstlisting}[style=cpp]
-constexpr lf eps = 1e-6;
+using lf = double;
+
+constexpr lf eps = 1e-8;
 constexpr lf inf = 1e100;
 const lf PI = acos(-1);
 
@@ -1964,11 +1966,20 @@ struct circle {
     vec o;
     lf r;
     circle(const vec &\_o, lf \_r) : o(\_o), r(\_r){};
+
     // 点与圆的关系 -1在圆内，0在圆上，1在圆外
-    int relation(const vec &a) const {
-        lf len = (a - o).len();
-        return sgn(len, r);
+    int relation(const vec &a) const { return sgn((a - o).len(), r); }
+
+    // 圆与圆的关系 -3包含，-2内切，-1相交，0外切，1相离
+    int relation(const circle &a) const {
+        lf l = (a.o - o).len();
+        if (sgn(l, abs(r - a.r)) < 0) return -3;
+        if (sgn(l, abs(r - a.r)) == 0) return -2;
+        if (sgn(l, abs(r + a.r)) < 0) return -1;
+        if (sgn(l, abs(r + a.r)) == 0) return 0;
+        return 1;
     }
+
     lf area() { return PI * r * r; }
 };
 
