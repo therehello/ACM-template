@@ -2444,20 +2444,20 @@ for (int i = 1; i <= 1000000; i++)
 linux/Mac
 
 \begin{lstlisting}[style=cpp]
-g++ a.cpp -o a -O2 -std=c++17
-g++ b.cpp -o b -O2 -std=c++17
-g++ random.cpp -o random -O2 -std=c++17
+#!/bin/bash
+
+g++ $1 -o a -O2
+g++ $2 -o b -O2
+g++ random.cpp -o random -O2
 
 cnt=0
-
 while true; do
     let cnt++
     echo TEST:$cnt
     ./random > in
     ./a < in > out.a
     ./b < in > out.b
-    diff out.a out.b
-    if [ $? -ne 0 ]; then break; fi
+    if ! diff out.a out.b; then break; fi
 done
 \end{lstlisting}
 
