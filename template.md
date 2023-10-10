@@ -2450,9 +2450,9 @@ windows
 ```bash
 @echo off
 
-g++ a.cpp -o a -O2 -std=c++17
-g++ b.cpp -o b -O2 -std=c++17
-g++ random.cpp -o random -O2 -std=c++17
+g++ %1 -o a -O2
+g++ %2 -o b -O2
+g++ random.cpp -o random -O2
 
 set cnt=0
 
@@ -2462,7 +2462,7 @@ set cnt=0
     .\random > in
     .\a < in > out.a
     .\b < in > out.b
-    fc out.a out.b
+    fc out.a out.b > nul
 if not errorlevel 1 goto again
 ```
 
