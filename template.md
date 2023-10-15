@@ -27,6 +27,8 @@
     - [manacher](#manacher)
 - [数学](#%E6%95%B0%E5%AD%A6)
     - [扩展欧几里得](#%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97)
+    - [线性代数](#%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0)
+        - [向量公约数](#%E5%90%91%E9%87%8F%E5%85%AC%E7%BA%A6%E6%95%B0)
     - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
     - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
     - [pollard rho](#pollard-rho)
@@ -744,6 +746,30 @@ array<int, 2> exgcd(int a, int b, int c) {
     if (x < 0) x += dx;
     y = (c - a * x) / b;
     return {x, y};
+}
+```
+
+### 线性代数
+
+#### 向量公约数
+
+```cpp
+// 将这两个向量组转化为b.y=0的形式
+array<vec, 2> gcd(vec a, vec b) {
+    while (b.y != 0) {
+        int t = a.y / b.y;
+        a = a - b * t;
+        swap(a, b);
+    }
+    return {a, b};
+}
+
+array<vec, 2> gcd(array<vec, 2> g, vec a) {
+    auto [b, c] = gcd(g[0], a);
+    g[0] = b;
+    g[1] = vec(gcd(g[1].x, c.x), 0);
+    if (g[1].x != 0) g[0].x %= g[1].x;
+    return g;
 }
 ```
 
