@@ -2583,14 +2583,14 @@ for (int i = 1; i <= 1000000; i++)
     if (i % 4 == 0 && i % 100 || i % 400 == 0) leap.push_back(i);
 ```
 
-### __builtin函数
+### builtin函数
 
 如果是 long long 型，记得函数后多加个 ll。
 
-- __builtin_ctz，从最低位连续的 0 的个数，如果传入 0 则行为未定义。
-- __builtin_clz，从最高位连续的 0 的个数，如果传入 0 则行为未定义。
-- __bulitin_popcount，二进制 1 的个数。
-- __builtin_parity，二进制 1 的个数奇偶性。 
+- ctz，从最低位连续的 0 的个数，如果传入 0 则行为未定义。
+- clz，从最高位连续的 0 的个数，如果传入 0 则行为未定义。
+- popcount，二进制 1 的个数。
+- parity，二进制 1 的个数奇偶性。 
 
 ### 对拍
 

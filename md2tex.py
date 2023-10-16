@@ -130,7 +130,6 @@ md = re.sub("<!-- TOC -->.*?<!-- /TOC -->", "", md, flags=re.DOTALL)
 md = re.sub("!\[.*?]\((.*?)\)", picture, md)
 md = re.sub("\n\n-.*?\n\n", item, md, flags=re.DOTALL)
 md = re.sub("\*\*(.*?)\*\*", textbf, md)
-md = md.replace("_","\_")
 md = md.strip()
 
 tex = begin + md + end

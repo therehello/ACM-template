@@ -74,7 +74,7 @@
 struct dsu {
     int n;
     vector<int> fa, sz;
-    dsu(int \_n) : n(\_n), fa(n + 1), sz(n + 1, 1) {
+    dsu(int _n) : n(_n), fa(n + 1), sz(n + 1, 1) {
         iota(fa.begin(), fa.end(), 0);
     }
     int find(int x) { return x == fa[x] ? x : fa[x] = find(fa[x]); }
@@ -97,7 +97,7 @@ template <class T>
 struct fenwick {
     int n;
     vector<T> t;
-    fenwick(int \_n) : n(\_n), t(n + 1) {}
+    fenwick(int _n) : n(_n), t(n + 1) {}
     T query(int l, int r) {
         auto query = [&](int pos) {
             T res = 0;
@@ -122,8 +122,8 @@ struct fenwick {
 
 \begin{lstlisting}[style=cpp]
 template <class T>
-struct Fenwick\_tree\_2 {
-    Fenwick\_tree\_2(int n, int m) : n(n), m(m), tree(n + 1, vector<T>(m + 1)) {}
+struct Fenwick_tree_2 {
+    Fenwick_tree_2(int n, int m) : n(n), m(m), tree(n + 1, vector<T>(m + 1)) {}
     T query(int l1, int r1, int l2, int r2) {
         auto query = [&](int l, int r) {
             T res = 0;
@@ -148,8 +148,8 @@ private:
 
 \begin{lstlisting}[style=cpp]
 template <class T>
-struct Fenwick\_tree\_3 {
-    Fenwick\_tree\_3(int n, int m, int k)
+struct Fenwick_tree_3 {
+    Fenwick_tree_3(int n, int m, int k)
         : n(n),
           m(m),
           k(k),
@@ -184,10 +184,10 @@ private:
 
 \begin{lstlisting}[style=cpp]
 template <class Data, class Num>
-struct Segment\_Tree {
+struct Segment_Tree {
     inline void update(int l, int r, Num x) { update(1, l, r, x); }
     inline Data query(int l, int r) { return query(1, l, r); }
-    Segment\_Tree(vector<Data>& a) {
+    Segment_Tree(vector<Data>& a) {
         n = a.size();
         tree.assign(n * 4 + 1, {});
         build(a, 1, 1, n);
@@ -277,7 +277,7 @@ struct treap {
         t = vector<int>(n + 1);
         t2 = vector<T>(n + 1);
     }
-    int pos(T x) { return lower\_bound(S.begin(), S.end(), x) - S.begin() + 1; }
+    int pos(T x) { return lower_bound(S.begin(), S.end(), x) - S.begin() + 1; }
     int sum(int pos) {
         int res = 0;
         while (pos) {
@@ -317,7 +317,7 @@ struct treap {
     T kth(int k) {
         assert(0 < k && k <= size);
         int cnt = 0, x = 0;
-        for (int i = \_\_lg(n); i >= 0; i--) {
+        for (int i = __lg(n); i >= 0; i--) {
             x += 1 << i;
             if (x >= n || cnt + t[x] >= k) x -= 1 << i;
             else cnt += t[x];
@@ -326,11 +326,11 @@ struct treap {
     }
 
     // 前k小的数之和
-    T pre\_sum(int k) {
+    T pre_sum(int k) {
         assert(0 < k && k <= size);
         int cnt = 0, x = 0;
         T res = 0;
-        for (int i = \_\_lg(n); i >= 0; i--) {
+        for (int i = __lg(n); i >= 0; i--) {
             x += 1 << i;
             if (x >= n || cnt + t[x] >= k) x -= 1 << i;
             else {
@@ -354,33 +354,33 @@ struct treap {
 \begin{lstlisting}[style=cpp]
 constexpr int MAXN = 200000;
 vector<int> root(MAXN << 5);
-struct Persistent\_seg {
+struct Persistent_seg {
     int n;
     struct Data {
         int ls, rs;
         int val;
     };
     vector<Data> tree;
-    Persistent\_seg(int n, vector<int>& a) : n(n) { root[0] = build(1, n, a); }
+    Persistent_seg(int n, vector<int>& a) : n(n) { root[0] = build(1, n, a); }
     int build(int l, int r, vector<int>& a) {
         if (l == r) {
-            tree.push\_back({0, 0, a[l]});
+            tree.push_back({0, 0, a[l]});
             return tree.size() - 1;
         }
         int mid = l + r >> 1;
         int ls = build(l, mid, a), rs = build(mid + 1, r, a);
-        tree.push\_back({ls, rs, tree[ls].val + tree[rs].val});
+        tree.push_back({ls, rs, tree[ls].val + tree[rs].val});
         return tree.size() - 1;
     }
     int update(int rt, const int& idx, const int& val, int l, int r) {
         if (l == r) {
-            tree.push\_back({0, 0, tree[rt].val + val});
+            tree.push_back({0, 0, tree[rt].val + val});
             return tree.size() - 1;
         }
         int mid = l + r >> 1, ls = tree[rt].ls, rs = tree[rt].rs;
         if (idx <= mid) ls = update(ls, idx, val, l, mid);
         else rs = update(rs, idx, val, mid + 1, r);
-        tree.push\_back({ls, rs, tree[ls].val + tree[rs].val});
+        tree.push_back({ls, rs, tree[ls].val + tree[rs].val});
         return tree.size() - 1;
     }
     int query(int rt1, int rt2, int k, int l, int r) {
@@ -406,9 +406,9 @@ template <typename T>
 struct st {
     int n;
     vector<vector<T>> a;
-    st(vector<T>& \_a) : n(\_a.size()) {
+    st(vector<T>& _a) : n(_a.size()) {
         a.assign(lg[n] + 1, vector<int>(n));
-        for (int i = 0; i < n; i++) a[0][i] = \_a[i];
+        for (int i = 0; i < n; i++) a[0][i] = _a[i];
         for (int j = 1; j <= lg[n]; j++)
             for (int i = 0; i + (1 << j) - 1 < n; i++)
                 a[j][i] = max(a[j - 1][i], a[j - 1][i + (1 << (j - 1))]);
@@ -433,11 +433,11 @@ struct Graph {
         int to, w;
     };
     vector<vector<Edge>> graph;
-    Graph(int \_n) {
-        n = \_n;
+    Graph(int _n) {
+        n = _n;
         graph.assign(n + 1, vector<Edge>());
     };
-    void add(int u, int v, int w) { graph[u].push\_back({v, w}); }
+    void add(int u, int v, int w) { graph[u].push_back({v, w}); }
 };
 \end{lstlisting}
 
@@ -448,7 +448,7 @@ struct Graph {
 \begin{lstlisting}[style=cpp]
 void dij(Graph& graph, vector<int>& dis, int t) {
     vector<int> visit(graph.n + 1, 0);
-    priority\_queue<pair<int, int>> que;
+    priority_queue<pair<int, int>> que;
     dis[t] = 0;
     que.emplace(0, t);
     while (!que.empty()) {
@@ -477,7 +477,7 @@ vector<int> dep;
 vector<array<int, 21>> fa;
 dep.assign(n + 1, 0);
 fa.assign(n + 1, array<int, 21>{});
-void binary\_jump(int root) {
+void binary_jump(int root) {
     function<void(int)> dfs = [&](int t) {
         dep[t] = dep[fa[t][0]] + 1;
         for (auto& [to] : graph[t]) {
@@ -542,11 +542,11 @@ void hld(int root) {
         }
     };
     dfs1(root);
-    int dfn\_tail = 0;
+    int dfn_tail = 0;
     for (int i = 1; i <= n; i++) top[i] = i;
     function<void(int)> dfs2 = [&](int t) {
-        dfn[t] = ++dfn\_tail;
-        rnk[dfn\_tail] = t;
+        dfn[t] = ++dfn_tail;
+        rnk[dfn_tail] = t;
         if (!son[t]) return;
         top[son[t]] = top[t];
         dfs2(son[t]);
@@ -563,12 +563,12 @@ void hld(int root) {
 
 \begin{lstlisting}[style=cpp]
 void tarjan(Graph& g1, Graph& g2) {
-    int dfn\_tail = 0, cnt = 0;
+    int dfn_tail = 0, cnt = 0;
     vector<int> dfn(g1.n + 1, 0), low(g1.n + 1, 0), exist(g1.n + 1, 0),
         belong(g1.n + 1, 0);
     stack<int> sta;
     function<void(int)> dfs = [&](int t) {
-        dfn[t] = low[t] = ++dfn\_tail;
+        dfn[t] = low[t] = ++dfn_tail;
         sta.push(t);
         exist[t] = 1;
         for (auto& [to] : g1.graph[t])
@@ -645,7 +645,7 @@ auto kmp(string& s) {
 
 \begin{lstlisting}[style=cpp]
 constexpr int N = 1e6;
-int pow\_base[N + 1][2];
+int pow_base[N + 1][2];
 constexpr ll mod[2] = {(int)2e9 + 11, (int)2e9 + 33},
              base[2] = {(int)2e5 + 11, (int)2e5 + 33};
 
@@ -666,7 +666,7 @@ struct Hash {
         if (l == 0) return a[r];
         auto getone = [&](bool f) {
             int x =
-                (a[r][f] - 1ll * a[l - 1][f] * pow\_base[r - l + 1][f]) % mod[f];
+                (a[r][f] - 1ll * a[l - 1][f] * pow_base[r - l + 1][f]) % mod[f];
             if (x < 0) x += mod[f];
             return x;
         };
@@ -674,11 +674,11 @@ struct Hash {
     }
 };
 
-auto \_ = []() {
-    pow\_base[0][0] = pow\_base[0][1] = 1;
+auto _ = []() {
+    pow_base[0][0] = pow_base[0][1] = 1;
     for (int i = 1; i <= N; i++) {
-        pow\_base[i][0] = pow\_base[i - 1][0] * base[0] % mod[0];
-        pow\_base[i][1] = pow\_base[i - 1][1] * base[1] % mod[1];
+        pow_base[i][0] = pow_base[i - 1][0] * base[0] % mod[0];
+        pow_base[i][1] = pow_base[i - 1][1] * base[1] % mod[1];
     }
     return true;
 }();
@@ -687,9 +687,9 @@ auto \_ = []() {
 \subsection{manacher}
 
 \begin{lstlisting}[style=cpp]
-auto manacher(const string& \_s) {
-    string s(\_s.size() * 2 + 1, '$');
-    for (int i = 0; i < \_s.size(); i++) s[2 * i + 1] = \_s[i];
+auto manacher(const string& _s) {
+    string s(_s.size() * 2 + 1, '$');
+    for (int i = 0; i < _s.size(); i++) s[2 * i + 1] = _s[i];
     vector r(s.size(), 0);
     for (int i = 0, maxr = 0, mid = 0; i < s.size(); i++) {
         if (i < maxr) r[i] = min(r[mid * 2 - i], maxr - i);
@@ -721,21 +721,21 @@ $x=x+k*dx,y=y-k*dy$
 若要求 $y\le q$，$k\ge\lceil \frac{y-q}{dy}\rceil$
 
 \begin{lstlisting}[style=cpp]
-int \_\_exgcd(int a, int b, int& x, int& y) {
+int __exgcd(int a, int b, int& x, int& y) {
     if (!b) {
         x = 1;
         y = 0;
         return a;
     }
-    int g = \_\_exgcd(b, a % b, y, x);
+    int g = __exgcd(b, a % b, y, x);
     y -= a / b * x;
     return g;
 }
 
 array<int, 2> exgcd(int a, int b, int c) {
     int x, y;
-    int g = \_\_exgcd(a, b, x, y);
-    if (c % g) return {INT\_MAX, INT\_MAX};
+    int g = __exgcd(a, b, x, y);
+    if (c % g) return {INT_MAX, INT_MAX};
     int dx = b / g;
     int dy = a / g;
     x = c / g % dx * x % dx;
@@ -773,17 +773,17 @@ array<vec, 2> gcd(array<vec, 2> g, vec a) {
 
 \begin{lstlisting}[style=cpp]
 constexpr int N = 10000000;
-array<int, N + 1> min\_prime;
+array<int, N + 1> min_prime;
 vector<int> primes;
 bool ok = []() {
     for (int i = 2; i <= N; i++) {
-        if (min\_prime[i] == 0) {
-            min\_prime[i] = i;
-            primes.push\_back(i);
+        if (min_prime[i] == 0) {
+            min_prime[i] = i;
+            primes.push_back(i);
         }
         for (auto& j : primes) {
-            if (j > min\_prime[i] || j > N / i) break;
-            min\_prime[j * i] = j;
+            if (j > min_prime[i] || j > N / i) break;
+            min_prime[j * i] = j;
         }
     }
     return 1;
@@ -798,14 +798,14 @@ auto getprimes(int n) {
     for (auto& i : primes) {
         if (i > n / i) break;
         if (n % i == 0) {
-            res.push\_back({i, 0});
+            res.push_back({i, 0});
             while (n % i == 0) {
                 n /= i;
                 res.back()[1]++;
             }
         }
     }
-    if (n > 1) res.push\_back({n, 1});
+    if (n > 1) res.push_back({n, 1});
     return res;
 }
 \end{lstlisting}
@@ -813,9 +813,9 @@ auto getprimes(int n) {
 \subsection{pollard rho}
 
 \begin{lstlisting}[style=cpp]
-using LL = \_\_int128\_t;
+using LL = __int128_t;
 
-random\_device rd;
+random_device rd;
 mt19937 seed(rd());
 
 ll power(ll a, ll b, ll mod) {
@@ -830,7 +830,7 @@ ll power(ll a, ll b, ll mod) {
 
 bool isprime(ll n) {
     static array primes{2, 3, 5, 7, 11, 13, 17, 19, 23};
-    static unordered\_map<ll, bool> S;
+    static unordered_map<ll, bool> S;
     if (n < 2) return 0;
     if (S.count(n)) return S[n];
     ll d = n - 1, r = 0;
@@ -851,7 +851,7 @@ bool isprime(ll n) {
     return S[n] = 1;
 }
 
-ll pollard\_rho(ll n) {
+ll pollard_rho(ll n) {
     ll s = 0, t = 0;
     ll c = seed() % (n - 1) + 1;
     ll val = 1;
@@ -869,14 +869,14 @@ ll pollard\_rho(ll n) {
     }
 }
 auto getprimes(ll n) {
-    unordered\_set<ll> S;
+    unordered_set<ll> S;
     auto get = [&](auto self, ll n) {
         if (n < 2) return;
         if (isprime(n)) {
             S.insert(n);
             return;
         }
-        ll mx = pollard\_rho(n);
+        ll mx = pollard_rho(n);
         self(self, n / mx);
         self(self, mx);
     };
@@ -898,7 +898,7 @@ modint C(int n, int m) {
     return C(n % mod, m % mod) * C(n / mod, m / mod);
 }
 
-auto \_ = []() {
+auto _ = []() {
     fac[0] = 1;
     for (int i = 1; i <= N; i++) fac[i] = fac[i - 1] * i;
     ifac[N] = fac[N].inv();
@@ -909,12 +909,12 @@ auto \_ = []() {
 
 \subsection{数论分块}
 
-求解形如 $\sum\_{i=1}^{n}f(i)g(\lfloor\frac{n}{i}\rfloor)$ 的合式
+求解形如 $\sum_{i=1}^{n}f(i)g(\lfloor\frac{n}{i}\rfloor)$ 的合式
 
-$s(n) = \sum\_{i=1}^{n}f(i)$
+$s(n) = \sum_{i=1}^{n}f(i)$
 
 \begin{lstlisting}[style=cpp]
-modint sqrt\_decomposition(int n) {
+modint sqrt_decomposition(int n) {
     auto s = [&](int x) { return x; };
     auto g = [&](int x) { return x; };
     modint res = 0;
@@ -939,10 +939,10 @@ modint sqrt\_decomposition(int n) {
 
 \begin{itemize}
    \item 单位函数：$\varepsilon(n)=[n=1]$。（完全积性）
-   \item 恒等函数：$\operatorname{id}\_k(n)=n^k$。（完全积性）
+   \item 恒等函数：$\operatorname{id}_k(n)=n^k$。（完全积性）
    \item 常数函数：$1(n)=1$。（完全积性）
-   \item 除数函数：$\sigma\_{k}(n)=\sum\_{d\mid n}d^{k}$。$\sigma\_{0}(n)$ 通常简记作 $d(n)$ 或 $\tau(n)$，$\sigma\_{1}(n)$ 通常简记作 $\sigma(n)$。
-   \item 欧拉函数：$\varphi(n)=\sum\_{i=1}^n[\gcd(i,n)=1]$。
+   \item 除数函数：$\sigma_{k}(n)=\sum_{d\mid n}d^{k}$。$\sigma_{0}(n)$ 通常简记作 $d(n)$ 或 $\tau(n)$，$\sigma_{1}(n)$ 通常简记作 $\sigma(n)$。
+   \item 欧拉函数：$\varphi(n)=\sum_{i=1}^n[\gcd(i,n)=1]$。
    \item 莫比乌斯函数：$\mu(n)=\begin{cases}1&n=1\\0&\exists d>1,d^{2}\mid n\\(-1)^{\omega(n)}&\text{otherwise}\end{cases}$，其中 $\omega(n)$ 表示 $n$ 的本质不同质因子个数，它是一个加性函数。
 \end{itemize}
 
@@ -950,7 +950,7 @@ modint sqrt\_decomposition(int n) {
 
 对于两个数论函数 $f(x)$ 和 $g(x)$，则它们的狄利克雷卷积得到的结果 $h(x)$ 定义为：
 
-$h(x)=\sum\_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum\_{ab=x}{f(a)g(b)}$
+$h(x)=\sum_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum_{ab=x}{f(a)g(b)}$
 
 可以简记为：$h=f*g$。
 
@@ -967,11 +967,11 @@ $h(x)=\sum\_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum\_{ab=x}{f(a)g(b)}$
 \subsubsection{例子}
 
 \begin{itemize}
-   \item $\varepsilon=\mu \ast 1\iff\varepsilon(n)=\sum\_{d\mid n}\mu(d)$
-   \item $id = \varphi * 1 \iff id(n)=\sum\_{d\mid n} \varphi(d)$
-   \item $d=1 \ast 1\iff d(n)=\sum\_{d\mid n}1$
-   \item $\sigma=\operatorname{id} \ast 1\iff\sigma(n)=\sum\_{d\mid n}d$
-   \item $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum\_{d\mid n}d\cdot\mu(\frac{n}{d})$
+   \item $\varepsilon=\mu \ast 1\iff\varepsilon(n)=\sum_{d\mid n}\mu(d)$
+   \item $id = \varphi * 1 \iff id(n)=\sum_{d\mid n} \varphi(d)$
+   \item $d=1 \ast 1\iff d(n)=\sum_{d\mid n}1$
+   \item $\sigma=\operatorname{id} \ast 1\iff\sigma(n)=\sum_{d\mid n}d$
+   \item $\varphi=\mu \ast \operatorname{id}\iff\varphi(n)=\sum_{d\mid n}d\cdot\mu(\frac{n}{d})$
 \end{itemize}
 
 \subsection{欧拉函数}
@@ -979,7 +979,7 @@ $h(x)=\sum\_{d\mid x}{f(d)g\left(\dfrac xd \right)}=\sum\_{ab=x}{f(a)g(b)}$
 \begin{lstlisting}[style=cpp]
 constexpr int N = 1e6;
 array<int, N + 1> phi;
-auto \_ = []() {
+auto _ = []() {
     iota(phi.begin() + 1, phi.end(), 1);
     for (int i = 2; i <= N; i++) {
         if (phi[i] == i)
@@ -994,8 +994,8 @@ auto \_ = []() {
 \subsubsection{莫比乌斯函数性质}
 
 \begin{itemize}
-   \item $\sum\_{d\mid n}\mu(d)=\begin{cases}1&n=1\\0&n\neq 1\\\end{cases}$，即 $\sum\_{d\mid n}\mu(d)=\varepsilon(n)$，$\mu * 1 =\varepsilon$
-   \item $\displaystyle [\gcd(i,j)=1]=\sum\_{d\mid\gcd(i,j)}\mu(d)$
+   \item $\sum_{d\mid n}\mu(d)=\begin{cases}1&n=1\\0&n\neq 1\\\end{cases}$，即 $\sum_{d\mid n}\mu(d)=\varepsilon(n)$，$\mu * 1 =\varepsilon$
+   \item $\displaystyle [\gcd(i,j)=1]=\sum_{d\mid\gcd(i,j)}\mu(d)$
 \end{itemize}
 
 \begin{lstlisting}[style=cpp]
@@ -1003,7 +1003,7 @@ constexpr int N = 1e6;
 array<int, N + 1> miu;
 array<bool, N + 1> ispr;
 
-auto \_ = []() {
+auto _ = []() {
     miu.fill(1);
     ispr.fill(1);
     for (int i = 2; i <= N; i++) {
@@ -1021,7 +1021,7 @@ auto \_ = []() {
 
 \subsubsection{莫比乌斯变换/反演}
 
-$f(n)=\sum\_{d\mid n}g(d)$，那么有 $g(n)=\sum\_{d\mid n}\mu(d)f(\frac{n}{d})=\sum\_{n|d}\mu(\frac{d}{n})f(d)$
+$f(n)=\sum_{d\mid n}g(d)$，那么有 $g(n)=\sum_{d\mid n}\mu(d)f(\frac{n}{d})=\sum_{n|d}\mu(\frac{d}{n})f(d)$
 。
 
 用狄利克雷卷积表示则为 $f=g\ast1$，有 $g=f\ast\mu$。
@@ -1030,43 +1030,43 @@ $f \rightarrow g$ 称为莫比乌斯反演，$g \rightarrow f$ 称为莫比乌�
 
 \subsection{杜教筛}
 
-杜教筛被用于处理一类数论函数的前缀和问题。对于数论函数 $f$，杜教筛可以在低于线性时间的复杂度内计算 $S(n)=\sum\_{i=1}^{n}f(i)$。
+杜教筛被用于处理一类数论函数的前缀和问题。对于数论函数 $f$，杜教筛可以在低于线性时间的复杂度内计算 $S(n)=\sum_{i=1}^{n}f(i)$。
 
 $$
 \begin{aligned}
-    S(n) & = \frac{\sum\_{i=1}^n (f * g)(i) - \sum\_{i=2}^n g(i)S\left(\left\lfloor\frac{n}{i}\right\rfloor\right)}{g(1)}
+    S(n) & = \frac{\sum_{i=1}^n (f * g)(i) - \sum_{i=2}^n g(i)S\left(\left\lfloor\frac{n}{i}\right\rfloor\right)}{g(1)}
 \end{aligned}
 $$
 
 可以构造恰当的数论函数 $g$ 使得：
 
 \begin{itemize}
-   \item 可以快速计算 $\sum\_{i=1}^n(f * g)(i)$。
-   \item 可以快速计算 $g$ 的单点值，用数论分块求解 $\sum\_{i=2}^ng(i)S\left(\left\lfloor\frac{n}{i}\right\rfloor\right)$。
+   \item 可以快速计算 $\sum_{i=1}^n(f * g)(i)$。
+   \item 可以快速计算 $g$ 的单点值，用数论分块求解 $\sum_{i=2}^ng(i)S\left(\left\lfloor\frac{n}{i}\right\rfloor\right)$。
 \end{itemize}
 
 \subsubsection{示例}
 
 \begin{lstlisting}[style=cpp]
-ll sum\_phi(ll n) {
+ll sum_phi(ll n) {
     if (n <= N) return sp[n];
     if (sp2.count(n)) return sp2[n];
     ll res = 0, l = 2;
     while (l <= n) {
         ll r = n / (n / l);
-        res = res + (r - l + 1) * sum\_phi(n / l);
+        res = res + (r - l + 1) * sum_phi(n / l);
         l = r + 1;
     }
     return sp2[n] = (ll)n * (n + 1) / 2 - res;
 }
 
-ll sum\_miu(ll n) {
+ll sum_miu(ll n) {
     if (n <= N) return sm[n];
     if (sm2.count(n)) return sm2[n];
     ll res = 0, l = 2;
     while (l <= n) {
         ll r = n / (n / l);
-        res = res + (r - l + 1) * sum\_miu(n / l);
+        res = res + (r - l + 1) * sum_miu(n / l);
         l = r + 1;
     }
     return sm2[n] = 1 - res;
@@ -1076,7 +1076,7 @@ ll sum\_miu(ll n) {
 \subsection{多项式}
 
 \begin{lstlisting}[style=cpp]
-#define countr\_zero(n) \_\_builtin\_ctz(n)
+#define countr_zero(n) __builtin_ctz(n)
 constexpr int N = 1e6;
 array<int, N + 1> inv;
 
@@ -1096,12 +1096,12 @@ vector<int> rev, roots{0, 1};
 void dft(vector<int> &a) {
     int n = a.size();
     if (rev.size() != n) {
-        int k = countr\_zero(n) - 1;
+        int k = countr_zero(n) - 1;
         rev.resize(n);
         for (int i = 0; i < n; ++i) rev[i] = rev[i >> 1] >> 1 | (i & 1) << k;
     }
     if (roots.size() < n) {
-        int k = countr\_zero(roots.size());
+        int k = countr_zero(roots.size());
         roots.resize(n);
         while ((1 << k) < n) {
             int e = power(g, (mod - 1) >> (k + 1));
@@ -1132,14 +1132,14 @@ void idft(vector<int> &a) {
     int n = a.size();
     reverse(a.begin() + 1, a.end());
     dft(a);
-    int inv\_n = power(n, mod - 2);
-    for (int i = 0; i < n; ++i) a[i] = 1ll * a[i] * inv\_n % mod;
+    int inv_n = power(n, mod - 2);
+    for (int i = 0; i < n; ++i) a[i] = 1ll * a[i] * inv_n % mod;
 }
 }  // namespace NFTS
 
 struct poly {
     poly &format() {
-        while (!a.empty() && a.back() == 0) a.pop\_back();
+        while (!a.empty() && a.back() == 0) a.pop_back();
         return *this;
     }
     poly &reverse() {
@@ -1151,7 +1151,7 @@ struct poly {
     poly(int x) {
         if (x) a = {x};
     }
-    poly(const vector<int> &\_a) : a(\_a) {}
+    poly(const vector<int> &_a) : a(_a) {}
     int size() const { return a.size(); }
     int &operator[](int id) { return a[id]; }
     int at(int id) const {
@@ -1190,7 +1190,7 @@ struct poly {
     }
     poly &operator*=(poly rhs) {
         int n = size(), m = rhs.size(), tot = max(1, n + m - 1);
-        int sz = 1 << \_\_lg(tot * 2 - 1);
+        int sz = 1 << __lg(tot * 2 - 1);
         a.resize(sz);
         rhs.a.resize(sz);
         NFTS::dft(a);
@@ -1278,8 +1278,8 @@ struct poly {
         }
         return x.modXn(n);
     }
-    // 减法卷积，也称转置卷积 {\rm MULT}(F(x),G(x))=\sum\_{i\ge0}(\sum\_{j\ge
-    // 0}f\_{i+j}g\_j)x^i
+    // 减法卷积，也称转置卷积 {\rm MULT}(F(x),G(x))=\sum_{i\ge0}(\sum_{j\ge
+    // 0}f_{i+j}g_j)x^i
     poly mulT(poly rhs) const {
         if (rhs.size() == 0) return poly();
         int n = rhs.size();
@@ -1326,7 +1326,7 @@ struct poly {
     }
 };  // 全家桶测试：https://www.luogu.com.cn/training/3015#information
 
-auto \_ = []() {
+auto _ = []() {
     inv[0] = inv[1] = 1;
     for (int i = 2; i < inv.size(); i++)
         inv[i] = 1ll * (mod - mod / i) * inv[mod % i] % mod;
@@ -1356,7 +1356,7 @@ int solve(int n, int m) {
 }
 \end{lstlisting}
 
-若要求不超过  $k$ 个，答案为 $[x^ny^m]\prod\limits\_{i=0}^k \left(\sum\limits\_{j=0}^m x^{ij}y^j\right)$。
+若要求不超过  $k$ 个，答案为 $[x^ny^m]\prod\limits_{i=0}^k \left(\sum\limits_{j=0}^m x^{ij}y^j\right)$。
 
 \subsubsection{球不同，盒同，可空}
 
@@ -1376,31 +1376,31 @@ int solve(int n, int m) {
 }
 \end{lstlisting}
 
-若要求不超过  $k$ 个，答案为 $m! \cdot [x^ny^m]\prod\limits\_{i=0}^k \left(\sum\limits\_{j=0}^n\frac{1}{i!^j} x^{ij}y^j\right)$。
+若要求不超过  $k$ 个，答案为 $m! \cdot [x^ny^m]\prod\limits_{i=0}^k \left(\sum\limits_{j=0}^n\frac{1}{i!^j} x^{ij}y^j\right)$。
 
 \subsubsection{球同，盒不同，可空}
 
-若要求不超过  $k$ 个，答案为 $[x^n]\left(\sum\limits\_{i=0}^kx^i\right)^m = [x^n]\frac{(x^{k+1}-1)^m}{(x-1)^m}$。
+若要求不超过  $k$ 个，答案为 $[x^n]\left(\sum\limits_{i=0}^kx^i\right)^m = [x^n]\frac{(x^{k+1}-1)^m}{(x-1)^m}$。
 
 也可以考虑容斥，令 $f(i)$ 表示至少有 $i$ 个盒子装了 $>k$ 个球方案数，$f(i) = \tbinom{m}{i}\tbinom{n-(k+1)i+m-1}{m-1}$。
 
-总方案数则为 $\sum\limits\_{i=0}^{m}(-1)^if(i)$。
+总方案数则为 $\sum\limits_{i=0}^{m}(-1)^if(i)$。
 
 \subsubsection{球同，盒不同，不可空}
 
-若要求不超过  $k$ 个，答案为 $[x^n]\left(\sum\limits\_{i=1}^kx^i\right)^m = [x^n]\frac{(x^k-1)^mx^m}{(x-1)^m}$。
+若要求不超过  $k$ 个，答案为 $[x^n]\left(\sum\limits_{i=1}^kx^i\right)^m = [x^n]\frac{(x^k-1)^mx^m}{(x-1)^m}$。
 
 也可以考虑容斥，令 $f(i)$ 表示至少有 $i$ 个盒子装了 $>k$ 个球方案数，$f(i) = \tbinom{m}{i}\tbinom{n-ki-1}{m-1}$。
 
-总方案数则为 $\sum\limits\_{i=0}^{m}(-1)^if(i)$。
+总方案数则为 $\sum\limits_{i=0}^{m}(-1)^if(i)$。
 
 \subsubsection{球不同，盒不同，可空}
 
-若要求不超过  $k$ 个，答案为 $m!\cdot[x^n]\left(\sum\limits\_{i=0}^k\frac{1}{i!}x^i\right)^m$。
+若要求不超过  $k$ 个，答案为 $m!\cdot[x^n]\left(\sum\limits_{i=0}^k\frac{1}{i!}x^i\right)^m$。
 
 \subsubsection{球不同，盒不同，不可空}
 
-若要求不超过  $k$ 个，答案为 $m!\cdot[x^n]\left(\sum\limits\_{i=1}^k\frac{1}{i!}x^i\right)^m$。
+若要求不超过  $k$ 个，答案为 $m!\cdot[x^n]\left(\sum\limits_{i=1}^k\frac{1}{i!}x^i\right)^m$。
 
 
 \subsection{线性基}
@@ -1433,7 +1433,7 @@ struct basis {
     }
 
     // 最大异或值
-    ull max\_basis() {
+    ull max_basis() {
         ull res = 0;
         for (int i = 63; i >= 0; i--)
             if ((res ^ p[i]) > res) res ^= p[i];
@@ -1493,7 +1493,7 @@ struct vec {
 
     ll x, y;
     vec() : x(0), y(0) {}
-    vec(ll \_x, ll \_y) : x(\_x), y(\_y) {}
+    vec(ll _x, ll _y) : x(_x), y(_y) {}
 
     // 模
     ll len2() const { return x * x + y * y; }
@@ -1534,7 +1534,7 @@ struct vec {
 ll cross(const vec &a, const vec &b, const vec &c) { return (a - c) ^ (b - c); }
 
 // 多边形的面积a
-double polygon\_area(vector<vec> &p) {
+double polygon_area(vector<vec> &p) {
     ll area = 0;
     for (int i = 1; i < p.size(); i++) area += p[i - 1] ^ p[i];
     area += p.back() ^ p[0];
@@ -1542,7 +1542,7 @@ double polygon\_area(vector<vec> &p) {
 }
 
 // 多边形的周长
-double polygon\_len(vector<vec> &p) {
+double polygon_len(vector<vec> &p) {
     double len = 0;
     for (int i = 1; i < p.size(); i++) len += (p[i - 1] - p[i]).len();
     len += (p.back() - p[0]).len();
@@ -1564,7 +1564,7 @@ ll count(vector<vec> &p) {
 }
 
 // 判断点是否在凸包内，凸包必须为逆时针顺序
-bool in\_polygon(const vec &a, vector<vec> &p) {
+bool in_polygon(const vec &a, vector<vec> &p) {
     int n = p.size();
     if (n == 0) return 0;
     if (n == 1) return a == p[0];
@@ -1573,12 +1573,12 @@ bool in\_polygon(const vec &a, vector<vec> &p) {
     if (cross(a, p[1], p[0]) > 0 || cross(p.back(), a, p[0]) > 0) return 0;
     auto cmp = [&](vec &x, const vec &y) { return ((x - p[0]) ^ y) >= 0; };
     int i =
-        lower\_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
+        lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
     return cross(p[(i + 1) % n], a, p[i]) >= 0;
 }
 
 // 凸包直径的两个端点
-auto polygon\_dia(vector<vec> &p) {
+auto polygon_dia(vector<vec> &p) {
     int n = p.size();
     array<vec, 2> res{};
     if (n == 1) return res;
@@ -1603,7 +1603,7 @@ auto polygon\_dia(vector<vec> &p) {
 }
 
 // 凸包
-auto convex\_hull(vector<vec> &p) {
+auto convex_hull(vector<vec> &p) {
     sort(p.begin(), p.end(), vec::cmp);
     int n = p.size();
     vector sta(n + 1, 0);
@@ -1629,8 +1629,8 @@ auto convex\_hull(vector<vec> &p) {
 
 // 闵可夫斯基和，两个点集的和构成一个凸包
 auto minkowski(vector<vec> &a, vector<vec> &b) {
-    rotate(a.begin(), min\_element(a.begin(), a.end(), vec::cmp), a.end());
-    rotate(b.begin(), min\_element(b.begin(), b.end(), vec::cmp), b.end());
+    rotate(a.begin(), min_element(a.begin(), a.end(), vec::cmp), a.end());
+    rotate(b.begin(), min_element(b.begin(), b.end(), vec::cmp), b.end());
     int n = a.size(), m = b.size();
     vector<vec> c{a[0] + b[0]};
     c.reserve(n + m);
@@ -1638,14 +1638,14 @@ auto minkowski(vector<vec> &a, vector<vec> &b) {
     while (i < n && j < m) {
         vec x = a[(i + 1) % n] - a[i];
         vec y = b[(j + 1) % m] - b[j];
-        c.push\_back(c.back() + ((x ^ y) >= 0 ? (i++, x) : (j++, y)));
+        c.push_back(c.back() + ((x ^ y) >= 0 ? (i++, x) : (j++, y)));
     }
     while (i + 1 < n) {
-        c.push\_back(c.back() + a[(i + 1) % n] - a[i]);
+        c.push_back(c.back() + a[(i + 1) % n] - a[i]);
         i++;
     }
     while (j + 1 < m) {
-        c.push\_back(c.back() + b[(j + 1) % m] - b[j]);
+        c.push_back(c.back() + b[(j + 1) % m] - b[j]);
         j++;
     }
     return c;
@@ -1668,7 +1668,7 @@ auto tangent(const vec &a, vector<vec> &p) {
 struct line {
     vec p, d;
     line() : p(vec()), d(vec()) {}
-    line(const vec &\_p, const vec &\_d) : p(\_p), d(\_d) {}
+    line(const vec &_p, const vec &_d) : p(_p), d(_d) {}
 };
 
 // 点到直线距离
@@ -1677,7 +1677,7 @@ double dis(const vec &a, const line &b) {
 }
 
 // 点在直线哪边，大于0在左边，等于0在线上，小于0在右边
-ll side\_line(const vec &a, const line &b) { return b.d ^ (a - b.p); }
+ll side_line(const vec &a, const line &b) { return b.d ^ (a - b.p); }
 
 // 两直线是否垂直
 bool perpen(const line &a, const line &b) { return a.d * b.d == 0; }
@@ -1694,7 +1694,7 @@ bool perpen(const vec &a, const line &b) {
 }
 
 // 点到线段距离
-double dis\_seg(const vec &a, const line &b) {
+double dis_seg(const vec &a, const line &b) {
     if (perpen(a, b)) return dis(a, b);
     return min((b.p - a).len(), (b.p + b.d - a).len());
 }
@@ -1703,8 +1703,8 @@ double dis\_seg(const vec &a, const line &b) {
 double dis(const vec &a, vector<vec> &p) {
     double res = inf;
     for (int i = 1; i < p.size(); i++)
-        res = min(dis\_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
-    res = min(dis\_seg(a, line(p.back(), p[0] - p.back())), res);
+        res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
     return res;
 }
 
@@ -1732,7 +1732,7 @@ struct vec3 {
 
     ll x, y, z;
     vec3() : x(0), y(0), z(0) {}
-    vec3(ll \_x, ll \_y, ll \_z) : x(\_x), y(\_y), z(\_z) {}
+    vec3(ll _x, ll _y, ll _z) : x(_x), y(_y), z(_z) {}
 
     // 模
     ll len2() const { return x * x + y * y + z * z; }
@@ -1809,7 +1809,7 @@ struct vec {
 
     lf x, y;
     vec() : x(0), y(0) {}
-    vec(lf \_x, lf \_y) : x(\_x), y(\_y) {}
+    vec(lf _x, lf _y) : x(_x), y(_y) {}
 
     // 模
     lf len2() const { return x * x + y * y; }
@@ -1875,7 +1875,7 @@ lf cross(const vec &a, const vec &b, const vec &c) { return (a - c) ^ (b - c); }
 lf angle(const vec &a, const vec &b) { return atan2(abs(a ^ b), a * b); }
 
 // 多边形的面积
-lf polygon\_area(vector<vec> &p) {
+lf polygon_area(vector<vec> &p) {
     lf area = 0;
     for (int i = 1; i < p.size(); i++) area += p[i - 1] ^ p[i];
     area += p.back() ^ p[0];
@@ -1883,7 +1883,7 @@ lf polygon\_area(vector<vec> &p) {
 }
 
 // 多边形的周长
-lf polygon\_len(vector<vec> &p) {
+lf polygon_len(vector<vec> &p) {
     lf len = 0;
     for (int i = 1; i < p.size(); i++) len += (p[i - 1] - p[i]).len();
     len += (p.back() - p[0]).len();
@@ -1891,7 +1891,7 @@ lf polygon\_len(vector<vec> &p) {
 }
 
 // 判断点是否在凸包内，凸包必须为逆时针顺序
-bool in\_polygon(const vec &a, vector<vec> &p) {
+bool in_polygon(const vec &a, vector<vec> &p) {
     int n = p.size();
     if (n == 0) return 0;
     if (n == 1) return a == p[0];
@@ -1905,12 +1905,12 @@ bool in\_polygon(const vec &a, vector<vec> &p) {
         return sgn((x - p[0]) ^ y, 0) >= 0;
     };
     int i =
-        lower\_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
+        lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
     return sgn(cross(p[(i + 1) % n], a, p[i]), 0) >= 0;
 }
 
 // 凸包直径的两个端点
-auto polygon\_dia(vector<vec> &p) {
+auto polygon_dia(vector<vec> &p) {
     int n = p.size();
     array<vec, 2> res{};
     if (n == 1) return res;
@@ -1935,7 +1935,7 @@ auto polygon\_dia(vector<vec> &p) {
 }
 
 // 凸包
-auto convex\_hull(vector<vec> &p) {
+auto convex_hull(vector<vec> &p) {
     sort(p.begin(), p.end(), vec::cmp);
     int n = p.size();
     vector sta(n + 1, 0);
@@ -1961,8 +1961,8 @@ auto convex\_hull(vector<vec> &p) {
 
 // 闵可夫斯基和，两个点集的和构成一个凸包
 auto minkowski(vector<vec> &a, vector<vec> &b) {
-    rotate(a.begin(), min\_element(a.begin(), a.end(), vec::cmp), a.end());
-    rotate(b.begin(), min\_element(b.begin(), b.end(), vec::cmp), b.end());
+    rotate(a.begin(), min_element(a.begin(), a.end(), vec::cmp), a.end());
+    rotate(b.begin(), min_element(b.begin(), b.end(), vec::cmp), b.end());
     int n = a.size(), m = b.size();
     vector<vec> c{a[0] + b[0]};
     c.reserve(n + m);
@@ -1970,14 +1970,14 @@ auto minkowski(vector<vec> &a, vector<vec> &b) {
     while (i < n && j < m) {
         vec x = a[(i + 1) % n] - a[i];
         vec y = b[(j + 1) % m] - b[j];
-        c.push\_back(c.back() + (sgn(x ^ y, 0) >= 0 ? (i++, x) : (j++, y)));
+        c.push_back(c.back() + (sgn(x ^ y, 0) >= 0 ? (i++, x) : (j++, y)));
     }
     while (i + 1 < n) {
-        c.push\_back(c.back() + a[(i + 1) % n] - a[i]);
+        c.push_back(c.back() + a[(i + 1) % n] - a[i]);
         i++;
     }
     while (j + 1 < m) {
-        c.push\_back(c.back() + b[(j + 1) % m] - b[j]);
+        c.push_back(c.back() + b[(j + 1) % m] - b[j]);
         j++;
     }
     return c;
@@ -2000,7 +2000,7 @@ auto tangent(const vec &a, vector<vec> &p) {
 struct line {
     vec p, d;
     line() : p(vec()), d(vec()) {}
-    line(const vec &\_p, const vec &\_d) : p(\_p), d(\_d) {}
+    line(const vec &_p, const vec &_d) : p(_p), d(_d) {}
 };
 
 // 点到直线距离
@@ -2009,7 +2009,7 @@ lf dis(const vec &a, const line &b) {
 }
 
 // 点在直线哪边，大于0在左边，等于0在线上，小于0在右边
-int side\_line(const vec &a, const line &b) { return sgn(b.d ^ (a - b.p), 0); }
+int side_line(const vec &a, const line &b) { return sgn(b.d ^ (a - b.p), 0); }
 
 // 两直线是否垂直
 bool perpen(const line &a, const line &b) { return sgn(a.d * b.d, 0) == 0; }
@@ -2026,7 +2026,7 @@ bool perpen(const vec &a, const line &b) {
 }
 
 // 点到线段距离
-lf dis\_seg(const vec &a, const line &b) {
+lf dis_seg(const vec &a, const line &b) {
     if (perpen(a, b)) return dis(a, b);
     return min((b.p - a).len(), (b.p + b.d - a).len());
 }
@@ -2035,8 +2035,8 @@ lf dis\_seg(const vec &a, const line &b) {
 lf dis(const vec &a, vector<vec> &p) {
     lf res = inf;
     for (int i = 1; i < p.size(); i++)
-        res = min(dis\_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
-    res = min(dis\_seg(a, line(p.back(), p[0] - p.back())), res);
+        res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
     return res;
 }
 
@@ -2055,7 +2055,7 @@ vec intersection(const line &a, const line &b) {
 struct circle {
     vec o;
     lf r;
-    circle(const vec &\_o, lf \_r) : o(\_o), r(\_r){};
+    circle(const vec &_o, lf _r) : o(_o), r(_r){};
 
     // 点与圆的关系 -1在圆内，0在圆上，1在圆外
     int relation(const vec &a) const { return sgn((a - o).len(), r); }
@@ -2078,11 +2078,11 @@ auto intersection(const circle &c, const line &l) {
     lf d = dis(c.o, l);
     vector<vec> res;
     vec mid = l.p + l.d.e() * ((c.o - l.p) * l.d / l.d.len());
-    if (sgn(d, c.r) == 0) res.push\_back(mid);
+    if (sgn(d, c.r) == 0) res.push_back(mid);
     else if (sgn(d, c.r) < 0) {
         d = sqrt(c.r * c.r - d * d);
-        res.push\_back(mid + l.d.e() * d);
-        res.push\_back(mid - l.d.e() * d);
+        res.push_back(mid + l.d.e() * d);
+        res.push_back(mid - l.d.e() * d);
     }
     return res;
 }
@@ -2091,14 +2091,14 @@ auto intersection(const circle &c, const line &l) {
 lf area(const circle &c, const vec &a, const vec &b) {
     if (sgn(cross(a, b, c.o), 0) == 0) return 0;
     vector<vec> p;
-    p.push\_back(a);
+    p.push_back(a);
     line l(a, b - a);
     auto tmp = intersection(c, l);
     if (tmp.size() == 2) {
         for (auto &i : tmp)
-            if (sgn((a - i) * (b - i), 0) < 0) p.push\_back(i);
+            if (sgn((a - i) * (b - i), 0) < 0) p.push_back(i);
     }
-    p.push\_back(b);
+    p.push_back(b);
     if (p.size() == 4 && sgn((p[0] - p[1]) * (p[2] - p[1]), 0) > 0)
         swap(p[1], p[2]);
     lf res = 0;
@@ -2136,7 +2136,7 @@ int sgn(lf a, lf b) {
 struct vec3 {
     lf x, y, z;
     vec3() : x(0), y(0), z(0) {}
-    vec3(lf \_x, lf \_y, lf \_z) : x(\_x), y(\_y), z(\_z) {}
+    vec3(lf _x, lf _y, lf _z) : x(_x), y(_y), z(_z) {}
 
     // 模
     lf len2() const { return x * x + y * y + z * z; }
@@ -2206,46 +2206,46 @@ vec3 intersection(const line3 &a, const plane &b) {
 #define rs (ls | 1)
 #define mid ((tree[pos].l + tree[pos].r) >> 1)
 struct Rectangle {
-    ll x\_l, y\_l, x\_r, y\_r;
+    ll x_l, y_l, x_r, y_r;
 };
 ll area(vector<Rectangle>& rec) {
     struct Line {
-        ll x, y\_up, y\_down;
+        ll x, y_up, y_down;
         int pd;
     };
     vector<Line> line(rec.size() * 2);
-    vector<ll> y\_set(rec.size() * 2);
+    vector<ll> y_set(rec.size() * 2);
     for (int i = 0; i < rec.size(); i++) {
-        y\_set[i * 2] = rec[i].y\_l;
-        y\_set[i * 2 + 1] = rec[i].y\_r;
-        line[i * 2] = {rec[i].x\_l, rec[i].y\_r, rec[i].y\_l, 1};
-        line[i * 2 + 1] = {rec[i].x\_r, rec[i].y\_r, rec[i].y\_l, -1};
+        y_set[i * 2] = rec[i].y_l;
+        y_set[i * 2 + 1] = rec[i].y_r;
+        line[i * 2] = {rec[i].x_l, rec[i].y_r, rec[i].y_l, 1};
+        line[i * 2 + 1] = {rec[i].x_r, rec[i].y_r, rec[i].y_l, -1};
     }
-    sort(y\_set.begin(), y\_set.end());
-    y\_set.erase(unique(y\_set.begin(), y\_set.end()), y\_set.end());
+    sort(y_set.begin(), y_set.end());
+    y_set.erase(unique(y_set.begin(), y_set.end()), y_set.end());
     sort(line.begin(), line.end(), [](Line a, Line b) { return a.x < b.x; });
     struct Data {
         int l, r;
-        ll len, cnt, raw\_len;
+        ll len, cnt, raw_len;
     };
-    vector<Data> tree(4 * y\_set.size());
+    vector<Data> tree(4 * y_set.size());
     function<void(int, int, int)> build = [&](int pos, int l, int r) {
         tree[pos].l = l;
         tree[pos].r = r;
         if (l == r) {
-            tree[pos].raw\_len = y\_set[r + 1] - y\_set[l];
+            tree[pos].raw_len = y_set[r + 1] - y_set[l];
             tree[pos].cnt = tree[pos].len = 0;
             return;
         }
         build(ls, l, mid);
         build(rs, mid + 1, r);
-        tree[pos].raw\_len = tree[ls].raw\_len + tree[rs].raw\_len;
+        tree[pos].raw_len = tree[ls].raw_len + tree[rs].raw_len;
     };
     function<void(int, int, int, int)> update = [&](int pos, int l, int r,
                                                     int num) {
         if (l <= tree[pos].l && tree[pos].r <= r) {
             tree[pos].cnt += num;
-            tree[pos].len = tree[pos].cnt ? tree[pos].raw\_len
+            tree[pos].len = tree[pos].cnt ? tree[pos].raw_len
                             : tree[pos].l == tree[pos].r
                                 ? 0
                                 : tree[ls].len + tree[rs].len;
@@ -2254,15 +2254,15 @@ ll area(vector<Rectangle>& rec) {
         if (l <= mid) update(ls, l, r, num);
         if (r > mid) update(rs, l, r, num);
         tree[pos].len =
-            tree[pos].cnt ? tree[pos].raw\_len : tree[ls].len + tree[rs].len;
+            tree[pos].cnt ? tree[pos].raw_len : tree[ls].len + tree[rs].len;
     };
-    build(1, 0, y\_set.size() - 2);
-    auto find\_pos = [&](ll num) {
-        return lower\_bound(y\_set.begin(), y\_set.end(), num) - y\_set.begin();
+    build(1, 0, y_set.size() - 2);
+    auto find_pos = [&](ll num) {
+        return lower_bound(y_set.begin(), y_set.end(), num) - y_set.begin();
     };
     ll res = 0;
     for (int i = 0; i < line.size() - 1; i++) {
-        update(1, find\_pos(line[i].y\_down), find\_pos(line[i].y\_up) - 1,
+        update(1, find_pos(line[i].y_down), find_pos(line[i].y_up) - 1,
                line[i].pd);
         res += (line[i + 1].x - line[i].x) * tree[1].len;
     }
@@ -2319,13 +2319,13 @@ struct bignum {
     bignum(const string& num) : num(num) {
         reverse(this->num.begin(), this->num.end());
     }
-    bignum(ll num) : num(to\_string(num)) {
+    bignum(ll num) : num(to_string(num)) {
         reverse(this->num.begin(), this->num.end());
     }
 
     bignum operator+(const bignum& other) {
         bignum res;
-        res.num.pop\_back();
+        res.num.pop_back();
         res.num.reserve(max(num.size(), other.num.size()) + 1);
         for (int i = 0, j = 0, x; i < num.size() || i < other.num.size() || j;
              i++) {
@@ -2334,7 +2334,7 @@ struct bignum {
             if (i < num.size()) x += num[i] - '0';
             if (i < other.num.size()) x += other.num[i] - '0';
             if (x >= 10) j = 1, x -= 10;
-            res.num.push\_back(x + '0');
+            res.num.push_back(x + '0');
         }
         res.num.capacity();
         return res;
@@ -2352,7 +2352,7 @@ struct bignum {
             res[i] %= 10;
         }
         while (g) {
-            res.push\_back(g % 10);
+            res.push_back(g % 10);
             g /= 10;
         }
         int lim = res.size();
@@ -2396,7 +2396,7 @@ struct Hash {
         a = vector<T>(S.size());
     }
     T& operator[](int i) const {
-        auto pos = lower\_bound(S.begin(), S.end(), i) - S.begin();
+        auto pos = lower_bound(S.begin(), S.end(), i) - S.begin();
         assert(pos != S.size() && S[pos] == i);
         return a[pos];
     }
@@ -2421,7 +2421,7 @@ T power(T a, int b) {
 
 struct modint {
     int x;
-    modint(int \_x = 0) : x(\_x) {
+    modint(int _x = 0) : x(_x) {
         if (x < 0) x += mod;
         else if (x >= mod) x -= mod;
     }
@@ -2432,9 +2432,9 @@ struct modint {
     modint operator*(const modint& b) { return int((ll)x * b.x % mod); }
     modint operator/(const modint& b) { return *this * b.inv(); }
     friend istream& operator>>(istream& is, modint& other) {
-        ll \_x;
-        is >> \_x;
-        other = modint(\_x);
+        ll _x;
+        is >> _x;
+        other = modint(_x);
         return is;
     }
     friend ostream& operator<<(ostream& os, modint other) {
@@ -2449,7 +2449,7 @@ struct modint {
 struct frac {
     ll a, b;
     frac() : a(0), b(1) {}
-    frac(ll \_a, ll \_b) : a(\_a), b(\_b) {
+    frac(ll _a, ll _b) : a(_a), b(_b) {
         assert(b);
         if (a) {
             int tmp = gcd(a, b);
@@ -2506,7 +2506,7 @@ string format(const string& s1) {
 
 // 中缀表达式转后缀表达式
 string convert(const string& s1) {
-    unordered\_map<char, int> rank{
+    unordered_map<char, int> rank{
         {'+', 2}, {'-', 2}, {'*', 1}, {'/', 1}, {'^', 0}};
     stringstream ss(s1);
     string s2, temp;
@@ -2583,7 +2583,7 @@ struct Date {
     }
     int dis() const {
         int yd = (y - 1) * 365 +
-                 (upper\_bound(leap.begin(), leap.end(), y - 1) - leap.begin());
+                 (upper_bound(leap.begin(), leap.end(), y - 1) - leap.begin());
         int md =
             pre[m - 1] + (m > 2 && (y % 4 == 0 && y % 100 || y % 400 == 0));
         return yd + md + d;
@@ -2592,18 +2592,18 @@ struct Date {
 };
 for (int i = 1; i <= 12; i++) pre[i] = pre[i - 1] + month[2];
 for (int i = 1; i <= 1000000; i++)
-    if (i % 4 == 0 && i % 100 || i % 400 == 0) leap.push\_back(i);
+    if (i % 4 == 0 && i % 100 || i % 400 == 0) leap.push_back(i);
 \end{lstlisting}
 
-\subsection{\_\_builtin函数}
+\subsection{builtin函数}
 
 如果是 long long 型，记得函数后多加个 ll。
 
 \begin{itemize}
-   \item \_\_builtin\_ctz，从最低位连续的 0 的个数，如果传入 0 则行为未定义。
-   \item \_\_builtin\_clz，从最高位连续的 0 的个数，如果传入 0 则行为未定义。
-   \item \_\_bulitin\_popcount，二进制 1 的个数。
-   \item \_\_builtin\_parity，二进制 1 的个数奇偶性。 
+   \item ctz，从最低位连续的 0 的个数，如果传入 0 则行为未定义。
+   \item clz，从最高位连续的 0 的个数，如果传入 0 则行为未定义。
+   \item popcount，二进制 1 的个数。
+   \item parity，二进制 1 的个数奇偶性。 
 \end{itemize}
 
 \subsection{对拍}
@@ -2662,7 +2662,7 @@ if not errorlevel 1 goto again
 \begin{lstlisting}[style=cpp]
 ulimit -s
 -Wl,--stack=0x10000000
--Wl,-stack\_size -Wl,0x10000000
+-Wl,-stack_size -Wl,0x10000000
 -Wl,-z,stack-size=0x10000000
 \end{lstlisting}
 
