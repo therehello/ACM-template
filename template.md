@@ -1711,6 +1711,72 @@ vec intersection(const line &a, const line &b) {
 }
 ```
 
+三维
+
+```cpp
+// 向量
+struct vec3 {
+    static bool cmp(const vec3 &a, const vec3 &b) {
+        return tie(a.x, a.y, a.z) < tie(b.x, b.y, b.z);
+    }
+
+    ll x, y, z;
+    vec3() : x(0), y(0), z(0) {}
+    vec3(ll _x, ll _y, ll _z) : x(_x), y(_y), z(_z) {}
+
+    // 模
+    ll len2() const { return x * x + y * y + z * z; }
+    double len() const { return hypot(x, y, z); }
+
+    bool operator==(const vec3 &b) const {
+        return tie(x, y, z) == tie(b.x, b.y, b.z);
+    }
+    bool operator!=(const vec3 &b) const { return !(*this == b); }
+
+    vec3 operator+(const vec3 &b) const { return {x + b.x, y + b.y, z + b.z}; }
+    vec3 operator-() const { return {-x, -y, -z}; }
+    vec3 operator-(const vec3 &b) const { return -b + (*this); }
+    vec3 operator*(ll b) const { return {b * x, b * y, b * z}; }
+    ll operator*(const vec3 &b) const { return x * b.x + y * b.y + z * b.z; }
+
+    // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
+    // 等于0共线，可能同向或反向，结果绝对值表示 a b 形成的平行四边行的面积
+    vec3 operator^(const vec3 &b) const {
+        return {y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x};
+    }
+
+    friend istream &operator>>(istream &in, vec3 &data) {
+        in >> data.x >> data.y >> data.z;
+        return in;
+    }
+    friend ostream &operator<<(ostream &out, const vec3 &data) {
+        out << fixed << setprecision(6);
+        out << data.x << " " << data.y << " " << data.z;
+        return out;
+    }
+};
+
+struct line3 {
+    vec3 p, d;
+    line3() {}
+    line3(const vec3 &a, const vec3 &b) : p(a), d(b - a) {}
+};
+
+struct plane {
+    vec3 p, d;
+    plane() {}
+    plane(const vec3 &a, const vec3 &b, const vec3 &c) : p(a) {
+        d = (b - a) ^ (c - a);
+        assert(d != vec3());
+    }
+};
+
+// 线面是否垂直
+bool perpen(const line3 &a, const plane &b) { return (a.d ^ b.d) == vec3(); }
+
+// 线面是否平行
+bool parallel(const line3 &a, const plane &b) { return a.d * b.d == 0; }
+```
 ### 浮点数
 
 ```cpp
@@ -2043,6 +2109,83 @@ lf area(vector<vec> &p, circle c) {
         else res -= area(c, p[i], p[j]);
     }
     return abs(res);
+}
+```
+
+三维
+
+```cpp
+constexpr lf eps = 1e-8;
+
+int sgn(lf a, lf b) {
+    lf c = a - b;
+    return c < -eps ? -1 : c < eps ? 0 : 1;
+}
+
+// 向量
+struct vec3 {
+    lf x, y, z;
+    vec3() : x(0), y(0), z(0) {}
+    vec3(lf _x, lf _y, lf _z) : x(_x), y(_y), z(_z) {}
+
+    // 模
+    lf len2() const { return x * x + y * y + z * z; }
+    lf len() const { return hypot(x, y, z); }
+
+    bool operator==(const vec3 &b) const {
+        return sgn(x, b.x) == 0 && sgn(y, b.y) == 0 && sgn(z, b.z) == 0;
+    }
+    bool operator!=(const vec3 &b) const { return !(*this == b); }
+
+    vec3 operator+(const vec3 &b) const { return {x + b.x, y + b.y, z + b.z}; }
+    vec3 operator-() const { return {-x, -y, -z}; }
+    vec3 operator-(const vec3 &b) const { return -b + (*this); }
+    vec3 operator*(lf b) const { return {b * x, b * y, b * z}; }
+    lf operator*(const vec3 &b) const { return x * b.x + y * b.y + z * b.z; }
+
+    // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
+    // 等于0共线，可能同向或反向，结果绝对值表示 a b 形成的平行四边行的面积
+    vec3 operator^(const vec3 &b) const {
+        return {y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x};
+    }
+
+    friend istream &operator>>(istream &in, vec3 &a) {
+        in >> a.x >> a.y >> a.z;
+        return in;
+    }
+    friend ostream &operator<<(ostream &out, const vec3 &a) {
+        out << fixed << setprecision(6);
+        out << a.x << " " << a.y << " " << a.z;
+        return out;
+    }
+};
+
+struct line3 {
+    vec3 p, d;
+    line3() {}
+    line3(const vec3 &a, const vec3 &b) : p(a), d(b - a) {}
+};
+
+struct plane {
+    vec3 p, d;
+    plane() {}
+    plane(const vec3 &a, const vec3 &b, const vec3 &c) : p(a) {
+        d = (b - a) ^ (c - a);
+        assert(d != vec3());
+    }
+};
+
+// 线面是否垂直
+bool perpen(const line3 &a, const plane &b) { return (a.d ^ b.d) == vec3(); }
+
+// 线面是否平行
+bool parallel(const line3 &a, const plane &b) { return sgn(a.d * b.d, 0) == 0; }
+
+// 线面交点
+vec3 intersection(const line3 &a, const plane &b) {
+    assert(!parallel(a, b));
+    double t = (b.p - a.p) * b.d / (a.d * b.d);
+    return a.p + a.d * t;
 }
 ```
 
