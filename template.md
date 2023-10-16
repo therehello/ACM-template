@@ -84,9 +84,7 @@
 struct dsu {
     int n;
     vector<int> fa, sz;
-    dsu(int _n) : n(_n), fa(n + 1), sz(n + 1, 1) {
-        iota(fa.begin(), fa.end(), 0);
-    }
+    dsu(int _n) : n(_n), fa(n + 1), sz(n + 1, 1) { iota(fa.begin(), fa.end(), 0); }
     int find(int x) { return x == fa[x] ? x : fa[x] = find(fa[x]); }
     int merge(int x, int y) {
         int fax = find(x), fay = find(y);
@@ -141,8 +139,7 @@ struct Fenwick_tree_2 {
                 for (int j = r; j; j -= lowbit(j)) res += tree[i][j];
             return res;
         };
-        return query(l2, r2) - query(l2, r1 - 1) - query(l1 - 1, r2) +
-               query(l1 - 1, r1 - 1);
+        return query(l2, r2) - query(l2, r1 - 1) - query(l1 - 1, r2) + query(l1 - 1, r1 - 1);
     }
     void update(int x, int y, T num) {
         for (int i = x; i <= n; i += lowbit(i))
@@ -160,10 +157,7 @@ private:
 template <class T>
 struct Fenwick_tree_3 {
     Fenwick_tree_3(int n, int m, int k)
-        : n(n),
-          m(m),
-          k(k),
-          tree(n + 1, vector<vector<T>>(m + 1, vector<T>(k + 1))) {}
+        : n(n), m(m), k(k), tree(n + 1, vector<vector<T>>(m + 1, vector<T>(k + 1))) {}
     T query(int a, int b, int c, int d, int e, int f) {
         auto query = [&](int x, int y, int z) {
             T res = 0;
@@ -174,8 +168,7 @@ struct Fenwick_tree_3 {
         };
         T res = query(d, e, f);
         res -= query(a - 1, e, f) + query(d, b - 1, f) + query(d, e, c - 1);
-        res += query(a - 1, b - 1, f) + query(a - 1, e, c - 1) +
-               query(d, b - 1, c - 1);
+        res += query(a - 1, b - 1, f) + query(a - 1, e, c - 1) + query(d, b - 1, c - 1);
         res -= query(a - 1, b - 1, c - 1);
         return res;
     }
@@ -209,13 +202,10 @@ private:
         Data data;
     };
     vector<Tree> tree;
-    inline void pushup(int pos) {
-        tree[pos].data = tree[pos << 1].data + tree[pos << 1 | 1].data;
-    }
+    inline void pushup(int pos) { tree[pos].data = tree[pos << 1].data + tree[pos << 1 | 1].data; }
     inline void pushdown(int pos) {
         tree[pos << 1].data = tree[pos << 1].data + tree[pos].data.lazytag;
-        tree[pos << 1 | 1].data =
-            tree[pos << 1 | 1].data + tree[pos].data.lazytag;
+        tree[pos << 1 | 1].data = tree[pos << 1 | 1].data + tree[pos].data.lazytag;
         tree[pos].data.lazytag = Num::zero();
     }
     void build(vector<Data>& a, int pos, int l, int r) {
@@ -257,12 +247,8 @@ struct Data {
     ll sum, len;
     Num lazytag;
     inline static Data zero() { return {0, 0, Num::zero()}; }
-    inline Data operator+(Num b) {
-        return {sum + len * b.add, len, lazytag + b};
-    }
-    inline Data operator+(Data b) {
-        return {sum + b.sum, len + b.len, Num::zero()};
-    }
+    inline Data operator+(Num b) { return {sum + len * b.add, len, lazytag + b}; }
+    inline Data operator+(Data b) { return {sum + b.sum, len + b.len, Num::zero()}; }
 };
 ```
 ### 普通平衡树
@@ -572,8 +558,7 @@ void hld(int root) {
 ```cpp
 void tarjan(Graph& g1, Graph& g2) {
     int dfn_tail = 0, cnt = 0;
-    vector<int> dfn(g1.n + 1, 0), low(g1.n + 1, 0), exist(g1.n + 1, 0),
-        belong(g1.n + 1, 0);
+    vector<int> dfn(g1.n + 1, 0), low(g1.n + 1, 0), exist(g1.n + 1, 0), belong(g1.n + 1, 0);
     stack<int> sta;
     function<void(int)> dfs = [&](int t) {
         dfn[t] = low[t] = ++dfn_tail;
@@ -652,8 +637,7 @@ auto kmp(string& s) {
 ```cpp
 constexpr int N = 1e6;
 int pow_base[N + 1][2];
-constexpr ll mod[2] = {(int)2e9 + 11, (int)2e9 + 33},
-             base[2] = {(int)2e5 + 11, (int)2e5 + 33};
+constexpr ll mod[2] = {(int)2e9 + 11, (int)2e9 + 33}, base[2] = {(int)2e5 + 11, (int)2e5 + 33};
 
 struct Hash {
     int size;
@@ -671,8 +655,7 @@ struct Hash {
     array<int, 2> get(int l, int r) const {
         if (l == 0) return a[r];
         auto getone = [&](bool f) {
-            int x =
-                (a[r][f] - 1ll * a[l - 1][f] * pow_base[r - l + 1][f]) % mod[f];
+            int x = (a[r][f] - 1ll * a[l - 1][f] * pow_base[r - l + 1][f]) % mod[f];
             if (x < 0) x += mod[f];
             return x;
         };
@@ -699,8 +682,7 @@ auto manacher(const string& _s) {
     vector r(s.size(), 0);
     for (int i = 0, maxr = 0, mid = 0; i < s.size(); i++) {
         if (i < maxr) r[i] = min(r[mid * 2 - i], maxr - i);
-        while (i - r[i] - 1 >= 0 && i + r[i] + 1 < s.size() &&
-               s[i - r[i] - 1] == s[i + r[i] + 1])
+        while (i - r[i] - 1 >= 0 && i + r[i] + 1 < s.size() && s[i - r[i] - 1] == s[i + r[i] + 1])
             ++r[i];
         if (i + r[i] > maxr) maxr = i + r[i], mid = i;
     }
@@ -1250,9 +1232,7 @@ struct poly {
         return x.modXn(n);
     }
     // 需要保证首项为 1
-    poly log(int n) const {
-        return (derivation() * inv(n)).integral().modXn(n);
-    }
+    poly log(int n) const { return (derivation() * inv(n)).integral().modXn(n); }
     // 需要保证首项为 0
     poly exp(int n) const {
         poly x(1);
@@ -1324,8 +1304,7 @@ struct poly {
 
 auto _ = []() {
     inv[0] = inv[1] = 1;
-    for (int i = 2; i < inv.size(); i++)
-        inv[i] = 1ll * (mod - mod / i) * inv[mod % i] % mod;
+    for (int i = 2; i < inv.size(); i++) inv[i] = 1ll * (mod - mod / i) * inv[mod % i] % mod;
     return true;
 }();
 ```
@@ -1341,8 +1320,7 @@ $n$ 个球，$m$ 个盒
 int solve(int n, int m) {
     vector a(n + 1, 0);
     for (int i = 1; i <= m; i++)
-        for (int j = i, k = 1; j <= n; j += i, k++)
-            a[j] = (a[j] + inv[k]) % mod;
+        for (int j = i, k = 1; j <= n; j += i, k++) a[j] = (a[j] + inv[k]) % mod;
     auto p = poly(a).exp(n + 1);
     return (p.a[n] + mod) % mod;
 }
@@ -1449,9 +1427,7 @@ struct Mat {
         for (int i = 0; i < res.n; i++)
             for (int j = 0; j < res.m; j++)
                 for (int k = 0; k < m; k++)
-                    res.mat[i][j] =
-                        (res.mat[i][j] + mat[i][k] * other.mat[k][j] % mod) %
-                        mod;
+                    res.mat[i][j] = (res.mat[i][j] + mat[i][k] * other.mat[k][j] % mod) % mod;
         return res;
     }
 };
@@ -1477,9 +1453,7 @@ constexpr double inf = 1e100;
 
 // 向量
 struct vec {
-    static bool cmp(const vec &a, const vec &b) {
-        return tie(a.x, a.y) < tie(b.x, b.y);
-    }
+    static bool cmp(const vec &a, const vec &b) { return tie(a.x, a.y) < tie(b.x, b.y); }
 
     ll x, y;
     vec() : x(0), y(0) {}
@@ -1558,12 +1532,10 @@ bool in_polygon(const vec &a, vector<vec> &p) {
     int n = p.size();
     if (n == 0) return 0;
     if (n == 1) return a == p[0];
-    if (n == 2)
-        return cross(a, p[1], p[0]) == 0 && (p[0] - a) * (p[1] - a) <= 0;
+    if (n == 2) return cross(a, p[1], p[0]) == 0 && (p[0] - a) * (p[1] - a) <= 0;
     if (cross(a, p[1], p[0]) > 0 || cross(p.back(), a, p[0]) > 0) return 0;
     auto cmp = [&](vec &x, const vec &y) { return ((x - p[0]) ^ y) >= 0; };
-    int i =
-        lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
+    int i = lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
     return cross(p[(i + 1) % n], a, p[i]) >= 0;
 }
 
@@ -1601,8 +1573,7 @@ auto convex_hull(vector<vec> &p) {
     int tp = -1;
     sta[++tp] = 0;
     auto update = [&](int lim, int i) {
-        while (tp > lim && cross(p[i], p[sta[tp]], p[sta[tp - 1]]) >= 0)
-            v[sta[tp--]] = 0;
+        while (tp > lim && cross(p[i], p[sta[tp]], p[sta[tp - 1]]) >= 0) v[sta[tp--]] = 0;
         sta[++tp] = i;
         v[i] = 1;
     };
@@ -1662,9 +1633,7 @@ struct line {
 };
 
 // 点到直线距离
-double dis(const vec &a, const line &b) {
-    return abs((b.p - a) ^ (b.p + b.d - a)) / b.d.len();
-}
+double dis(const vec &a, const line &b) { return abs((b.p - a) ^ (b.p + b.d - a)) / b.d.len(); }
 
 // 点在直线哪边，大于0在左边，等于0在线上，小于0在右边
 ll side_line(const vec &a, const line &b) { return b.d ^ (a - b.p); }
@@ -1692,22 +1661,20 @@ double dis_seg(const vec &a, const line &b) {
 // 点到凸包距离
 double dis(const vec &a, vector<vec> &p) {
     double res = inf;
-    for (int i = 1; i < p.size(); i++)
-        res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    for (int i = 1; i < p.size(); i++) res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
     res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
     return res;
 }
 
 // 两直线交点
 vec intersection(ll A, ll B, ll C, ll D, ll E, ll F) {
-    return {(B * F - C * E) / (A * E - B * D),
-            (C * D - A * F) / (A * E - B * D)};
+    return {(B * F - C * E) / (A * E - B * D), (C * D - A * F) / (A * E - B * D)};
 }
 
 // 两直线交点
 vec intersection(const line &a, const line &b) {
-    return intersection(a.d.y, -a.d.x, a.d.x * a.p.y - a.d.y * a.p.x, b.d.y,
-                        -b.d.x, b.d.x * b.p.y - b.d.y * b.p.x);
+    return intersection(a.d.y, -a.d.x, a.d.x * a.p.y - a.d.y * a.p.x, b.d.y, -b.d.x,
+                        b.d.x * b.p.y - b.d.y * b.p.x);
 }
 ```
 
@@ -1728,9 +1695,7 @@ struct vec3 {
     ll len2() const { return x * x + y * y + z * z; }
     double len() const { return hypot(x, y, z); }
 
-    bool operator==(const vec3 &b) const {
-        return tie(x, y, z) == tie(b.x, b.y, b.z);
-    }
+    bool operator==(const vec3 &b) const { return tie(x, y, z) == tie(b.x, b.y, b.z); }
     bool operator!=(const vec3 &b) const { return !(*this == b); }
 
     vec3 operator+(const vec3 &b) const { return {x + b.x, y + b.y, z + b.z}; }
@@ -1814,8 +1779,7 @@ struct vec {
 
     // 逆时针旋转
     vec rotate(const lf &theta) const {
-        return {x * cos(theta) - y * sin(theta),
-                y * cos(theta) + x * sin(theta)};
+        return {x * cos(theta) - y * sin(theta), y * cos(theta) + x * sin(theta)};
     }
 
     vec e() const {
@@ -1824,13 +1788,9 @@ struct vec {
     }
 
     // 是否在上半轴
-    bool up() const {
-        return sgn(y, 0) > 0 || sgn(y, 0) == 0 && sgn(x, 0) >= 0;
-    }
+    bool up() const { return sgn(y, 0) > 0 || sgn(y, 0) == 0 && sgn(x, 0) >= 0; }
 
-    bool operator==(const vec &other) const {
-        return sgn(x, other.x) == 0 && sgn(y, other.y) == 0;
-    }
+    bool operator==(const vec &other) const { return sgn(x, other.x) == 0 && sgn(y, other.y) == 0; }
     // 极角排序
     bool operator<(const vec &b) const {
         if (up() != b.up()) return up() > b.up();
@@ -1885,17 +1845,10 @@ bool in_polygon(const vec &a, vector<vec> &p) {
     int n = p.size();
     if (n == 0) return 0;
     if (n == 1) return a == p[0];
-    if (n == 2)
-        return sgn(cross(a, p[1], p[0]), 0) == 0 &&
-               sgn((p[0] - a) * (p[1] - a), 0) <= 0;
-    if (sgn(cross(a, p[1], p[0]), 0) > 0 ||
-        sgn(cross(p.back(), a, p[0]), 0) > 0)
-        return 0;
-    auto cmp = [&](vec &x, const vec &y) {
-        return sgn((x - p[0]) ^ y, 0) >= 0;
-    };
-    int i =
-        lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
+    if (n == 2) return sgn(cross(a, p[1], p[0]), 0) == 0 && sgn((p[0] - a) * (p[1] - a), 0) <= 0;
+    if (sgn(cross(a, p[1], p[0]), 0) > 0 || sgn(cross(p.back(), a, p[0]), 0) > 0) return 0;
+    auto cmp = [&](vec &x, const vec &y) { return sgn((x - p[0]) ^ y, 0) >= 0; };
+    int i = lower_bound(p.begin() + 2, p.end() - 1, a - p[0], cmp) - p.begin() - 1;
     return sgn(cross(p[(i + 1) % n], a, p[i]), 0) >= 0;
 }
 
@@ -1933,8 +1886,7 @@ auto convex_hull(vector<vec> &p) {
     int tp = -1;
     sta[++tp] = 0;
     auto update = [&](int lim, int i) {
-        while (tp > lim && sgn(cross(p[i], p[sta[tp]], p[sta[tp - 1]]), 0) >= 0)
-            v[sta[tp--]] = 0;
+        while (tp > lim && sgn(cross(p[i], p[sta[tp]], p[sta[tp - 1]]), 0) >= 0) v[sta[tp--]] = 0;
         sta[++tp] = i;
         v[i] = 1;
     };
@@ -1994,9 +1946,7 @@ struct line {
 };
 
 // 点到直线距离
-lf dis(const vec &a, const line &b) {
-    return abs((b.p - a) ^ (b.p + b.d - a)) / b.d.len();
-}
+lf dis(const vec &a, const line &b) { return abs((b.p - a) ^ (b.p + b.d - a)) / b.d.len(); }
 
 // 点在直线哪边，大于0在左边，等于0在线上，小于0在右边
 int side_line(const vec &a, const line &b) { return sgn(b.d ^ (a - b.p), 0); }
@@ -2024,22 +1974,20 @@ lf dis_seg(const vec &a, const line &b) {
 // 点到凸包距离
 lf dis(const vec &a, vector<vec> &p) {
     lf res = inf;
-    for (int i = 1; i < p.size(); i++)
-        res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    for (int i = 1; i < p.size(); i++) res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
     res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
     return res;
 }
 
 // 两直线交点
 vec intersection(lf A, lf B, lf C, lf D, lf E, lf F) {
-    return {(B * F - C * E) / (A * E - B * D),
-            (C * D - A * F) / (A * E - B * D)};
+    return {(B * F - C * E) / (A * E - B * D), (C * D - A * F) / (A * E - B * D)};
 }
 
 // 两直线交点
 vec intersection(const line &a, const line &b) {
-    return intersection(a.d.y, -a.d.x, a.d.x * a.p.y - a.d.y * a.p.x, b.d.y,
-                        -b.d.x, b.d.x * b.p.y - b.d.y * b.p.x);
+    return intersection(a.d.y, -a.d.x, a.d.x * a.p.y - a.d.y * a.p.x, b.d.y, -b.d.x,
+                        b.d.x * b.p.y - b.d.y * b.p.x);
 }
 
 struct circle {
@@ -2089,8 +2037,7 @@ lf area(const circle &c, const vec &a, const vec &b) {
             if (sgn((a - i) * (b - i), 0) < 0) p.push_back(i);
     }
     p.push_back(b);
-    if (p.size() == 4 && sgn((p[0] - p[1]) * (p[2] - p[1]), 0) > 0)
-        swap(p[1], p[2]);
+    if (p.size() == 4 && sgn((p[0] - p[1]) * (p[2] - p[1]), 0) > 0) swap(p[1], p[2]);
     lf res = 0;
     for (int i = 1; i < p.size(); i++)
         if (c.relation(p[i - 1]) == 1 || c.relation(p[i]) == 1) {
@@ -2231,20 +2178,17 @@ ll area(vector<Rectangle>& rec) {
         build(rs, mid + 1, r);
         tree[pos].raw_len = tree[ls].raw_len + tree[rs].raw_len;
     };
-    function<void(int, int, int, int)> update = [&](int pos, int l, int r,
-                                                    int num) {
+    function<void(int, int, int, int)> update = [&](int pos, int l, int r, int num) {
         if (l <= tree[pos].l && tree[pos].r <= r) {
             tree[pos].cnt += num;
-            tree[pos].len = tree[pos].cnt ? tree[pos].raw_len
-                            : tree[pos].l == tree[pos].r
-                                ? 0
-                                : tree[ls].len + tree[rs].len;
+            tree[pos].len = tree[pos].cnt                ? tree[pos].raw_len
+                            : tree[pos].l == tree[pos].r ? 0
+                                                         : tree[ls].len + tree[rs].len;
             return;
         }
         if (l <= mid) update(ls, l, r, num);
         if (r > mid) update(rs, l, r, num);
-        tree[pos].len =
-            tree[pos].cnt ? tree[pos].raw_len : tree[ls].len + tree[rs].len;
+        tree[pos].len = tree[pos].cnt ? tree[pos].raw_len : tree[ls].len + tree[rs].len;
     };
     build(1, 0, y_set.size() - 2);
     auto find_pos = [&](ll num) {
@@ -2252,8 +2196,7 @@ ll area(vector<Rectangle>& rec) {
     };
     ll res = 0;
     for (int i = 0; i < line.size() - 1; i++) {
-        update(1, find_pos(line[i].y_down), find_pos(line[i].y_up) - 1,
-               line[i].pd);
+        update(1, find_pos(line[i].y_down), find_pos(line[i].y_up) - 1, line[i].pd);
         res += (line[i + 1].x - line[i].x) * tree[1].len;
     }
     return res;
@@ -2304,19 +2247,14 @@ struct bignum {
     string num;
 
     bignum() : num("0") {}
-    bignum(const string& num) : num(num) {
-        reverse(this->num.begin(), this->num.end());
-    }
-    bignum(ll num) : num(to_string(num)) {
-        reverse(this->num.begin(), this->num.end());
-    }
+    bignum(const string& num) : num(num) { reverse(this->num.begin(), this->num.end()); }
+    bignum(ll num) : num(to_string(num)) { reverse(this->num.begin(), this->num.end()); }
 
     bignum operator+(const bignum& other) {
         bignum res;
         res.num.pop_back();
         res.num.reserve(max(num.size(), other.num.size()) + 1);
-        for (int i = 0, j = 0, x; i < num.size() || i < other.num.size() || j;
-             i++) {
+        for (int i = 0, j = 0, x; i < num.size() || i < other.num.size() || j; i++) {
             x = j;
             j = 0;
             if (i < num.size()) x += num[i] - '0';
@@ -2425,9 +2363,7 @@ struct modint {
         other = modint(_x);
         return is;
     }
-    friend ostream& operator<<(ostream& os, modint other) {
-        return os << other.x;
-    }
+    friend ostream& operator<<(ostream& os, modint other) { return os << other.x; }
 };
 ```
 
@@ -2445,18 +2381,14 @@ struct frac {
             b /= tmp;
         } else *this = frac();
     }
-    frac operator+(const frac& other) {
-        return frac(a * other.b + other.a * b, b * other.b);
-    }
+    frac operator+(const frac& other) { return frac(a * other.b + other.a * b, b * other.b); }
     frac operator-() const {
         frac res = *this;
         res.a = -res.a;
         return res;
     }
     frac operator-(const frac& other) const { return -other + *this; }
-    frac operator*(const frac& other) const {
-        return frac(a * other.a, b * other.b);
-    }
+    frac operator*(const frac& other) const { return frac(a * other.a, b * other.b); }
     frac operator/(const frac& other) const {
         assert(other.a);
         return *this * frac(other.b, other.a);
@@ -2465,9 +2397,7 @@ struct frac {
     bool operator<=(const frac& other) const { return (*this - other).a <= 0; }
     bool operator>=(const frac& other) const { return (*this - other).a >= 0; }
     bool operator>(const frac& other) const { return (*this - other).a > 0; }
-    bool operator==(const frac& other) const {
-        return a == other.a && b == other.b;
-    }
+    bool operator==(const frac& other) const { return a == other.a && b == other.b; }
     bool operator!=(const frac& other) const { return !(*this == other); }
 };
 ```
@@ -2494,8 +2424,7 @@ string format(const string& s1) {
 
 // 中缀表达式转后缀表达式
 string convert(const string& s1) {
-    unordered_map<char, int> rank{
-        {'+', 2}, {'-', 2}, {'*', 1}, {'/', 1}, {'^', 0}};
+    unordered_map<char, int> rank{{'+', 2}, {'-', 2}, {'*', 1}, {'/', 1}, {'^', 0}};
     stringstream ss(s1);
     string s2, temp;
     stack<char> op;
@@ -2561,8 +2490,7 @@ vector<int> leap;
 struct Date {
     int y, m, d;
     bool operator<(const Date& other) const {
-        return array<int, 3>{y, m, d} <
-               array<int, 3>{other.y, other.m, other.d};
+        return array<int, 3>{y, m, d} < array<int, 3>{other.y, other.m, other.d};
     }
     Date(const string& s) {
         stringstream ss(s);
@@ -2570,10 +2498,8 @@ struct Date {
         ss >> y >> ch >> m >> ch >> d;
     }
     int dis() const {
-        int yd = (y - 1) * 365 +
-                 (upper_bound(leap.begin(), leap.end(), y - 1) - leap.begin());
-        int md =
-            pre[m - 1] + (m > 2 && (y % 4 == 0 && y % 100 || y % 400 == 0));
+        int yd = (y - 1) * 365 + (upper_bound(leap.begin(), leap.end(), y - 1) - leap.begin());
+        int md = pre[m - 1] + (m > 2 && (y % 4 == 0 && y % 100 || y % 400 == 0));
         return yd + md + d;
     }
     int dis(const Date& other) const { return other.dis() - dis(); }
