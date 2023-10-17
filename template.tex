@@ -874,7 +874,7 @@ constexpr int N = 1e6;
 array<modint, N + 1> fac, ifac;
 
 modint C(int n, int m) {
-    if (n < m) return 0;
+    if (m < 0 || m > n) return 0;
     if (n <= mod) return fac[n] * ifac[m] * ifac[n - m];
     // n >= mod 时需要这个
     return C(n % mod, m % mod) * C(n / mod, m / mod);
