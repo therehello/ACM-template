@@ -29,7 +29,7 @@
     - [扩展欧几里得](#%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97)
     - [线性代数](#%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0)
         - [向量公约数](#%E5%90%91%E9%87%8F%E5%85%AC%E7%BA%A6%E6%95%B0)
-    - [线性筛法](#%E7%BA%BF%E6%80%A7%E7%AD%9B%E6%B3%95)
+    - [筛法](#%E7%AD%9B%E6%B3%95)
     - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
     - [pollard rho](#pollard-rho)
     - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
@@ -755,21 +755,165 @@ array<vec, 2> gcd(array<vec, 2> g, vec a) {
 }
 ```
 
-### 线性筛法
+### 筛法
+
+primes
 
 ```cpp
-constexpr int N = 10000000;
-array<int, N + 1> min_prime;
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
 vector<int> primes;
-bool ok = []() {
+bool _ = []() {
+    ispr.set();
+    ispr[0] = ispr[1] = 0;
     for (int i = 2; i <= N; i++) {
-        if (min_prime[i] == 0) {
-            min_prime[i] = i;
+        if (!ispr[i]) continue;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) ispr[j] = 0;
+    }
+    return 1;
+}();
+```
+
+$\varphi$
+
+```cpp
+constexpr int N = 1e7;
+array<int, N + 1> phi;
+auto _ = []() {
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (phi[i] == i)
+            for (int j = i; j <= N; j += i) phi[j] = phi[j] / i * (i - 1);
+    }
+    return true;
+}();
+```
+
+$\mu$
+
+```cpp
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> mu;
+auto _ = []() {
+    mu.fill(1);
+    ispr.set();
+    mu[0] = ispr[0] = ispr[1] = 0;
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        mu[i] = -1;
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if (j / i % i == 0) mu[j] = 0;
+            else mu[j] *= -1;
+        }
+    }
+    return true;
+}();
+```
+
+prime $\varphi$
+
+```cpp
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> phi;
+vector<int> primes;
+bool _ = []() {
+    ispr.set();
+    ispr[0] = ispr[1] = 0;
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        phi[i] = i - 1;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            phi[j] = phi[j] / i * (i - 1);
+        }
+    }
+    return 1;
+}();
+```
+
+prime $\mu$
+
+```cpp
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> mu;
+vector<int> primes;
+bool _ = []() {
+    mu.fill(1);
+    ispr.set();
+    mu[0] = ispr[0] = ispr[1] = 0;
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        mu[i] = -1;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if (j / i % i == 0) mu[j] = 0;
+            else mu[j] *= -1;
+        }
+    }
+    return 1;
+}();
+```
+
+prime $\mu$ $\varphi$
+
+```cpp
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> mu, phi;
+vector<int> primes;
+bool _ = []() {
+    mu.fill(1);
+    ispr.set();
+    mu[0] = ispr[0] = ispr[1] = 0;
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        mu[i] = -1;
+        phi[i] = i - 1;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if (j / i % i == 0) mu[j] = 0;
+            else mu[j] *= -1;
+            phi[j] = phi[j] / i * (i - 1);
+        }
+    }
+    return 1;
+}();
+```
+
+```cpp
+constexpr int N = 1e7;
+array<int, N + 1> minpr, mu, phi;
+vector<int> primes;
+bool _ = []() {
+    phi[1] = mu[1] = 1;
+    for (int i = 2; i <= N; i++) {
+        if (minpr[i] == 0) {
+            minpr[i] = i;
+            mu[i] = -1;
+            phi[i] = i - 1;
             primes.push_back(i);
         }
         for (auto& j : primes) {
-            if (j > min_prime[i] || j > N / i) break;
-            min_prime[j * i] = j;
+            if (i * j > N) break;
+            minpr[i * j] = j;
+            if (j < minpr[i]) {
+                phi[i * j] = phi[i] * phi[j];
+                mu[i * j] = -mu[i];
+            } else {
+                mu[i * j] = 0;
+                phi[i * j] = phi[i] * j;
+                break;
+            }
         }
     }
     return 1;

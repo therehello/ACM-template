@@ -751,21 +751,165 @@ array<vec, 2> gcd(array<vec, 2> g, vec a) {
 }
 \end{lstlisting}
 
-\subsection{线性筛法}
+\subsection{筛法}
+
+primes
 
 \begin{lstlisting}[style=cpp]
-constexpr int N = 10000000;
-array<int, N + 1> min_prime;
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
 vector<int> primes;
-bool ok = []() {
+bool _ = []() {
+    ispr.set();
+    ispr[0] = ispr[1] = 0;
     for (int i = 2; i <= N; i++) {
-        if (min_prime[i] == 0) {
-            min_prime[i] = i;
+        if (!ispr[i]) continue;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) ispr[j] = 0;
+    }
+    return 1;
+}();
+\end{lstlisting}
+
+$\varphi$
+
+\begin{lstlisting}[style=cpp]
+constexpr int N = 1e7;
+array<int, N + 1> phi;
+auto _ = []() {
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (phi[i] == i)
+            for (int j = i; j <= N; j += i) phi[j] = phi[j] / i * (i - 1);
+    }
+    return true;
+}();
+\end{lstlisting}
+
+$\mu$
+
+\begin{lstlisting}[style=cpp]
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> mu;
+auto _ = []() {
+    mu.fill(1);
+    ispr.set();
+    mu[0] = ispr[0] = ispr[1] = 0;
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        mu[i] = -1;
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if (j / i % i == 0) mu[j] = 0;
+            else mu[j] *= -1;
+        }
+    }
+    return true;
+}();
+\end{lstlisting}
+
+prime $\varphi$
+
+\begin{lstlisting}[style=cpp]
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> phi;
+vector<int> primes;
+bool _ = []() {
+    ispr.set();
+    ispr[0] = ispr[1] = 0;
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        phi[i] = i - 1;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            phi[j] = phi[j] / i * (i - 1);
+        }
+    }
+    return 1;
+}();
+\end{lstlisting}
+
+prime $\mu$
+
+\begin{lstlisting}[style=cpp]
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> mu;
+vector<int> primes;
+bool _ = []() {
+    mu.fill(1);
+    ispr.set();
+    mu[0] = ispr[0] = ispr[1] = 0;
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        mu[i] = -1;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if (j / i % i == 0) mu[j] = 0;
+            else mu[j] *= -1;
+        }
+    }
+    return 1;
+}();
+\end{lstlisting}
+
+prime $\mu$ $\varphi$
+
+\begin{lstlisting}[style=cpp]
+constexpr int N = 1e7;
+bitset<N + 1> ispr;
+array<int, N + 1> mu, phi;
+vector<int> primes;
+bool _ = []() {
+    mu.fill(1);
+    ispr.set();
+    mu[0] = ispr[0] = ispr[1] = 0;
+    iota(phi.begin() + 1, phi.end(), 1);
+    for (int i = 2; i <= N; i++) {
+        if (!ispr[i]) continue;
+        mu[i] = -1;
+        phi[i] = i - 1;
+        primes.push_back(i);
+        for (int j = 2 * i; j <= N; j += i) {
+            ispr[j] = 0;
+            if (j / i % i == 0) mu[j] = 0;
+            else mu[j] *= -1;
+            phi[j] = phi[j] / i * (i - 1);
+        }
+    }
+    return 1;
+}();
+\end{lstlisting}
+
+\begin{lstlisting}[style=cpp]
+constexpr int N = 1e7;
+array<int, N + 1> minpr, mu, phi;
+vector<int> primes;
+bool _ = []() {
+    phi[1] = mu[1] = 1;
+    for (int i = 2; i <= N; i++) {
+        if (minpr[i] == 0) {
+            minpr[i] = i;
+            mu[i] = -1;
+            phi[i] = i - 1;
             primes.push_back(i);
         }
         for (auto& j : primes) {
-            if (j > min_prime[i] || j > N / i) break;
-            min_prime[j * i] = j;
+            if (i * j > N) break;
+            minpr[i * j] = j;
+            if (j < minpr[i]) {
+                phi[i * j] = phi[i] * phi[j];
+                mu[i * j] = -mu[i];
+            } else {
+                mu[i * j] = 0;
+                phi[i * j] = phi[i] * j;
+                break;
+            }
         }
     }
     return 1;
