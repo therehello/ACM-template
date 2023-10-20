@@ -2509,9 +2509,9 @@ struct modint {
     }
     modint inv() const { return power(*this, mod - 2); }
     modint operator+(const modint& b) { return x + b.x; }
-    modint operator-() const { return {-x}; }
+    modint operator-() const { return -x; }
     modint operator-(const modint& b) { return -b + *this; }
-    modint operator*(const modint& b) { return int((ll)x * b.x % mod); }
+    modint operator*(const modint& b) { return (ll)x * b.x % mod; }
     modint operator/(const modint& b) { return *this * b.inv(); }
     friend istream& operator>>(istream& is, modint& other) {
         ll _x;
