@@ -1033,6 +1033,24 @@ auto _ = []() {
 }();
 \end{lstlisting}
 
+\subsubsection{常用式子}
+
+\begin{itemize}
+   \item $\binom{n}{k} = \frac{n}{k} \binom{n-1}{k-1}$
+   \item $\binom{n}{k} = \frac{n-k}{k} \binom{n}{k-1}$
+   \item $\sum_{i=0}^n(-1)^i\binom{n}{i}=[n=0]$
+   \item $\sum_{i=0}^m \binom{n}{i}\binom{m}{i} = \binom{m+n}{m}$
+   \item $\sum_{i=0}^n\binom{n}{i}^2=\binom{2n}{n}$
+   \item $\sum_{i=0}^ni\binom{n}{i}=n2^{n-1}$
+   \item $\sum_{i=0}^ni^2\binom{n}{i}=n(n+1)2^{n-2}$
+   \item $\sum_{l=0}^n\binom{l}{k} = \binom{n+1}{k+1}$
+   \item $\binom{n}{r}\binom{r}{k} = \binom{n}{k}\binom{n-k}{r-k}$
+   \item $\sum_{i=0}^n\binom{n-i}{i}=F_{n+1}$，其中 $F$ 是斐波那契数列。
+   \item $\sum_{i=0}^k\dbinom{n}{i}\dbinom{m}{k-i}=\dbinom{n+m}{k}$
+   \item $\sum_{i=1}^{n}\dbinom{n}{i}\dbinom{n}{i-1}=\dbinom{2n}{n+1}$
+   \item $m^n = \sum_{i=0}^{m}{n \brace i}\binom{m}{i}i!$
+\end{itemize}
+
 \subsection{数论分块}
 
 求解形如 $\sum_{i=1}^{n}f(i)g(\lfloor\frac{n}{i}\rfloor)$ 的合式

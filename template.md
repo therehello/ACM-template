@@ -33,6 +33,7 @@
     - [分解质因数](#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0)
     - [pollard rho](#pollard-rho)
     - [组合数](#%E7%BB%84%E5%90%88%E6%95%B0)
+        - [常用式子](#%E5%B8%B8%E7%94%A8%E5%BC%8F%E5%AD%90)
     - [数论分块](#%E6%95%B0%E8%AE%BA%E5%88%86%E5%9D%97)
     - [积性函数](#%E7%A7%AF%E6%80%A7%E5%87%BD%E6%95%B0)
         - [定义](#%E5%AE%9A%E4%B9%89)
@@ -1036,6 +1037,22 @@ auto _ = []() {
     return true;
 }();
 ```
+
+#### 常用式子
+
+- $\binom{n}{k} = \frac{n}{k} \binom{n-1}{k-1}$
+- $\binom{n}{k} = \frac{n-k}{k} \binom{n}{k-1}$
+- $\sum_{i=0}^n(-1)^i\binom{n}{i}=[n=0]$
+- $\sum_{i=0}^m \binom{n}{i}\binom{m}{i} = \binom{m+n}{m}$
+- $\sum_{i=0}^n\binom{n}{i}^2=\binom{2n}{n}$
+- $\sum_{i=0}^ni\binom{n}{i}=n2^{n-1}$
+- $\sum_{i=0}^ni^2\binom{n}{i}=n(n+1)2^{n-2}$
+- $\sum_{l=0}^n\binom{l}{k} = \binom{n+1}{k+1}$
+- $\binom{n}{r}\binom{r}{k} = \binom{n}{k}\binom{n-k}{r-k}$
+- $\sum_{i=0}^n\binom{n-i}{i}=F_{n+1}$，其中 $F$ 是斐波那契数列。
+- $\sum_{i=0}^k\dbinom{n}{i}\dbinom{m}{k-i}=\dbinom{n+m}{k}$
+- $\sum_{i=1}^{n}\dbinom{n}{i}\dbinom{n}{i-1}=\dbinom{2n}{n+1}$
+- $m^n = \sum_{i=0}^{m}{n \brace i}\binom{m}{i}i!$
 
 ### 数论分块
 
