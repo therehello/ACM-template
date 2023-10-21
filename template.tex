@@ -1631,6 +1631,9 @@ struct vec {
     vec() : x(0), y(0) {}
     vec(ll _x, ll _y) : x(_x), y(_y) {}
 
+    vec rotleft() const { return {-y, x}; }
+    vec rotright() const { return {y, -x}; }
+
     // 模
     ll len2() const { return x * x + y * y; }
     double len() const { return sqrt(x * x + y * y); }
@@ -1800,8 +1803,8 @@ auto tangent(const vec &a, vector<vec> &p) {
 // 直线
 struct line {
     vec p, d;
-    line() : p(vec()), d(vec()) {}
-    line(const vec &_p, const vec &_d) : p(_p), d(_d) {}
+    line() {}
+    line(const vec &a, const vec &b) : p(a), d(b - a) {}
 };
 
 // 点到直线距离
@@ -1833,7 +1836,7 @@ double dis_seg(const vec &a, const line &b) {
 // 点到凸包距离
 double dis(const vec &a, vector<vec> &p) {
     double res = inf;
-    for (int i = 1; i < p.size(); i++) res = min(dis_seg(a, line(p[i - 1], p[i] - p[i - 1])), res);
+    for (int i = 1; i < p.size(); i++) res = min(dis_seg(a, line(p[i - 1], p[i])), res);
     res = min(dis_seg(a, line(p.back(), p[0] - p.back())), res);
     return res;
 }
@@ -1849,71 +1852,6 @@ vec intersection(const line &a, const line &b) {
                         b.d.x * b.p.y - b.d.y * b.p.x);
 }
 \end{lstlisting}
-
-三维
-
-\begin{lstlisting}[style=cpp]
-// 向量
-struct vec3 {
-    static bool cmp(const vec3 &a, const vec3 &b) {
-        return tie(a.x, a.y, a.z) < tie(b.x, b.y, b.z);
-    }
-
-    ll x, y, z;
-    vec3() : x(0), y(0), z(0) {}
-    vec3(ll _x, ll _y, ll _z) : x(_x), y(_y), z(_z) {}
-
-    // 模
-    ll len2() const { return x * x + y * y + z * z; }
-    double len() const { return hypot(x, y, z); }
-
-    bool operator==(const vec3 &b) const { return tie(x, y, z) == tie(b.x, b.y, b.z); }
-    bool operator!=(const vec3 &b) const { return !(*this == b); }
-
-    vec3 operator+(const vec3 &b) const { return {x + b.x, y + b.y, z + b.z}; }
-    vec3 operator-() const { return {-x, -y, -z}; }
-    vec3 operator-(const vec3 &b) const { return -b + (*this); }
-    vec3 operator*(ll b) const { return {b * x, b * y, b * z}; }
-    ll operator*(const vec3 &b) const { return x * b.x + y * b.y + z * b.z; }
-
-    // 叉积 结果大于0，a到b为逆时针，小于0，a到b顺时针,
-    // 等于0共线，可能同向或反向，结果绝对值表示 a b 形成的平行四边行的面积
-    vec3 operator^(const vec3 &b) const {
-        return {y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x};
-    }
-
-    friend istream &operator>>(istream &in, vec3 &data) {
-        in >> data.x >> data.y >> data.z;
-        return in;
-    }
-    friend ostream &operator<<(ostream &out, const vec3 &data) {
-        out << fixed << setprecision(6);
-        out << data.x << " " << data.y << " " << data.z;
-        return out;
-    }
-};
-
-struct line3 {
-    vec3 p, d;
-    line3() {}
-    line3(const vec3 &a, const vec3 &b) : p(a), d(b - a) {}
-};
-
-struct plane {
-    vec3 p, d;
-    plane() {}
-    plane(const vec3 &a, const vec3 &b, const vec3 &c) : p(a) {
-        d = (b - a) ^ (c - a);
-        assert(d != vec3());
-    }
-};
-
-// 线面是否垂直
-bool perpen(const line3 &a, const plane &b) { return (a.d ^ b.d) == vec3(); }
-
-// 线面是否平行
-bool parallel(const line3 &a, const plane &b) { return a.d * b.d == 0; }
-\end{lstlisting}
 \subsection{浮点数}
 
 \begin{lstlisting}[style=cpp]
@@ -1925,7 +1863,7 @@ const lf PI = acos(-1);
 
 int sgn(lf a, lf b) {
     lf c = a - b;
-    return c < -eps ? -1 : c < eps ? 0 : 1;
+    return c < -eps ? -1 : c > eps ? 1 : 0;
 }
 
 // 向量
@@ -1936,7 +1874,9 @@ struct vec {
 
     lf x, y;
     vec() : x(0), y(0) {}
-    vec(lf _x, lf _y) : x(_x), y(_y) {}
+    vec(lf _x, lf _y) : x(_x), y(_y) {
+        if (sgn(y, 0) == 0) y = 0;
+    }
 
     // 模
     lf len2() const { return x * x + y * y; }
@@ -1951,8 +1891,14 @@ struct vec {
 
     // 逆时针旋转
     vec rotate(const lf &theta) const {
-        return {x * cos(theta) - y * sin(theta), y * cos(theta) + x * sin(theta)};
+        lf sint = sin(theta);
+        lf cost = cos(theta);
+        return {x * cost - y * sint, x * sint + y * cost};
     }
+
+    vec rotleft() const { return {-y, x}; }
+
+    vec rotright() const { return {y, -x}; }
 
     vec e() const {
         lf tmp = len();
@@ -1963,6 +1909,7 @@ struct vec {
     bool up() const { return sgn(y, 0) > 0 || sgn(y, 0) == 0 && sgn(x, 0) >= 0; }
 
     bool operator==(const vec &other) const { return sgn(x, other.x) == 0 && sgn(y, other.y) == 0; }
+
     // 极角排序
     bool operator<(const vec &b) const {
         if (up() != b.up()) return up() > b.up();
@@ -2113,8 +2060,8 @@ auto tangent(const vec &a, vector<vec> &p) {
 // 直线
 struct line {
     vec p, d;
-    line() : p(vec()), d(vec()) {}
-    line(const vec &_p, const vec &_d) : p(_p), d(_d) {}
+    line() {}
+    line(const vec &a, const vec &b) : p(a), d(b - a) {}
 };
 
 // 点到直线距离
@@ -2166,6 +2113,24 @@ struct circle {
     vec o;
     lf r;
     circle(const vec &_o, lf _r) : o(_o), r(_r){};
+    circle(const vec &a, const vec &b, const vec &c) {
+        line u((a + b) / 2, (a + b) / 2 + (b - a).rotleft());
+        line v((b + c) / 2, (b + c) / 2 + (c - b).rotleft());
+        o = intersection(u, v);
+        r = (o - a).len();
+    }
+    // 内切圆
+    circle(const vec &a, const vec &b, const vec &c, bool t) {
+        line u, v;
+        double m = atan2(b.y - a.y, b.x - a.x), n = atan2(c.y - a.y, c.x - a.x);
+        u.p = a;
+        u.d = vec(cos((n + m) / 2), sin((n + m) / 2));
+        v.p = b;
+        m = atan2(a.y - b.y, a.x - b.x), n = atan2(c.y - b.y, c.x - b.x);
+        v.d = vec(cos((n + m) / 2), sin((n + m) / 2));
+        o = intersection(u, v);
+        r = dis_seg(o, line(a, b));
+    }
 
     // 点与圆的关系 -1在圆内，0在圆上，1在圆外
     int relation(const vec &a) const { return sgn((a - o).len(), r); }
@@ -2182,6 +2147,24 @@ struct circle {
 
     lf area() { return PI * r * r; }
 };
+
+// 圆与圆交点
+auto intersection(const circle &a, const circle &b) {
+    int rel = a.relation(b);
+    vector<vec> res;
+    if (rel == -3 || rel == 1) return res;
+    vec o = b.o - a.o;
+    lf l = (o.len2() + a.r * a.r - b.r * b.r) / (2 * o.len());
+    lf h = sqrt(a.r * a.r - l * l);
+    o = o.e();
+    vec tmp = a.o + o * l;
+    if (rel == -2 || rel == 0) res.push_back(tmp);
+    else {
+        res.push_back(tmp + o.rotleft() * h);
+        res.push_back(tmp + o.rotright() * h);
+    }
+    return res;
+}
 
 // 圆与直线交点
 auto intersection(const circle &c, const line &l) {
@@ -2202,7 +2185,7 @@ lf area(const circle &c, const vec &a, const vec &b) {
     if (sgn(cross(a, b, c.o), 0) == 0) return 0;
     vector<vec> p;
     p.push_back(a);
-    line l(a, b - a);
+    line l(a, b);
     auto tmp = intersection(c, l);
     if (tmp.size() == 2) {
         for (auto &i : tmp)
