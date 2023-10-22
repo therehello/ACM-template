@@ -2708,7 +2708,7 @@ if not errorlevel 1 goto again
 ### 编译常用选项
 
 ```bash
--Wall -Woverflow -Wextra -Wpedantic -Wfloat-equal -Wshadow -fsanitize=address,undefined
+-fsanitize=address,undefined -Woverflow -Wshadow -Wall -Wextra -Wpedantic -Wfloat-equal  
 ```
 
 ### 开栈
