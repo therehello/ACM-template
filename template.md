@@ -11,6 +11,7 @@
     - [线段树](#%E7%BA%BF%E6%AE%B5%E6%A0%91)
     - [普通平衡树](#%E6%99%AE%E9%80%9A%E5%B9%B3%E8%A1%A1%E6%A0%91)
         - [树状数组实现](#%E6%A0%91%E7%8A%B6%E6%95%B0%E7%BB%84%E5%AE%9E%E7%8E%B0)
+        - [集合平衡树](#%E9%9B%86%E5%90%88%E5%B9%B3%E8%A1%A1%E6%A0%91)
     - [可持久化线段树](#%E5%8F%AF%E6%8C%81%E4%B9%85%E5%8C%96%E7%BA%BF%E6%AE%B5%E6%A0%91)
     - [st 表](#st-%E8%A1%A8)
 - [图论](#%E5%9B%BE%E8%AE%BA)
@@ -339,10 +340,89 @@ struct treap {
     }
 
     // 小于x，最大的数
-    T prev(T x) { return kth(sum(pos(x) - 1)); }
+    optional<T> prev(T x) {
+        int k = pos(x) - 1;
+        if (k == 0) return nullopt;
+        return kth(sum(k));
+    }
 
     // 大于x，最小的数
-    T next(T x) { return kth(sum(pos(x)) + 1); }
+    optional<T> next(T x) {
+        int k = sum(pos(x)) + 1;
+        if (k == size + 1) return nullopt;
+        return kth(sum(k));
+    }
+};
+```
+
+#### 集合平衡树
+
+```cpp
+template <typename T = ull>
+struct treap_set {
+    static constexpr int w = 64;
+    static constexpr T bit(int i) { return (T)1 << i; }
+    int n;
+    vector<vector<T>> nodes;
+
+    treap_set(int _n) : n(_n) {
+        do {
+            nodes.emplace_back(_n = (_n + w - 1) / w);
+        } while (_n > 1);
+    }
+    treap_set(const string &s) : n(s.size()) {
+        int _n = n;
+        do {
+            nodes.emplace_back(_n = (_n + w - 1) / w);
+        } while (_n > 1);
+        for (int i = 0; i < n; i++)
+            if (s[i] == '1') nodes[0][i / w] |= bit(i % w);
+        for (int i = 1; i < nodes.size(); i++) {
+            for (int j = 0; j < nodes[i - 1].size(); j++)
+                if (nodes[i - 1][j]) nodes[i][j / w] |= bit(j % w);
+        }
+    }
+    void clear() {
+        for (auto &i : nodes) fill(i.begin(), i.end(), 0);
+    }
+    void insert(int k) {
+        for (auto &node : nodes) {
+            node[k / w] |= bit(k % w);
+            k /= w;
+        }
+    }
+    void erase(int k) {
+        for (auto &node : nodes) {
+            node[k / w] &= ~bit(k % w);
+            k /= w;
+            if (node[k]) break;
+        }
+    }
+    bool contains(int k) { return nodes[0][k / w] & bit(k % w); }
+    // Find the smallest key greater than k.
+    optional<int> next(int k) {
+        for (int i = 0; i < nodes.size(); i++, k /= w) {
+            if (k % w == w - 1) continue;
+            T keys = nodes[i][k / w] & ~(bit(k % w + 1) - 1);
+            if (keys == 0) continue;
+            k = k / w * w + __countr_zero(keys);
+            for (int j = i - 1; j >= 0; j--) k = k * w + __countr_zero(nodes[j][k]);
+            return k;
+        }
+        return nullopt;
+    }
+    // Find the largest key samller than k.
+    optional<int> prev(int k) {
+        for (int i = 0; i < nodes.size(); i++, k /= w) {
+            if (k % w == 0) continue;
+            T keys = nodes[i][k / w] & (bit(k % w) - 1);
+            if (keys == 0) continue;
+            k = k / w * w + w - 1 - __countl_zero(keys);
+            for (int j = i - 1; j >= 0; j--) k = k * w + w - 1 - __countl_zero(nodes[j][k]);
+            return k;
+        }
+        return nullopt;
+    }
 };
 ```
 
