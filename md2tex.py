@@ -4,7 +4,7 @@ import os.path
 import re
 import sys
 
-begin = r"""\documentclass[UTF8]{ctexart}
+begin = r"""\documentclass[UTF8, twoside]{ctexart}
 \usepackage[a4paper,margin=2cm]{geometry}
 \usepackage{afterpage}
 \usepackage{xcolor}
