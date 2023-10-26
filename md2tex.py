@@ -25,8 +25,8 @@ begin = r"""\documentclass[UTF8, twoside]{ctexart}
 % 定义代码样式
 \lstdefinestyle{cpp}{
   language=C++,
-  basicstyle=\ttfamily\fontsize{8pt}{9.6pt}\selectfont,
-  backgroundcolor=\color{gray!10},
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{white},
   keywordstyle=\color{blue}\bfseries,
   commentstyle=\color{green!70!black},
   stringstyle=\color{red},
