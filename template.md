@@ -263,19 +263,12 @@ struct Data {
 ```cpp
 int lowbit(int x) { return x & -x; }
 
-template <typename T>
-struct treap {
-    int n, size;
+template <typename T = int>
+class Treap {
+    int n;
     vector<int> t;
-    vector<T> t2, S;
-    treap(const vector<T>& a) : S(a) {
-        sort(S.begin(), S.end());
-        S.erase(unique(S.begin(), S.end()), S.end());
-        n = S.size();
-        size = 0;
-        t = vector<int>(n + 1);
-        t2 = vector<T>(n + 1);
-    }
+    vector<T> S;
+    vector<T> t2;  // 需要求前k小的数之和再写
     int pos(T x) { return lower_bound(S.begin(), S.end(), x) - S.begin() + 1; }
     int sum(int pos) {
         int res = 0;
@@ -286,6 +279,17 @@ struct treap {
         return res;
     }
 
+public:
+    int size = 0;
+
+    Treap(const vector<T>& a) : S(a) {
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+        n = S.size();
+        t = vector<int>(n + 1);
+        t2 = vector<T>(n + 1);  // 需要求前k小的数之和再写
+    }
+
     // 插入cnt个x
     void insert(T x, int cnt) {
         size += cnt;
@@ -293,7 +297,7 @@ struct treap {
         assert(i <= n && S[i - 1] == x);
         for (; i <= n; i += lowbit(i)) {
             t[i] += cnt;
-            t2[i] += cnt * x;
+            t2[i] += cnt * x;  // 需要求前k小的数之和再写
         }
     }
 
@@ -325,7 +329,7 @@ struct treap {
     }
 
     // 前k小的数之和
-    T pre_sum(int k) {
+    T presum(int k) {
         assert(0 < k && k <= size);
         int cnt = 0, x = 0;
         T res = 0;
@@ -356,6 +360,201 @@ struct treap {
 };
 ```
 
+#### 线段树实现
+
+```cpp
+template <typename T = int>
+class Treap {
+#define ls tr[pos].l
+#define rs tr[pos].r
+    struct Node {
+        T l = 0, r = 0;
+        int cnt = 0;
+    };
+    vector<Node> tr{Node{}, Node{}};
+    void newson(int pos) {
+        if (!ls) {
+            ls = tr.size();
+            tr.push_back({});
+        }
+        if (!rs) {
+            rs = tr.size();
+            tr.push_back({});
+        }
+    }
+    void insert(int pos, T l, T r, T x, int cnt) {
+        tr[pos].cnt += cnt;
+        if (l == r) return;
+        newson(pos);
+        T mid = (l + r) >> 1;
+        if (x <= mid) insert(ls, l, mid, x, cnt);
+        else insert(rs, mid + 1, r, x, cnt);
+    }
+    int query(int pos, T l, T r, T L, T R) {
+        if (R < l || L > r) return 0;
+        if (L <= l && r <= R) return tr[pos].cnt;
+        newson(pos);
+        T mid = (l + r) >> 1;
+        return query(ls, l, mid, L, R) + query(rs, mid + 1, r, L, R);
+    }
+    T kth(int pos, T l, T r, int k) {
+        if (l == r) return l;
+        T mid = (l + r) >> 1;
+        if (k <= tr[ls].cnt) return kth(ls, l, mid, k);
+        return kth(rs, mid + 1, r, k - tr[ls].cnt);
+    }
+
+public:
+    int size = 0;
+    static constexpr T min = numeric_limits<T>::min() / 2;
+    static constexpr T max = numeric_limits<T>::max() / 2;
+
+    // 插入cnt个x
+    void insert(T x, int cnt) {
+        size += cnt;
+        insert(1, min, max, x, cnt);
+    }
+
+    // 删除cnt个x
+    void erase(T x, int cnt) {
+        size -= cnt;
+        insert(1, min, max, x, -cnt);
+    }
+
+    // 统计出现次数
+    int count(T x) { return query(1, min, max, x, x); }
+
+    // x 的排名
+    int rank(T x) { return query(1, min, max, min, x - 1) + 1; }
+
+    // 第k小
+    T kth(int k) {
+        assert(0 < k && k <= size);
+        return kth(1, min, max, k);
+    }
+
+    // 小于x，最大的数
+    optional<T> prev(T x) {
+        int k = rank(x) - 1;
+        if (k == 0) return nullopt;
+        return kth(k);
+    }
+
+    // 大于x，最小的数
+    optional<T> next(T x) {
+        int k = rank(x + 1);
+        if (k == size + 1) return nullopt;
+        return kth(k);
+    }
+
+#undef ls
+#undef rs
+};
+```
+
+可求前k小的数之和
+
+```cpp
+template <typename T = int>
+class Treap {
+#define ls tr[pos].l
+#define rs tr[pos].r
+    struct Node {
+        T l = 0, r = 0;
+        int cnt = 0;
+        T sum = 0;
+    };
+    vector<Node> tr{Node{}, Node{}};
+    void newson(int pos) {
+        if (!ls) {
+            ls = tr.size();
+            tr.push_back({});
+        }
+        if (!rs) {
+            rs = tr.size();
+            tr.push_back({});
+        }
+    }
+    void insert(int pos, T l, T r, T x, int cnt) {
+        tr[pos].cnt += cnt;
+        tr[pos].sum += x * cnt;
+        if (l == r) return;
+        newson(pos);
+        T mid = (l + r) >> 1;
+        if (x <= mid) insert(ls, l, mid, x, cnt);
+        else insert(rs, mid + 1, r, x, cnt);
+    }
+    pair<int, T> query(int pos, T l, T r, T L, T R) {
+        if (R < l || L > r) return {0, 0};
+        if (L <= l && r <= R) return {tr[pos].cnt, tr[pos].sum};
+        newson(pos);
+        T mid = (l + r) >> 1;
+        auto [cnt1, sum1] = query(ls, l, mid, L, R);
+        auto [cnt2, sum2] = query(rs, mid + 1, r, L, R);
+        return {cnt1 + cnt2, sum1 + sum2};
+    }
+    T kth(int pos, T l, T r, int k) {
+        if (l == r) return l;
+        T mid = (l + r) >> 1;
+        if (k <= tr[ls].cnt) return kth(ls, l, mid, k);
+        return kth(rs, mid + 1, r, k - tr[ls].cnt);
+    }
+
+public:
+    int size = 0;
+    static constexpr T min = numeric_limits<T>::min() / 2;
+    static constexpr T max = numeric_limits<T>::max() / 2;
+
+    // 插入cnt个x
+    void insert(T x, int cnt) {
+        size += cnt;
+        insert(1, min, max, x, cnt);
+    }
+
+    // 删除cnt个x
+    void erase(T x, int cnt) {
+        size -= cnt;
+        insert(1, min, max, x, -cnt);
+    }
+
+    // 统计出现次数
+    int count(T x) { return query(1, min, max, x, x).first; }
+
+    // x 的排名
+    int rank(T x) { return query(1, min, max, min, x - 1).first + 1; }
+
+    // 第k小
+    T kth(int k) {
+        assert(0 < k && k <= size);
+        return kth(1, min, max, k);
+    }
+
+    // 前k小的数之和
+    T presum(int k) {
+        assert(0 < k && k <= size);
+        T x = kth(k);
+        auto [cnt, sum] = query(1, min, max, min, x);
+        return sum - (cnt - k) * x;
+    }
+
+    // 小于x，最大的数
+    optional<T> prev(T x) {
+        int k = rank(x) - 1;
+        if (k == 0) return nullopt;
+        return kth(k);
+    }
+
+    // 大于x，最小的数
+    optional<T> next(T x) {
+        int k = rank(x + 1);
+        if (k == size + 1) return nullopt;
+        return kth(k);
+    }
+
+#undef ls
+#undef rs
+};
+```
 #### 集合平衡树
 
 ```cpp
