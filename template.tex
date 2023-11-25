@@ -92,13 +92,18 @@ struct dsu {
 \subsubsection{一维}
 
 \begin{lstlisting}[style=cpp]
-template <class T>
-struct fenwick {
+template <typename T = int>
+class FenwickTree {
+    static int lowbit(int x) { return x & -x; }
     int n;
     vector<T> t;
-    fenwick(int _n) : n(_n), t(n + 1) {}
+
+public:
+    FenwickTree(int n) : n(n), t(n + 1) {}
     T query(int l, int r) {
+        if (l > r) return 0;
         auto query = [&](int pos) {
+            pos++;
             T res = 0;
             while (pos) {
                 res += t[pos];
@@ -106,9 +111,11 @@ struct fenwick {
             }
             return res;
         };
+        if (l == 0) return query(r);
         return query(r) - query(l - 1);
     }
     void add(int pos, T num) {
+        pos++;
         while (pos <= n) {
             t[pos] += num;
             pos += lowbit(pos);
