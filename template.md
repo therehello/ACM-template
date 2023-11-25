@@ -633,44 +633,71 @@ struct treap_set {
 ### 可持久化线段树
 
 ```cpp
-constexpr int MAXN = 200000;
-vector<int> root(MAXN << 5);
-struct Persistent_seg {
+template <typename T>
+class PersistentSeg {
+#define mid (l + r) / 2
     int n;
-    struct Data {
-        int ls, rs;
-        int val;
+    struct Node {
+        int l, r;
+        int cnt = 0;
     };
-    vector<Data> tree;
-    Persistent_seg(int n, vector<int>& a) : n(n) { root[0] = build(1, n, a); }
-    int build(int l, int r, vector<int>& a) {
+    vector<Node> tr;
+    vector<int> root;
+    vector<T> S;
+    int lson(int pos) { return tr[pos].l; }
+    int rson(int pos) { return tr[pos].r; }
+
+    int build(int l, int r) {
         if (l == r) {
-            tree.push_back({0, 0, a[l]});
-            return tree.size() - 1;
+            tr.push_back({});
+            return tr.size() - 1;
         }
-        int mid = l + r >> 1;
-        int ls = build(l, mid, a), rs = build(mid + 1, r, a);
-        tree.push_back({ls, rs, tree[ls].val + tree[rs].val});
-        return tree.size() - 1;
+        tr.push_back({build(l, mid), build(mid + 1, r)});
+        return tr.size() - 1;
     }
-    int update(int rt, const int& idx, const int& val, int l, int r) {
+    int update(int pos, int idx, int l, int r) {
         if (l == r) {
-            tree.push_back({0, 0, tree[rt].val + val});
-            return tree.size() - 1;
+            tr.push_back({0, 0, tr[pos].cnt + 1});
+            return tr.size() - 1;
         }
-        int mid = l + r >> 1, ls = tree[rt].ls, rs = tree[rt].rs;
-        if (idx <= mid) ls = update(ls, idx, val, l, mid);
-        else rs = update(rs, idx, val, mid + 1, r);
-        tree.push_back({ls, rs, tree[ls].val + tree[rs].val});
-        return tree.size() - 1;
+        int ls = lson(pos), rs = rson(pos);
+        if (idx <= mid) ls = update(ls, idx, l, mid);
+        else rs = update(rs, idx, mid + 1, r);
+        tr.push_back({ls, rs, tr[ls].cnt + tr[rs].cnt});
+        return tr.size() - 1;
     }
-    int query(int rt1, int rt2, int k, int l, int r) {
-        if (l == r) return l;
-        int mid = l + r >> 1;
-        int lcnt = tree[tree[rt2].ls].val - tree[tree[rt1].ls].val;
-        if (k <= lcnt) return query(tree[rt1].ls, tree[rt2].ls, k, l, mid);
-        else return query(tree[rt1].rs, tree[rt2].rs, k - lcnt, mid + 1, r);
+    int query(int pos1, int pos2, int l, int r, int k) {
+        if (l == r) return S[l];
+        int lcnt = tr[lson(pos2)].cnt - tr[lson(pos1)].cnt;
+        if (k <= lcnt) return query(lson(pos1), lson(pos2), l, mid, k);
+        return query(rson(pos1), rson(pos2), mid + 1, r, k - lcnt);
     }
+    int query2(int pos1, int pos2, int l, int r, int L, int R) {
+        if (L <= S[l] && S[r] <= R) return tr[pos2].cnt - tr[pos1].cnt;
+        int res = 0;
+        if (L <= S[mid]) res += query2(lson(pos1), lson(pos2), l, mid, L, R);
+        if (R >= S[mid + 1]) res += query2(rson(pos1), rson(pos2), mid + 1, r, L, R);
+        return res;
+    }
+
+public:
+    PersistentSeg(vector<T>& a) : root(a.size() + 1), S(a) {
+        sort(S.begin(), S.end());
+        S.erase(unique(S.begin(), S.end()), S.end());
+        n = S.size();
+        root[0] = build(0, n - 1);
+        for (int i = 0; i < (int)a.size(); i++) {
+            root[i + 1] =
+                update(root[i], lower_bound(S.begin(), S.end(), a[i]) - S.begin(), 0, n - 1);
+        }
+    }
+
+    // 查询区间第k小
+    int kth(int l, int r, int k) { return query(root[l], root[r + 1], 0, n - 1, k); }
+
+    // 区间内满足值在[L,R]的个数
+    int query(int l, int r, int L, int R) { return query2(root[l], root[r + 1], 0, n - 1, L, R); }
+#undef mid
 };
 ```
 
