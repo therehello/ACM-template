@@ -83,17 +83,19 @@
 ### 并查集
 
 ```cpp
-struct dsu {
+class Dsu {
     int n;
     vector<int> fa, sz;
-    dsu(int _n) : n(_n), fa(n + 1), sz(n + 1, 1) { iota(fa.begin(), fa.end(), 0); }
+
+public:
+    Dsu(int _n) : n(_n), fa(n), sz(n, 1) { iota(fa.begin(), fa.end(), 0); }
     int find(int x) { return x == fa[x] ? x : fa[x] = find(fa[x]); }
     bool merge(int x, int y) {
         int fax = find(x), fay = find(y);
-        if (fax == fay) return 0;
+        if (fax == fay) return false;
         sz[fay] += sz[fax];
         fa[fax] = fay;
-        return 1;
+        return true;
     }
     int size(int x) { return sz[find(x)]; }
 };
