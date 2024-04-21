@@ -1790,7 +1790,7 @@ auto _ = []() {
 
 $n$ 个球，$m$ 个盒
 
-![box and ball](box-and-ball.png)
+![box and ball](/resource/box-and-ball.png)
 
 #### 球同，盒同，可空
 
